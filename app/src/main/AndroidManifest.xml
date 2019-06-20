@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.anastdronina.gyperborea">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_new2"
+        android:label="Гиперборея"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ResetPreferences" />
+        <activity
+            android:name=".NewGame" />
+        <activity
+            android:name=".AboutGame" />
+        <activity
+            android:name=".Popup" />
+        <activity
+            android:name=".PersonCard" />
+        <activity
+            android:name=".People" />
+        <activity
+            android:name=".Finances" />
+        <activity
+            android:name=".Sciense" />
+        <activity
+            android:name=".Tecnologies" />
+        <activity
+            android:name=".SellTechnology" />
+        <activity
+            android:name=".Supply" />
+        <activity
+            android:name=".Stock" />
+        <activity
+            android:name=".Agriculture" />
+        <activity
+            android:name=".FarmCard" />
+        <activity
+            android:name=".Market" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+
+    </application>
+
+</manifest>
