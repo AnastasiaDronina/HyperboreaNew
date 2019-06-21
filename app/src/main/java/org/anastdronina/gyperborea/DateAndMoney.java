@@ -48,7 +48,7 @@ public class DateAndMoney {
                 break;
             default:
         }
-        return month + " " + yearId;
+        return "\n  " + month + " " + yearId;
     }
 
     public String getMoney(SharedPreferences allSettings, String currency) {
