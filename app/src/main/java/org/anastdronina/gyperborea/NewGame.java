@@ -37,15 +37,11 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.activity_new_game);
 
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
-        //db = openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
         dateAndMoney = new DateAndMoney();
         ifNewGame = allSettings.getBoolean("NEW_GAME", true);
         if (ifNewGame) {
             Intent popupIntent = new Intent(this, Popup.class);
             startActivity(popupIntent);
-
-            DatabaseThread databaseThread = new DatabaseThread();
-            databaseThread.start();
         }
 
         btnPopulation = findViewById(R.id.btnPopulation);
@@ -294,72 +290,5 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-    }
-
-    private class DatabaseThread extends Thread {
-        @Override
-        public void run() {
-            super.run();
-
-            DatabaseHelper myDb = new DatabaseHelper(getApplicationContext());
-
-            //filling population table in db
-            myDb.insertPeopleData("Дмитрий", "Аксенов", 0, 0, 21, 0, 0, 0, 1, 0,
-                    0, 1, 0, "Жаворонок", "Торопыжка", "Некультурный", 0, 0.0);
-            myDb.insertPeopleData("Денис", "Сергеев", 0, 0, 53, 0, 1, 0, 0, 1,
-                    0, 0, 0, "Способный ученик", "Технарь", "Бездонный желудок", 0, 0.0);
-            myDb.insertPeopleData("Степан", "Одинцов", 0, 0, 28, 0, 0, 0, 0, 1,
-                    1, 0, 0, "Декоратор", "Гурман", "Брезгливый", 0, 0.0);
-            myDb.insertPeopleData("Вадим", "Дьячков", 0, 0, 34, 0, 0, 1, 0, 0,
-                    1, 0, 0, "Веган", "Болтун", "Громкий храп", 0, 0.0);
-            myDb.insertPeopleData("Владислав", "Кошелев", 0, 0, 30, 1, 0, 1, 0, 0,
-                    0, 0, 0, "Способный ученик", "Декоратор", "Пацифист", 0, 0.0);
-            myDb.insertPeopleData("Святослав", "Гуляев", 0, 0, 25, 0, 1, 0, 0, 0,
-                    0, 1, 0, "Анемия", "Гурман", "Неконструктивный", 0, 0.0);
-            myDb.insertPeopleData("Артём", "Тетерин", 0, 0, 28, 0, 0, 0, 1, 0,
-                    1, 0, 0, "Руки из лапши", "Бездонный желудок", "Жаворонок", 0, 0.0);
-            myDb.insertPeopleData("Эдуард", "Лыткин", 0, 0, 18, 0, 0, 0, 0, 1,
-                    0, 0, 1, "Буйвол", "Декоратор", "Нарколепсия", 0, 0.0);
-            myDb.insertPeopleData("Иннокентий", "Харитонов", 0, 0, 34, 0, 1, 1, 0, 0,
-                    0, 0, 0, "Медленная обучаемость", "Брезгливый", "Торопыжка", 0, 0.0);
-            myDb.insertPeopleData("Илья", "Некрасов", 0, 0, 23, 1, 0, 0, 0, 0,
-                    1, 0, 1, "Трипофобия", "Технарь", "Декоратор", 0, 0.0);
-
-            //filling tecnologies table in db
-            myDb.insertTecnologiesData("tec1", "desc1", 3, 300, 0);
-            myDb.insertTecnologiesData("tec2", "desc2", 10, 1000, 1);
-            myDb.insertTecnologiesData("tec3", "desc3", 5, 500, 0);
-            myDb.insertTecnologiesData("tec4", "desc4", 8, 800, 0);
-            myDb.insertTecnologiesData("tec5", "desc5", 12, 1200, 0);
-            myDb.insertTecnologiesData("tec1.1", "desc1.1", 2, 200, 0);
-            myDb.insertTecnologiesData("tec2.1", "desc2.1", 7, 700, 0);
-            myDb.insertTecnologiesData("tec3.1", "desc3.1", 9, 900, 0);
-            myDb.insertTecnologiesData("tec4.1", "desc4.1", 4, 400, 0);
-            myDb.insertTecnologiesData("tec5.1", "desc5.1", 18, 1800, 0);
-
-            myDb.insertStockData("Самосвал", "Транспорт", 2);
-            myDb.insertStockData("Огурцы", "Еда", 10);
-            myDb.insertStockData("Ресурс1", "Ресурсы", 2);
-            myDb.insertStockData("Лук", "Еда", 30);
-            myDb.insertStockData("Ресурс2", "Ресурсы", 10);
-            myDb.insertStockData("Помидоры", "Еда", 10);
-            myDb.insertStockData("Оборудование3", "Оборудование", 2);
-            myDb.insertStockData("Ресурс3", "Ресурсы", 6);
-            myDb.insertStockData("Оборудование2", "Оборудование", 7);
-            myDb.insertStockData("Легковой автомобиль", "Транспорт", 5);
-            myDb.insertStockData("Оборудование1", "Оборудование", 10);
-            myDb.insertStockData("Трактор", "Транспорт", 3);
-
-            myDb.insertFarmsData("Теплица 1", "Не выбрано", 0, 0);
-            myDb.insertFarmsData("Теплица 2", "Не выбрано", 0, 0);
-            myDb.insertFarmsData("Теплица 3", "Не выбрано", 0, 0);
-            myDb.insertFarmsData("Теплица 4", "Не выбрано", 0, 0);
-            myDb.insertFarmsData("Теплица 5", "Не выбрано", 0, 0);
-
-            myDb.insertMarketData("Картофель", 10, 300, "руб", "Еда");
-            myDb.insertMarketData("Оборудование42", 5, 50000, "руб", "Оборудование");
-            myDb.insertMarketData("Бетономешалка", 1, 50000, "$", "Транспорт");
-
-        }
     }
 }

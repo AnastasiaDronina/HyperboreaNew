@@ -7,21 +7,24 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static android.database.sqlite.SQLiteDatabase.openOrCreateDatabase;
-
 public class DbThread extends Thread {
 
     private static DbThread mInstance;
-    private static Boolean isDataLoaded = false;
+    private static Boolean isDataLoaded;
     private static DbListener dbListener;
+    private static SQLiteDatabase db;
 
-    private DbThread() {
+    private DbThread(Context context) {
+
+    }
+
+    public static void init(Context context) {
+        if (mInstance == null) {
+            mInstance = new DbThread(context);
+        }
     }
 
     public static DbThread getInstance() {
-        if(mInstance == null){
-            mInstance = new DbThread();
-        }
         return mInstance;
     }
 
@@ -45,15 +48,13 @@ public class DbThread extends Thread {
 
     //...................всякие остальные методы..................................
     public void doQuery(String sqlQuery) {
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         db.execSQL(sqlQuery);
     }
 
     public ArrayList<Person> loadAllPeopleData() {
         isDataLoaded = false;
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         ArrayList<Person> populationList = new ArrayList<>();
         Cursor res = db.rawQuery("select * from " + "population", null);
         while (res.moveToNext()) {
@@ -88,8 +89,8 @@ public class DbThread extends Thread {
 
     public ArrayList<Tecnology> loadAllTechData() {
         isDataLoaded = false;
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+
         ArrayList<Tecnology> tecs = new ArrayList<>();
         Cursor res = db.rawQuery("select * from " + "tecnologies", null);
         while (res.moveToNext()) {
@@ -113,8 +114,8 @@ public class DbThread extends Thread {
 
     public ArrayList<Product> loadAllStockData() {
         isDataLoaded = false;
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+
         ArrayList<Product> products = new ArrayList<>();
         Cursor res = db.rawQuery("select * from " + "stock", null);
         while (res.moveToNext()) {
@@ -133,8 +134,8 @@ public class DbThread extends Thread {
 
     public ArrayList<Farm> loadAllFarmsData() {
         isDataLoaded = false;
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+
         ArrayList<Farm> farms = new ArrayList<>();
 
         Cursor res = db.rawQuery("select * from " + "farms", null);
@@ -157,8 +158,8 @@ public class DbThread extends Thread {
 
     public ArrayList<MarketItem> loadAllMarketData() {
         isDataLoaded = false;
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+
         ArrayList<MarketItem> marketItems = new ArrayList<>();
 
         Cursor res = db.rawQuery("select * from " + "market", null);
@@ -181,8 +182,7 @@ public class DbThread extends Thread {
     }
 
     public String printCoefAsync(int personId) {
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         String printCoef = "";
         Cursor res = db.rawQuery("select * from " + "population", null);
         while (res.moveToNext()) {
@@ -197,8 +197,7 @@ public class DbThread extends Thread {
     }
 
     public Double setCoefInFinancesActivity() {
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         Double coef = 0.0;
         Cursor res = db.rawQuery("select * from " + "population", null);
         while (res.moveToNext()) {
@@ -211,10 +210,9 @@ public class DbThread extends Thread {
     }
 
     public ArrayList<Integer> getFinIds() {
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         ArrayList finIds = new ArrayList<Integer>();
         isDataLoaded = false;
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         Cursor res = db.rawQuery("select * from " + "population", null);
         while (res.moveToNext()) {
             int finId = res.getInt(0);
@@ -230,10 +228,9 @@ public class DbThread extends Thread {
     }
 
     public ArrayList<Double> getFinCoefs() {
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         ArrayList finCoefs = new ArrayList<Double>();
         isDataLoaded = false;
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         Cursor res = db.rawQuery("select * from " + "population", null);
         while (res.moveToNext()) {
             double finCoef = res.getDouble(18);
@@ -248,11 +245,69 @@ public class DbThread extends Thread {
         return finCoefs;
     }
 
+    public void insertData(DatabaseHelper myDb) {
+        //filling population table in db
+        myDb.insertPeopleData("Дмитрий", "Аксенов", 0, 0, 21, 0, 0, 0, 1, 0,
+                0, 1, 0, "Жаворонок", "Торопыжка", "Некультурный", 0, 0.0);
+        myDb.insertPeopleData("Денис", "Сергеев", 0, 0, 53, 0, 1, 0, 0, 1,
+                0, 0, 0, "Способный ученик", "Технарь", "Бездонный желудок", 0, 0.0);
+        myDb.insertPeopleData("Степан", "Одинцов", 0, 0, 28, 0, 0, 0, 0, 1,
+                1, 0, 0, "Декоратор", "Гурман", "Брезгливый", 0, 0.0);
+        myDb.insertPeopleData("Вадим", "Дьячков", 0, 0, 34, 0, 0, 1, 0, 0,
+                1, 0, 0, "Веган", "Болтун", "Громкий храп", 0, 0.0);
+        myDb.insertPeopleData("Владислав", "Кошелев", 0, 0, 30, 1, 0, 1, 0, 0,
+                0, 0, 0, "Способный ученик", "Декоратор", "Пацифист", 0, 0.0);
+        myDb.insertPeopleData("Святослав", "Гуляев", 0, 0, 25, 0, 1, 0, 0, 0,
+                0, 1, 0, "Анемия", "Гурман", "Неконструктивный", 0, 0.0);
+        myDb.insertPeopleData("Артём", "Тетерин", 0, 0, 28, 0, 0, 0, 1, 0,
+                1, 0, 0, "Руки из лапши", "Бездонный желудок", "Жаворонок", 0, 0.0);
+        myDb.insertPeopleData("Эдуард", "Лыткин", 0, 0, 18, 0, 0, 0, 0, 1,
+                0, 0, 1, "Буйвол", "Декоратор", "Нарколепсия", 0, 0.0);
+        myDb.insertPeopleData("Иннокентий", "Харитонов", 0, 0, 34, 0, 1, 1, 0, 0,
+                0, 0, 0, "Медленная обучаемость", "Брезгливый", "Торопыжка", 0, 0.0);
+        myDb.insertPeopleData("Илья", "Некрасов", 0, 0, 23, 1, 0, 0, 0, 0,
+                1, 0, 1, "Трипофобия", "Технарь", "Декоратор", 0, 0.0);
+
+        //filling tecnologies table in db
+        myDb.insertTecnologiesData("tec1", "desc1", 3, 300, 0);
+        myDb.insertTecnologiesData("tec2", "desc2", 10, 1000, 1);
+        myDb.insertTecnologiesData("tec3", "desc3", 5, 500, 0);
+        myDb.insertTecnologiesData("tec4", "desc4", 8, 800, 0);
+        myDb.insertTecnologiesData("tec5", "desc5", 12, 1200, 0);
+        myDb.insertTecnologiesData("tec1.1", "desc1.1", 2, 200, 0);
+        myDb.insertTecnologiesData("tec2.1", "desc2.1", 7, 700, 0);
+        myDb.insertTecnologiesData("tec3.1", "desc3.1", 9, 900, 0);
+        myDb.insertTecnologiesData("tec4.1", "desc4.1", 4, 400, 0);
+        myDb.insertTecnologiesData("tec5.1", "desc5.1", 18, 1800, 0);
+
+        myDb.insertStockData("Самосвал", "Транспорт", 2);
+        myDb.insertStockData("Огурцы", "Еда", 10);
+        myDb.insertStockData("Ресурс1", "Ресурсы", 2);
+        myDb.insertStockData("Лук", "Еда", 30);
+        myDb.insertStockData("Ресурс2", "Ресурсы", 10);
+        myDb.insertStockData("Помидоры", "Еда", 10);
+        myDb.insertStockData("Оборудование3", "Оборудование", 2);
+        myDb.insertStockData("Ресурс3", "Ресурсы", 6);
+        myDb.insertStockData("Оборудование2", "Оборудование", 7);
+        myDb.insertStockData("Легковой автомобиль", "Транспорт", 5);
+        myDb.insertStockData("Оборудование1", "Оборудование", 10);
+        myDb.insertStockData("Трактор", "Транспорт", 3);
+
+        myDb.insertFarmsData("Теплица 1", "Не выбрано", 0, 0);
+        myDb.insertFarmsData("Теплица 2", "Не выбрано", 0, 0);
+        myDb.insertFarmsData("Теплица 3", "Не выбрано", 0, 0);
+        myDb.insertFarmsData("Теплица 4", "Не выбрано", 0, 0);
+        myDb.insertFarmsData("Теплица 5", "Не выбрано", 0, 0);
+
+        myDb.insertMarketData("Картофель", 10, 300, "руб", "Еда");
+        myDb.insertMarketData("Оборудование42", 5, 50000, "руб", "Оборудование");
+        myDb.insertMarketData("Бетономешалка", 1, 50000, "$", "Транспорт");
+    }
+
     public ArrayList<Integer> getFinMonthsWorked() {
+        db = SQLiteDatabase.openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         ArrayList finMonthsWorked = new ArrayList<Integer>();
         isDataLoaded = false;
-        SQLiteDatabase db = SQLiteDatabase
-                .openDatabase("/data/data/org.anastdronina.gyperborea/databases/hyperborea.db", null, 0, null);
         Cursor res = db.rawQuery("select * from " + "population", null);
         while (res.moveToNext()) {
             int monthsWorked = res.getInt(17);

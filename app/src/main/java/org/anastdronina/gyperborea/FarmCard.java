@@ -130,14 +130,6 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
             }
         });
 
-//        ViewGroup headerView = (ViewGroup) getLayoutInflater().inflate(R.layout.scientists_header, lvChangeFarmer, false);
-//        lvChangeFarmer.addHeaderView(headerView, null, false);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
         farmId = allSettings.getInt("CURRENT_FARM_ID", 0);
         farmName = allSettings.getString("CURRENT_FARM_NAME", "");
         farmCrop = allSettings.getString("CURRENT_FARM_CROP", "");
@@ -216,6 +208,18 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
     protected void onStop() {
         super.onStop();
         DbThread.getInstance().removeListener(listener);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("farmer", tvFarmFarmer.getText().toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        tvFarmFarmer.setText(savedInstanceState.getString("farmer"));
     }
 
     @Override
@@ -333,31 +337,6 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
             return this.farmers.size();
         }
     }
-
-//    class FarmerAdapter extends ArrayAdapter<String> {
-//        Context context;
-//        String[] fNames;
-//        String[] fLevels;
-//
-//        FarmerAdapter(Context c, String[] names, String[] levels) {
-//            super(c, R.layout.scientists_row, R.id.scientistName, names);
-//            this.context = c;
-//            this.fNames = names;
-//            this.fLevels = levels;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            LayoutInflater layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            View scientistsRow = layoutInflater.inflate(R.layout.scientists_row, parent, false);
-//            TextView scientistName = scientistsRow.findViewById(R.id.scientistName);
-//            TextView scientistLevel = scientistsRow.findViewById(R.id.scientistLevel);
-//
-//            scientistName.setText(fNames[position]);
-//            scientistLevel.setText(fLevels[position]);
-//            return scientistsRow;
-//        }
-//    }
 
     @Override
     public void onBackPressed() {

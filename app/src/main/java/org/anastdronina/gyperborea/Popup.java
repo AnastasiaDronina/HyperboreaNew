@@ -42,6 +42,9 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
 
         popupApply.setOnClickListener(this);
         popupBack.setOnClickListener(this);
+
+        DatabaseHelper myDb = new DatabaseHelper(getApplicationContext());
+        DbThread.getInstance().insertData(myDb);
     }
 
     @Override
