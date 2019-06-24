@@ -79,11 +79,7 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
         dialogNextTurn = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogNextTurn.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         tvForDialogNextTurn = new TextView(this);
-        tvForDialogNextTurn.setText("ПОСЛЕ ПЕРЕХОДА НА СЛЕДУЮЩИЙ ХОД: " +
-                "\n\n1. С Вашего баланса будут списаны зарплаты работающему населению. " +
-                "\n2. Изучений текущей технологии продвинется еще на один месяц. " +
-                "\n3. Коэффициенты улучшения могут быть обновлены " +
-                "\n4. Используемые теплицы перейдут в следующий статус");
+        tvForDialogNextTurn.setText(getString(R.string.next_turn_info));
         dialogNextTurn.setView(tvForDialogNextTurn);
         dialogNextTurn.setButton(DialogInterface.BUTTON_POSITIVE, "Ок", new DialogInterface.OnClickListener() {
             @Override
