@@ -10,7 +10,8 @@
         android:theme="@style/AppTheme"
         android:name="org.anastdronina.gyperborea.Hyperborea">
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,35 +19,50 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ResetPreferences" />
+            android:name=".ResetPreferences"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".NewGame" />
+            android:name=".NewGame"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".AboutGame" />
+            android:name=".AboutGame"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Popup" />
+            android:name=".Popup"
+            android:theme="@style/AppSecondTheme"/>
         <activity
-            android:name=".PersonCard" />
+            android:name=".PersonCard"
+            android:theme="@style/AppSecondTheme"/>
         <activity
-            android:name=".People" />
+            android:name=".People"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Finances" />
+            android:name=".Finances"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Sciense" />
+            android:name=".Sciense"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Tecnologies" />
+            android:name=".Tecnologies"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".SellTechnology" />
+            android:name=".SellTechnology"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Supply" />
+            android:name=".Supply"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Stock" />
+            android:name=".Stock"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Agriculture" />
+            android:name=".Agriculture"
+            android:theme="@style/AppTheme"/>
         <activity
-            android:name=".FarmCard" />
+            android:name=".FarmCard"
+            android:theme="@style/AppSecondTheme"/>
         <activity
-            android:name=".Market" />
+            android:name=".Market"
+            android:theme="@style/AppTheme"/>
 
         <meta-data
             android:name="preloaded_fonts"
