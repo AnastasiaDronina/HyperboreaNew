@@ -21,7 +21,13 @@ public class DbThread extends Thread {
     public static void init(Context context) {
         if (mInstance == null) {
             mInstance = new DbThread(context);
+            mInstance.start();
         }
+    }
+
+    @Override
+    public void run() {
+        super.run();
     }
 
     public static DbThread getInstance() {
