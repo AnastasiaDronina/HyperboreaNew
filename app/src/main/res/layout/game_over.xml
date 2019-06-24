@@ -24,7 +24,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:fontFamily="@font/roboto_light"
-        android:text="ИГРА ОКОНЧЕНА! \n\nПоздравляем! Вы успешно прошли демо-версию игры Гиперборея. Полная версия выйдет немного позже. \n\nЕсли Вы знаете, как помочь проекту или заметили ошибки в работе приложения, пожалуйста, свяжитесь с нами a.dronina@gmail.com. "
+        android:text="@string/game_over"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp"
