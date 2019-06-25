@@ -4,6 +4,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -27,13 +29,26 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
     private SharedPreferences allSettings;
     private DateAndMoney dateAndMoney;
     private double coef;
+    private Handler handler;
+    private Message message;
+    private DbThread.DbListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finances);
 
-        coef = DbThread.getInstance().setCoefInFinancesActivity();
+        handler = new Handler();
+        message = handler.obtainMessage(7);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
+        listener = new DbThread.DbListener() {
+            @Override
+            public void onDataLoaded(Bundle bundle) {
+                coef = bundle.getDouble("coef");
+            }
+        };
+        DbThread.getInstance().addListener(listener);
 
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
 
@@ -144,6 +159,18 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
         date.setText(dateAndMoney.getDate(allSettings));
         moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
         moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        DbThread.getInstance().addListener(listener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        DbThread.getInstance().removeListener(listener);
     }
 
     @Override

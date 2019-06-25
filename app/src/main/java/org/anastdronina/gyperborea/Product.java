@@ -1,6 +1,9 @@
 package org.anastdronina.gyperborea;
 
-public class Product {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Product implements Parcelable {
     private int id;
     private String name, type;
     private int amount;
@@ -11,6 +14,25 @@ public class Product {
         this.type = type;
         this.amount = amount;
     }
+
+    protected Product(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        type = in.readString();
+        amount = in.readInt();
+    }
+
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -42,5 +64,18 @@ public class Product {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeString(type);
+        dest.writeInt(amount);
     }
 }

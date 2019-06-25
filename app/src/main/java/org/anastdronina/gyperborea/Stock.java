@@ -3,6 +3,8 @@ package org.anastdronina.gyperborea;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,12 +35,15 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     private DateAndMoney dateAndMoney;
     private TextView date, moneyD, moneyR;
     private DbThread.DbListener listener;
+    private Handler handler;
+    private Message message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock);
 
+        handler = new Handler();
         products = new ArrayList<>();
         stockListView = findViewById(R.id.stockListView);
         stockListView.setHasFixedSize(true);
@@ -64,8 +69,15 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     @Override
     protected void onResume() {
         super.onResume();
-        products = new ArrayList<>();
-        products = DbThread.getInstance().loadAllStockData();
+        message = handler.obtainMessage(3);
+        DbThread.getBackgroundHandler().sendMessage(message);
+        listener = new DbThread.DbListener() {
+            @Override
+            public void onDataLoaded(Bundle bundle) {
+                products = bundle.getParcelableArrayList("products");
+            }
+        };
+        DbThread.getInstance().addListener(listener);
 
     }
 
@@ -85,23 +97,26 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
         if (text.equals("Не выбрано")) {
+            message = handler.obtainMessage(3);
+            DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
-                public void onDataLoaded() {
+                public void onDataLoaded(Bundle bundle) {
+                    products = bundle.getParcelableArrayList("products");
                     stockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, products);
                     stockListView.setLayoutManager(layoutManager);
                     stockListView.setAdapter(stockAdapter);
                 }
             };
             DbThread.getInstance().addListener(listener);
-            products = DbThread.getInstance().loadAllStockData();
-            DbThread.getInstance().setData();
-            DbThread.getInstance().removeListener(listener);
         }
         if (text.equals("Еда")) {
+            message = handler.obtainMessage(3);
+            DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
-                public void onDataLoaded() {
+                public void onDataLoaded(Bundle bundle) {
+                    products = bundle.getParcelableArrayList("products");
                     subList = new ArrayList<>();
                     for (int i = 0; i < products.size(); i++) {
                         if (products.get(i).getType().equals("Еда")) {
@@ -114,14 +129,14 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
                 }
             };
             DbThread.getInstance().addListener(listener);
-            products = DbThread.getInstance().loadAllStockData();
-            DbThread.getInstance().setData();
-            DbThread.getInstance().removeListener(listener);
         }
         if (text.equals("Ресурсы")) {
+            message = handler.obtainMessage(3);
+            DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
-                public void onDataLoaded() {
+                public void onDataLoaded(Bundle bundle) {
+                    products = bundle.getParcelableArrayList("products");
                     subList = new ArrayList<>();
                     for (int i = 0; i < products.size(); i++) {
                         if (products.get(i).getType().equals("Ресурсы")) {
@@ -134,14 +149,14 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
                 }
             };
             DbThread.getInstance().addListener(listener);
-            products = DbThread.getInstance().loadAllStockData();
-            DbThread.getInstance().setData();
-            DbThread.getInstance().removeListener(listener);
         }
         if (text.equals("Оборудование")) {
+            message = handler.obtainMessage(3);
+            DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
-                public void onDataLoaded() {
+                public void onDataLoaded(Bundle bundle) {
+                    products = bundle.getParcelableArrayList("products");
                     subList = new ArrayList<>();
                     for (int i = 0; i < products.size(); i++) {
                         if (products.get(i).getType().equals("Оборудование")) {
@@ -154,14 +169,14 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
                 }
             };
             DbThread.getInstance().addListener(listener);
-            products = DbThread.getInstance().loadAllStockData();
-            DbThread.getInstance().setData();
-            DbThread.getInstance().removeListener(listener);
         }
         if (text.equals("Транспорт")) {
+            message = handler.obtainMessage(3);
+            DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
-                public void onDataLoaded() {
+                public void onDataLoaded(Bundle bundle) {
+                    products = bundle.getParcelableArrayList("products");
                     subList = new ArrayList<>();
                     for (int i = 0; i < products.size(); i++) {
                         if (products.get(i).getType().equals("Транспорт")) {
@@ -174,9 +189,6 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
                 }
             };
             DbThread.getInstance().addListener(listener);
-            products = DbThread.getInstance().loadAllStockData();
-            DbThread.getInstance().setData();
-            DbThread.getInstance().removeListener(listener);
         }
     }
 
@@ -184,31 +196,6 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-
-//    class StockAdapter extends ArrayAdapter<String> {
-//        Context context;
-//        String[] productNames;
-//        String[] productAmounts;
-//
-//        StockAdapter(Context c, String[] names, String[] amounts) {
-//            super(c, R.layout.stock_row, R.id.scientistName, names);
-//            this.context = c;
-//            this.productNames = names;
-//            this.productAmounts = amounts;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            LayoutInflater layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            View tecnologiesRow = layoutInflater.inflate(R.layout.stock_row, parent, false);
-//            TextView productName = tecnologiesRow.findViewById(R.id.scientistName);
-//            TextView productAmount = tecnologiesRow.findViewById(R.id.scientistLevel);
-//
-//            productName.setText(productNames[position]);
-//            productAmount.setText(productAmounts[position]);
-//            return tecnologiesRow;
-//        }
-//    }
 
     public class StockHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +31,9 @@ public class Market extends AppCompatActivity {
     private AlertDialog dialogBuyItem;
     private TextView tvForDialogBuyItem, date, moneyR, moneyD;
     private DbThread.DbListener listener;
+    private Handler handler;
+    private Message message;
+    private Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,25 +72,29 @@ public class Market extends AppCompatActivity {
                 databaseThread.start();
 
                 //delete from market
-                DbThread.getInstance().doQuery("delete from market where ITEM_ID='" + allSettings.getInt("CURRENT_ITEM_ID", 0) + "'");
+                bundle = new Bundle();
+                bundle.putString("query", "delete from market where ITEM_ID='" + allSettings.getInt("CURRENT_ITEM_ID", 0) + "'");
+                handler = new Handler();
+                message = handler.obtainMessage(0);
+                message.setData(bundle);
+                DbThread.getBackgroundHandler().sendMessage(message);
 
                 marketItems = new ArrayList<>();
 
+                message = handler.obtainMessage(5);
+                DbThread.getBackgroundHandler().sendMessage(message);
                 listener = new DbThread.DbListener() {
                     @Override
-                    public void onDataLoaded() {
+                    public void onDataLoaded(Bundle bundle) {
+                        marketItems = bundle.getParcelableArrayList("marketItems");
                         MarketAdapter peopleAdapter = new MarketAdapter(getApplicationContext(), R.layout.market_row, marketItems);
                         lvMarket.setHasFixedSize(true);
                         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                         lvMarket.setLayoutManager(layoutManager);
                         lvMarket.setAdapter(peopleAdapter);
-                        //Toast.makeText(getApplicationContext(), "data loaded", Toast.LENGTH_LONG).show();
                     }
                 };
                 DbThread.getInstance().addListener(listener);
-                marketItems = DbThread.getInstance().loadAllMarketData();
-                DbThread.getInstance().setData();
-                DbThread.getInstance().removeListener(listener);
 
                 date.setText(dateAndMoney.getDate(allSettings));
                 moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
@@ -100,21 +109,20 @@ public class Market extends AppCompatActivity {
 
         marketItems = new ArrayList<>();
 
+        message = handler.obtainMessage(5);
+        DbThread.getBackgroundHandler().sendMessage(message);
         listener = new DbThread.DbListener() {
             @Override
-            public void onDataLoaded() {
-                MarketAdapter peopleAdapter = new MarketAdapter(getApplicationContext(), R.layout.market_row, marketItems);
+            public void onDataLoaded(Bundle bundle) {
+                marketItems = bundle.getParcelableArrayList("marketItems");
+                MarketAdapter marketAdapter = new MarketAdapter(getApplicationContext(), R.layout.market_row, marketItems);
                 lvMarket.setHasFixedSize(true);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
                 lvMarket.setLayoutManager(layoutManager);
-                lvMarket.setAdapter(peopleAdapter);
-                //Toast.makeText(getApplicationContext(), "data loaded", Toast.LENGTH_LONG).show();
+                lvMarket.setAdapter(marketAdapter);
             }
         };
         DbThread.getInstance().addListener(listener);
-        marketItems = DbThread.getInstance().loadAllMarketData();
-        DbThread.getInstance().setData();
-        DbThread.getInstance().removeListener(listener);
 
         date.setText(dateAndMoney.getDate(allSettings));
         moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));

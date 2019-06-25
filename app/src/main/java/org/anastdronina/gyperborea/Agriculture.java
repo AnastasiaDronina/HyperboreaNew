@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +28,8 @@ public class Agriculture extends AppCompatActivity {
     private SharedPreferences allSettings;
     private DateAndMoney dateAndMoney;
     private TextView date, moneyR, moneyD;
+    private Handler handler;
+    private Message message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,16 +47,22 @@ public class Agriculture extends AppCompatActivity {
         date.setText(dateAndMoney.getDate(allSettings));
         moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
         moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+
+        farmsList = new ArrayList<>();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        farmsList = new ArrayList<>();
+        handler = new Handler();
+        message = handler.obtainMessage(4);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
         listener = new DbThread.DbListener() {
             @Override
-            public void onDataLoaded() {
+            public void onDataLoaded(Bundle bundle) {
+                farmsList = bundle.getParcelableArrayList("farms");
                 FarmAdapter farmAdapter = new FarmAdapter(getApplicationContext(), R.layout.farms_row, farmsList);
                 agricultureLv.setHasFixedSize(true);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -61,8 +71,6 @@ public class Agriculture extends AppCompatActivity {
             }
         };
         DbThread.getInstance().addListener(listener);
-        farmsList = DbThread.getInstance().loadAllFarmsData();
-        DbThread.getInstance().setData();
 
         date.setText(dateAndMoney.getDate(allSettings));
         moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));

@@ -1,6 +1,9 @@
 package org.anastdronina.gyperborea;
 
-public class MarketItem {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class MarketItem implements Parcelable {
 
     private int id, amount, price;
     String name, currency, type;
@@ -13,6 +16,27 @@ public class MarketItem {
         this.currency = currency;
         this.type = type;
     }
+
+    protected MarketItem(Parcel in) {
+        id = in.readInt();
+        amount = in.readInt();
+        price = in.readInt();
+        name = in.readString();
+        currency = in.readString();
+        type = in.readString();
+    }
+
+    public static final Creator<MarketItem> CREATOR = new Creator<MarketItem>() {
+        @Override
+        public MarketItem createFromParcel(Parcel in) {
+            return new MarketItem(in);
+        }
+
+        @Override
+        public MarketItem[] newArray(int size) {
+            return new MarketItem[size];
+        }
+    };
 
     public String getType() {
         return type;
@@ -60,5 +84,20 @@ public class MarketItem {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeInt(amount);
+        dest.writeInt(price);
+        dest.writeString(name);
+        dest.writeString(currency);
+        dest.writeString(type);
     }
 }

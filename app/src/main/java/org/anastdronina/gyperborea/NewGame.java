@@ -1,14 +1,14 @@
 package org.anastdronina.gyperborea;
 
-import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +32,13 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
     private DbThread.DbListener listener;
     private List<Person> population;
     private AlertDialog dialogNextTurn, dialogGameOver, dialogNotEnoughtMoney;
+    private ArrayList<Integer> finIds;
+    private ArrayList<Double> finCoefs;
+    private ArrayList<Integer> finMonthsWorked;
+    private ArrayList<Farm> farms;
+    private Handler handler;
+    private Message message;
+    private Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,22 +187,55 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
 
         population = new ArrayList<Person>();
 
+        handler = new Handler();
+        message = handler.obtainMessage(1);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
         listener = new DbThread.DbListener() {
             @Override
-            public void onDataLoaded() {
-                for (int i = 0; i < population.size(); i++) {
-                    salaries = salaries + population.get(i).getSalary();
+            public void onDataLoaded(Bundle bundle) {
+                population = bundle.getParcelableArrayList("allPopulation");
+                if (population != null) {
+                    for (int i = 0; i < population.size(); i++) {
+                        salaries = salaries + population.get(i).getSalary();
+                    }
                 }
             }
         };
         DbThread.getInstance().addListener(listener);
-        population = DbThread.getInstance().loadAllPeopleData();
-        DbThread.getInstance().setData();
-        DbThread.getInstance().removeListener(listener);
 
-        ArrayList<Integer> finIds = DbThread.getInstance().getFinIds();
-        ArrayList<Double> finCoefs = DbThread.getInstance().getFinCoefs();
-        ArrayList<Integer> finMonthsWorked = DbThread.getInstance().getFinMonthsWorked();
+        message = handler.obtainMessage(8);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
+        listener = new DbThread.DbListener() {
+            @Override
+            public void onDataLoaded(Bundle bundle) {
+                finIds = bundle.getIntegerArrayList("finIds");
+            }
+        };
+        DbThread.getInstance().addListener(listener);
+
+        message = handler.obtainMessage(9);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
+        listener = new DbThread.DbListener() {
+            @Override
+            public void onDataLoaded(Bundle bundle) {
+                finCoefs = (ArrayList<Double>) bundle.getSerializable("finCoefs");
+            }
+        };
+        DbThread.getInstance().addListener(listener);
+
+        message = handler.obtainMessage(10);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
+        listener = new DbThread.DbListener() {
+            @Override
+            public void onDataLoaded(Bundle bundle) {
+                finMonthsWorked = bundle.getIntegerArrayList("finMonthsWorked");
+            }
+        };
+        DbThread.getInstance().addListener(listener);
 
 
         if (allSettings.getLong("MONEY_RUBLES", 0) < salaries) {
@@ -218,8 +258,17 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
                 if (newCoef > 3.0) {
                     newCoef = 3.0;
                 }
-                DbThread.getInstance().doQuery("UPDATE " + "population" + " SET FIN_MONTHS_WORKED='" + finMonthsWorked.get(i) + 1 + "'WHERE ID='" + finIds.get(i) + "'");
-                DbThread.getInstance().doQuery("UPDATE " + "population" + " SET FIN_COEF='" + newCoef + "'WHERE ID='" + finIds.get(i) + "'");
+                bundle = new Bundle();
+                bundle.putString("query", "UPDATE " + "population" + " SET FIN_MONTHS_WORKED='" + finMonthsWorked.get(i) + 1 + "'WHERE ID='" + finIds.get(i) + "'");
+                message = handler.obtainMessage(0);
+                message.setData(bundle);
+                DbThread.getBackgroundHandler().sendMessage(message);
+
+                bundle = new Bundle();
+                bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + newCoef + "'WHERE ID='" + finIds.get(i) + "'");
+                message = handler.obtainMessage(0);
+                message.setData(bundle);
+                DbThread.getBackgroundHandler().sendMessage(message);
             }
             date.setText(dateAndMoney.getDate(allSettings));
             moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
@@ -230,7 +279,13 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
                 int tecId = allSettings.getInt("TEC_IS_BEEING_LEARNED_ID", 0);
                 int monthsLeft = allSettings.getInt("MONTHS_LEFT_TO_LEARN", 0) - 1;
                 if (monthsLeft == 0) {
-                    DbThread.getInstance().doQuery("UPDATE " + "tecnologies" + " SET TEC_IS_LEARNED='" + 1 + "'WHERE TEC_ID='" + tecId + "'");
+                    bundle = new Bundle();
+                    bundle.putString("query", "UPDATE " + "tecnologies" + " SET TEC_IS_LEARNED='" + 1 + "'WHERE TEC_ID='" + tecId + "'");
+                    message = handler.obtainMessage(0);
+                    message.setData(bundle);
+                    DbThread.getBackgroundHandler().sendMessage(message);
+
+
                     allSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
                     allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
                     allSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", 0).apply();
@@ -240,17 +295,37 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
             }
 
             //changing farms statuses
-            ArrayList<Farm> farms = DbThread.getInstance().loadAllFarmsData();
+            message = handler.obtainMessage(4);
+            DbThread.getBackgroundHandler().sendMessage(message);
+
+            listener = new DbThread.DbListener() {
+                @Override
+                public void onDataLoaded(Bundle bundle) {
+                    farms = bundle.getParcelableArrayList("farms");
+                }
+            };
+            DbThread.getInstance().addListener(listener);
 
             for (int i = 0; i < farms.size(); i++) {
                 if ((farms.get(i).getFarmerId() != 0) && !(farms.get(i).getCrop().equals("Не выбрано"))) {
                     if (farms.get(i).getStatus() == 5) {
                         DatabaseHelper myDb = new DatabaseHelper(this);
                         myDb.insertStockData(farms.get(i).getCrop(), "Еда", 100);
-                        DbThread.getInstance().doQuery("UPDATE " + "farms" + " SET FARM_STATUS='" + 0 + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
+
+                        bundle = new Bundle();
+                        bundle.putString("query", "UPDATE " + "farms" + " SET FARM_STATUS='" + 0 + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
+                        message = handler.obtainMessage(0);
+                        message.setData(bundle);
+                        DbThread.getBackgroundHandler().sendMessage(message);
+
                     } else {
                         int statusChanged = farms.get(i).getStatus() + 1;
-                        DbThread.getInstance().doQuery("UPDATE " + "farms" + " SET FARM_STATUS='" + statusChanged + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
+
+                        bundle = new Bundle();
+                        bundle.putString("query", "UPDATE " + "farms" + " SET FARM_STATUS='" + statusChanged + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
+                        message = handler.obtainMessage(0);
+                        message.setData(bundle);
+                        DbThread.getBackgroundHandler().sendMessage(message);
                     }
                 }
             }

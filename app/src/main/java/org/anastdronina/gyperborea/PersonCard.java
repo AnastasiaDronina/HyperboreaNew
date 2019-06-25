@@ -3,6 +3,8 @@ package org.anastdronina.gyperborea;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -31,6 +33,11 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
     private int myId;
     private DateAndMoney dateAndMoney;
     private SharedPreferences allSettings;
+    private String printCoef;
+    private DbThread.DbListener listener;
+    private Handler handler;
+    private Message message;
+    private Bundle bundle;
 
 
     @Override
@@ -38,6 +45,8 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person_card);
 
+        handler = new Handler();
+        bundle = new Bundle();
         dateAndMoney = new DateAndMoney();
         personName = findViewById(R.id.personName);
         personSurname = findViewById(R.id.personSurname);
@@ -64,7 +73,6 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         spinnerJobs.setOnItemSelectedListener(this);
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         myId = allSettings.getInt("CURRENT_PERS_ID", 0);
-//        db = openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
 
         date.setText(dateAndMoney.getDate(allSettings));
         moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
@@ -109,7 +117,10 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 personName.setText(editPersonName.getText());
-                DbThread.getInstance().doQuery("UPDATE " + "population" + " SET NAME='" + editPersonName.getText() + "'WHERE ID='" + myId + "'");
+                bundle.putString("query", "UPDATE " + "population" + " SET NAME='" + editPersonName.getText() + "'WHERE ID='" + myId + "'");
+                message = handler.obtainMessage(0);
+                message.setData(bundle);
+                DbThread.getBackgroundHandler().sendMessage(message);
             }
         });
         personName.setOnClickListener(new View.OnClickListener() {
@@ -124,14 +135,20 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 personSurname.setText(editPersonSurname.getText());
-                DbThread.getInstance().doQuery("UPDATE " + "population" + " SET SURNAME='" + editPersonSurname.getText() + "'WHERE ID='" + myId + "'");
+                bundle.putString("query", "UPDATE " + "population" + " SET SURNAME='" + editPersonSurname.getText() + "'WHERE ID='" + myId + "'");
+                message = handler.obtainMessage(0);
+                message.setData(bundle);
+                DbThread.getBackgroundHandler().sendMessage(message);
             }
         });
 
         dialogChangeJob.setButton(DialogInterface.BUTTON_POSITIVE, "Да", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                DbThread.getInstance().doQuery("UPDATE " + "population" + " SET JOB='" + 0 + "'WHERE ID='" + myId + "'");
+                bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + 0 + "'WHERE ID='" + myId + "'");
+                message = handler.obtainMessage(0);
+                message.setData(bundle);
+                DbThread.getBackgroundHandler().sendMessage(message);
             }
         });
 
@@ -165,6 +182,18 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         } else {
             changingJob(text);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        DbThread.getInstance().addListener(listener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        DbThread.getInstance().removeListener(listener);
     }
 
     @Override
@@ -277,9 +306,17 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
     }
 
     public String printCoef(SharedPreferences allSettings) {
-        String printCoef = "";
+        printCoef = "";
         if (allSettings.getInt("CURRENT_PERS_JOB", 0) == 11) {
-            printCoef = DbThread.getInstance().printCoefAsync(myId);
+            message = handler.obtainMessage(6, myId, 0);
+            DbThread.getBackgroundHandler().sendMessage(message);
+            listener = new DbThread.DbListener() {
+                @Override
+                public void onDataLoaded(Bundle bundle) {
+                    printCoef = bundle.getString("printCoef");
+                }
+            };
+            DbThread.getInstance().addListener(listener);
         }
         return printCoef;
     }
@@ -348,11 +385,22 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                         .setCancelable(false)
                         .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                DbThread.getInstance().doQuery("UPDATE " + "population" + " SET JOB='" + 11 + "'WHERE ID='" + myId + "'");
-                                DbThread.getInstance().doQuery("UPDATE " + "population" + " SET SALARY='" + 10000 + "'WHERE ID='" + myId + "'");
+                                bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + 11 + "'WHERE ID='" + myId + "'");
+                                message = handler.obtainMessage(0);
+                                message.setData(bundle);
+                                DbThread.getBackgroundHandler().sendMessage(message);
+
+                                bundle.putString("query", "UPDATE " + "population" + " SET SALARY='" + 10000 + "'WHERE ID='" + myId + "'");
+                                message = handler.obtainMessage(0);
+                                message.setData(bundle);
+                                DbThread.getBackgroundHandler().sendMessage(message);
+
                                 if (allSettings.getInt("CURRENT_PERS_LEARNING", 0) > 0) {
                                     double coef = 0.2 * allSettings.getInt("CURRENT_PERS_LEARNING", 0);
-                                    DbThread.getInstance().doQuery("UPDATE " + "population" + " SET FIN_COEF='" + coef + "'WHERE ID='" + myId + "'");
+                                    bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + coef + "'WHERE ID='" + myId + "'");
+                                    message = handler.obtainMessage(0);
+                                    message.setData(bundle);
+                                    DbThread.getBackgroundHandler().sendMessage(message);
                                 }
                                 allSettings.edit().putInt("CURRENT_PERS_SALARY", 10000).apply();
                                 allSettings.edit().putInt("CURRENT_PERS_JOB", 11).apply();
@@ -389,9 +437,21 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                 .setCancelable(false)
                 .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        DbThread.getInstance().doQuery("UPDATE " + "population" + " SET JOB='" + job + "'WHERE ID='" + myId + "'");
-                        DbThread.getInstance().doQuery("UPDATE " + "population" + " SET SALARY='" + salary + "'WHERE ID='" + myId + "'");
-                        DbThread.getInstance().doQuery("UPDATE " + "population" + " SET FIN_COEF='" + 0.0 + "'WHERE ID='" + myId + "'");
+                        bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + job + "'WHERE ID='" + myId + "'");
+                        message = handler.obtainMessage(0);
+                        message.setData(bundle);
+                        DbThread.getBackgroundHandler().sendMessage(message);
+
+                        bundle.putString("query", "UPDATE " + "population" + " SET SALARY='" + salary + "'WHERE ID='" + myId + "'");
+                        message = handler.obtainMessage(0);
+                        message.setData(bundle);
+                        DbThread.getBackgroundHandler().sendMessage(message);
+
+                        bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + 0.0 + "'WHERE ID='" + myId + "'");
+                        message = handler.obtainMessage(0);
+                        message.setData(bundle);
+                        DbThread.getBackgroundHandler().sendMessage(message);
+
                         allSettings.edit().putInt("CURRENT_PERS_SALARY", salary).apply();
                         allSettings.edit().putInt("CURRENT_PERS_JOB", job).apply();
                         personSalary.setText(printSalary(allSettings));

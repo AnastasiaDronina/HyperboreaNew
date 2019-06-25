@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,12 +32,15 @@ public class SellTechnology extends AppCompatActivity {
     private AlertDialog dialogSellTec;
     private SharedPreferences allSettings;
     private DateAndMoney dateAndMoney;
+    private Handler handler;
+    private Message message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sell_technology);
 
+        handler = new Handler();
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         sellTecInfo = findViewById(R.id.sellTecInfo);
         learnedTecList = findViewById(R.id.learnedTecList);
@@ -66,9 +71,14 @@ public class SellTechnology extends AppCompatActivity {
                     }
                 }
 
+                message = handler.obtainMessage(2);
+                DbThread.getBackgroundHandler().sendMessage(message);
+
+
                 listener = new DbThread.DbListener() {
                     @Override
-                    public void onDataLoaded() {
+                    public void onDataLoaded(Bundle bundle) {
+                        tecs = bundle.getParcelableArrayList("techs");
                         soldTechnologies = allSettings.getString("SOLD_TECHNOLOGIES", "").split(",");
                         for (int i = 0; i < tecs.size(); i++) {
                             Boolean isSold = false;
@@ -92,9 +102,6 @@ public class SellTechnology extends AppCompatActivity {
                     }
                 };
                 DbThread.getInstance().addListener(listener);
-                tecs = DbThread.getInstance().loadAllTechData();
-                DbThread.getInstance().setData();
-                DbThread.getInstance().removeListener(listener);
 
                 date.setText(dateAndMoney.getDate(allSettings));
                 moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
@@ -110,9 +117,13 @@ public class SellTechnology extends AppCompatActivity {
         soldTechnologies = allSettings.getString("SOLD_TECHNOLOGIES", "").split(",");
         learnedTechs = new ArrayList<>();
 
+        message = handler.obtainMessage(2);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
         listener = new DbThread.DbListener() {
             @Override
-            public void onDataLoaded() {
+            public void onDataLoaded(Bundle bundle) {
+                tecs = bundle.getParcelableArrayList("techs");
                 for (int i = 0; i < tecs.size(); i++) {
                     Boolean isSold = false;
                     for (int j = 0; j < soldTechnologies.length; j++) {
@@ -135,9 +146,6 @@ public class SellTechnology extends AppCompatActivity {
             }
         };
         DbThread.getInstance().addListener(listener);
-        tecs = DbThread.getInstance().loadAllTechData();
-        DbThread.getInstance().setData();
-        DbThread.getInstance().removeListener(listener);
 
         date.setText(dateAndMoney.getDate(allSettings));
         moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
@@ -155,24 +163,6 @@ public class SellTechnology extends AppCompatActivity {
         super.onStop();
         DbThread.getInstance().removeListener(listener);
     }
-
-//    @Override
-//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        if (position != 0) {
-//            allSettings.edit().putInt("CURRENT_TEC_ID", learnedTechs.get(position - 1).getId()).apply();
-//            allSettings.edit().putString("CURRENT_TEC_NAME", learnedTechs.get(position - 1).getName()).apply();
-//            allSettings.edit().putString("CURRENT_TEC_DESCRIPTION", learnedTechs.get(position - 1).getDescription()).apply();
-//            allSettings.edit().putInt("CURRENT_TEC_MONTHS", learnedTechs.get(position - 1).getMonthsToLearn()).apply();
-//            allSettings.edit().putLong("CURRENT_TEC_PRICE", learnedTechs.get(position - 1).getPrice()).apply();
-//            allSettings.edit().putBoolean("CURRENT_TEC_ISLEARNED", learnedTechs.get(position - 1).isLearned()).apply();
-//
-//            sellTecView.setText("\n" + allSettings.getString("CURRENT_TEC_NAME", "").toUpperCase() + "\n\nОписание: \n"
-//                    + allSettings.getString("CURRENT_TEC_DESCRIPTION", "") + "\n\nДля изучения необходимо: "
-//                    + allSettings.getInt("CURRENT_TEC_MONTHS", 0) + " мес. \n\nЦена продажи: "
-//                    + allSettings.getLong("CURRENT_TEC_PRICE", 0) + " $");
-//            dialogSellTec.show();
-//        }
-//    }
 
     public class LearnedTechHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

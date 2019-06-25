@@ -1,6 +1,9 @@
 package org.anastdronina.gyperborea;
 
-public class Farm {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Farm implements Parcelable {
     private int id, status, farmerId;
     private String name, crop;
 
@@ -11,6 +14,26 @@ public class Farm {
         this.name = name;
         this.crop = crop;
     }
+
+    protected Farm(Parcel in) {
+        id = in.readInt();
+        status = in.readInt();
+        farmerId = in.readInt();
+        name = in.readString();
+        crop = in.readString();
+    }
+
+    public static final Creator<Farm> CREATOR = new Creator<Farm>() {
+        @Override
+        public Farm createFromParcel(Parcel in) {
+            return new Farm(in);
+        }
+
+        @Override
+        public Farm[] newArray(int size) {
+            return new Farm[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -75,5 +98,19 @@ public class Farm {
                 break;
         }
         return statusStr;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeInt(status);
+        dest.writeInt(farmerId);
+        dest.writeString(name);
+        dest.writeString(crop);
     }
 }
