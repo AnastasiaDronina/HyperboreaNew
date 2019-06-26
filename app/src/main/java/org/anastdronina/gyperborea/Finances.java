@@ -46,6 +46,7 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
             @Override
             public void onDataLoaded(Bundle bundle) {
                 coef = bundle.getDouble("coef");
+                tvRulesFinances.setText("Коэффициент улучшения курса: " + coef + "\nПокупка $ - " + (70.0 - coef) + "0 руб \nПродажа $ - " + (60.0 + coef) + "0 руб");
             }
         };
         DbThread.getInstance().addListener(listener);
@@ -149,7 +150,6 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
                 moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
             }
         });
-        tvRulesFinances.setText("Коэффициент улучшения курса: " + coef + "\nПокупка $ - " + (70.0 - coef) + "0 руб \nПродажа $ - " + (60.0 + coef) + "0 руб");
     }
 
     @Override

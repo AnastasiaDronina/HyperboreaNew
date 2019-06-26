@@ -45,6 +45,11 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
 
+        finIds = new ArrayList<>();
+        finCoefs = new ArrayList<>();
+        finMonthsWorked = new ArrayList<>();
+        farms = new ArrayList<>();
+
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         dateAndMoney = new DateAndMoney();
         ifNewGame = allSettings.getBoolean("NEW_GAME", true);
@@ -252,6 +257,8 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
 
             //changing money value and finanses coef
             allSettings.edit().putLong("MONEY_RUBLES", allSettings.getLong("MONEY_RUBLES", 0) - salaries).apply();
+
+
             for (int i = 0; i < finIds.size(); i++) {
                 double newCoef = finCoefs.get(i) + 0.2;
                 newCoef = Math.round(newCoef * 10.0) / 10.0;
@@ -270,6 +277,8 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
+
+
             date.setText(dateAndMoney.getDate(allSettings));
             moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
             moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));

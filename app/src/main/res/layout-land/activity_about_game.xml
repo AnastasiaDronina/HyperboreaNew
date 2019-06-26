@@ -31,7 +31,7 @@
         android:background="@color/colorAccent"
         android:fontFamily="@font/roboto"
         android:paddingTop="5dp"
-        android:text=""
+        android:text="@string/about_game"
         android:textAlignment="center"
         android:textColor="@color/lightBlue"
         android:textSize="14sp"

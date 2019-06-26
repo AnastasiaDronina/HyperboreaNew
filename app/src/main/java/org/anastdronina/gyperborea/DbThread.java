@@ -198,7 +198,7 @@ public class DbThread extends Thread {
                         res = db.rawQuery("select * from " + "population", null);
                         ArrayList finIds = new ArrayList<Integer>();
                         while (res.moveToNext()) {
-                            int finId = res.getInt(0);
+                            Integer finId = res.getInt(0);
                             int job = Integer.parseInt(res.getString(3));
                             if (job == 11) {
                                 finIds.add(finId);

@@ -24,7 +24,7 @@ import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 public class PersonCard extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private TextView personName, personSurname, personSalary, personAge, skillsAndTraits, date, moneyD, moneyR;
-    private AlertDialog dialogName, dialogSurname, dialogChangeJob;
+    private AlertDialog dialogName, dialogSurname;
     private TextView tvFoDialogChangeJob;
     private EditText editPersonName, editPersonSurname;
     private Spinner spinnerJobs;
@@ -60,8 +60,8 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         dialogName.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         dialogSurname = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogSurname.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
-        dialogChangeJob = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
-        dialogChangeJob.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
+        //dialogChangeJob = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
+        //dialogChangeJob.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         editPersonName = new EditText(this);
         editPersonSurname = new EditText(this);
         tvFoDialogChangeJob = new TextView(this);
@@ -101,17 +101,17 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         String printTraits = printTraits(allSettings);
 
 //setting coefs if any
-        String printCoef = printCoef(allSettings);
+        printCoef(allSettings);
 
-        skillsAndTraits.setText(printSkills + printTraits + printCoef);
+        skillsAndTraits.setText(printSkills + printTraits);
 
 
         dialogName.setTitle("Редактировать имя");
         dialogName.setView(editPersonName);
         dialogSurname.setTitle("Редактировать фамилию");
         dialogSurname.setView(editPersonSurname);
-        dialogChangeJob.setTitle("Изменить профессию ");
-        dialogChangeJob.setView(tvFoDialogChangeJob);
+        //dialogChangeJob.setTitle("Изменить профессию ");
+        //dialogChangeJob.setView(tvFoDialogChangeJob);
 
         dialogName.setButton(DialogInterface.BUTTON_POSITIVE, "Сохранить", new DialogInterface.OnClickListener() {
             @Override
@@ -141,16 +141,16 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
         });
-
-        dialogChangeJob.setButton(DialogInterface.BUTTON_POSITIVE, "Да", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + 0 + "'WHERE ID='" + myId + "'");
-                message = handler.obtainMessage(0);
-                message.setData(bundle);
-                DbThread.getBackgroundHandler().sendMessage(message);
-            }
-        });
+//
+//        dialogChangeJob.setButton(DialogInterface.BUTTON_POSITIVE, "Да", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + 0 + "'WHERE ID='" + myId + "'");
+//                message = handler.obtainMessage(0);
+//                message.setData(bundle);
+//                DbThread.getBackgroundHandler().sendMessage(message);
+//            }
+//        });
 
         personSurname.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -305,20 +305,23 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         return "\n\nЧЕРТЫ ХАРАКТЕРА : \n\n" + trait1 + "\n- " + description1 + "\n\n" + trait2 + "\n- " + description2 + "\n\n" + trait3 + "\n- " + description3 + "\n";
     }
 
-    public String printCoef(SharedPreferences allSettings) {
-        printCoef = "";
+    public void printCoef(SharedPreferences allSettings) {
         if (allSettings.getInt("CURRENT_PERS_JOB", 0) == 11) {
-            message = handler.obtainMessage(6, myId, 0);
+            message = handler.obtainMessage(6, allSettings.getInt("CURRENT_PERS_ID", 0), 0);
             DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
-                public void onDataLoaded(Bundle bundle) {
-                    printCoef = bundle.getString("printCoef");
+                public void onDataLoaded(Bundle bundlee) {
+                    printCoef = bundlee.getString("printCoef");
+                    if (printCoef != null) {
+                        if (!(skillsAndTraits.getText().toString().endsWith(printCoef))) {
+                            skillsAndTraits.append(printCoef);
+                        }
+                    }
                 }
             };
             DbThread.getInstance().addListener(listener);
         }
-        return printCoef;
     }
 
     public void changingJob(String text) {
@@ -385,11 +388,13 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                         .setCancelable(false)
                         .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                bundle = new Bundle();
                                 bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + 11 + "'WHERE ID='" + myId + "'");
                                 message = handler.obtainMessage(0);
                                 message.setData(bundle);
                                 DbThread.getBackgroundHandler().sendMessage(message);
 
+                                bundle = new Bundle();
                                 bundle.putString("query", "UPDATE " + "population" + " SET SALARY='" + 10000 + "'WHERE ID='" + myId + "'");
                                 message = handler.obtainMessage(0);
                                 message.setData(bundle);
@@ -397,6 +402,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
 
                                 if (allSettings.getInt("CURRENT_PERS_LEARNING", 0) > 0) {
                                     double coef = 0.2 * allSettings.getInt("CURRENT_PERS_LEARNING", 0);
+                                    bundle = new Bundle();
                                     bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + coef + "'WHERE ID='" + myId + "'");
                                     message = handler.obtainMessage(0);
                                     message.setData(bundle);
@@ -407,8 +413,8 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                                 personSalary.setText(printSalary(allSettings));
                                 String printSkills = printSkills(allSettings);
                                 String printTraits = printTraits(allSettings);
-                                String printCoef = printCoef(allSettings);
-                                skillsAndTraits.setText(printSkills + printTraits + printCoef);
+                                printCoef(allSettings);
+                                skillsAndTraits.setText(printSkills + printTraits);
                             }
                         })
                         .setNegativeButton("Отмена",
@@ -437,16 +443,19 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                 .setCancelable(false)
                 .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        bundle = new Bundle();
                         bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + job + "'WHERE ID='" + myId + "'");
                         message = handler.obtainMessage(0);
                         message.setData(bundle);
                         DbThread.getBackgroundHandler().sendMessage(message);
 
+                        bundle = new Bundle();
                         bundle.putString("query", "UPDATE " + "population" + " SET SALARY='" + salary + "'WHERE ID='" + myId + "'");
                         message = handler.obtainMessage(0);
                         message.setData(bundle);
                         DbThread.getBackgroundHandler().sendMessage(message);
 
+                        bundle = new Bundle();
                         bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + 0.0 + "'WHERE ID='" + myId + "'");
                         message = handler.obtainMessage(0);
                         message.setData(bundle);
@@ -457,8 +466,8 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                         personSalary.setText(printSalary(allSettings));
                         String printSkills = printSkills(allSettings);
                         String printTraits = printTraits(allSettings);
-                        String printCoef = printCoef(allSettings);
-                        skillsAndTraits.setText(printSkills + printTraits + printCoef);
+                        printCoef(allSettings);
+                        skillsAndTraits.setText(printSkills + printTraits);
                     }
                 })
                 .setNegativeButton("Отмена",
