@@ -200,7 +200,7 @@ public class DbThread extends Thread {
                         while (res.moveToNext()) {
                             Integer finId = res.getInt(res.getColumnIndex("ID"));
                             int job = Integer.parseInt(res.getString(res.getColumnIndex("JOB")));
-                            if (job == 11) {
+                            if (job == Person.FINANSIST) {
                                 finIds.add(finId);
                             }
                         }
@@ -215,7 +215,7 @@ public class DbThread extends Thread {
                         while (res.moveToNext()) {
                             double finCoef = res.getDouble(res.getColumnIndex("FIN_COEF"));
                             int job = Integer.parseInt(res.getString(res.getColumnIndex("JOB")));
-                            if (job == 11) {
+                            if (job == Person.FINANSIST) {
                                 finCoefs.add(finCoef);
                             }
                         }
@@ -230,7 +230,7 @@ public class DbThread extends Thread {
                         while (res.moveToNext()) {
                             int monthsWorked = res.getInt(res.getColumnIndex("FIN_MONTHS_WORKED"));
                             int job = Integer.parseInt(res.getString(res.getColumnIndex("JOB")));
-                            if (job == 11) {
+                            if (job == Person.FINANSIST) {
                                 finMonthsWorked.add(monthsWorked);
                             }
                         }

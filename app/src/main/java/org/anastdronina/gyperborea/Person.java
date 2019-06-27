@@ -12,6 +12,36 @@ public class Person implements Parcelable {
     private int building, manufacture, farm, athletic, learning, talking, strength, art;
     private ArrayList<String> traits;
 
+    // JOBS //
+    public static final int NOT_EMPLOYED = 0;
+    public static final int BUILDER = 1;
+    public static final int COLLECTOR = 2;
+    public static final int MECHANIC = 3;
+    public static final int FARMER = 4;
+    public static final int COURIER = 5;
+    public static final int SCIENTIST = 6;
+    public static final int MINISTER = 7;
+    public static final int SECURITY = 8;
+    public static final int DEVELOPER = 9;
+    public static final int CLEANER = 10;
+    public static final int FINANSIST = 11;
+    public static final int SALESMAN = 12;
+
+    // SALARIES //
+    public static final int NOT_EMPLOYED_SALARY = 0;
+    public static final int BUILDER_SALARY = 10000;
+    public static final int COLLECTOR_SALARY = 8000;
+    public static final int MECHANIC_SALARY = 11000;
+    public static final int FARMER_SALARY = 6000;
+    public static final int COURIER_SALARY = 7000;
+    public static final int SCIENTIST_SALARY = 12000;
+    public static final int MINISTER_SALARY = 11000;
+    public static final int SECURITY_SALARY = 7000;
+    public static final int DEVELOPER_SALARY = 12000;
+    public static final int CLEANER_SALARY = 6000;
+    public static final int FINANSIST_SALARY = 10000;
+    public static final int SALESMAN_SALARY = 11000;
+
     public Person(int id, String name, String surname, int job, int salary, int age, int building, int manufacture, int farm,
                   int athletic, int learning, int talking, int strength, int art, ArrayList<String> traits) {
         this.id = id;

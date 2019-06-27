@@ -172,12 +172,10 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         String text = parent.getItemAtPosition(position).toString();
         //db = openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
         if (allSettings.getInt("CURRENT_PERS_ID", 0) == allSettings.getInt("SCIENTIST_IN_USE_ID", 0)) {
-            Toast.makeText(getApplicationContext(), "Этот ученый сейчас занят изучением технологии, " +
-                    "ему нельзя изменить професиию ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.scientist_busy, Toast.LENGTH_SHORT).show();
             spinnerJobs.setSelection(Arrays.asList((getResources().getStringArray(R.array.jobs))).indexOf("Ученый"));
         } else if (allSettings.getInt("CURRENT_PERS_ID", 0) == allSettings.getInt("FARMER_IN_USE_ID", 0)) {
-            Toast.makeText(getApplicationContext(), "Этот фермер сейчас занят обслуживанием теплицы, " +
-                    "ему нельзя изменить професиию ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.farmer_busy, Toast.LENGTH_SHORT).show();
             spinnerJobs.setSelection(Arrays.asList((getResources().getStringArray(R.array.jobs))).indexOf("Фермер"));
         } else {
             changingJob(text);
@@ -306,7 +304,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
     }
 
     public void printCoef(SharedPreferences allSettings) {
-        if (allSettings.getInt("CURRENT_PERS_JOB", 0) == 11) {
+        if (allSettings.getInt("CURRENT_PERS_JOB", Person.NOT_EMPLOYED) == Person.FINANSIST) {
             message = handler.obtainMessage(6, allSettings.getInt("CURRENT_PERS_ID", 0), 0);
             DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
@@ -327,57 +325,57 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
     public void changingJob(String text) {
         if (text.equals("Не работает")) {
             if (!getJobStr(allSettings).equals("Не работает")) {
-                showAlertDialogForChangingJob(0, 0);
+                showAlertDialogForChangingJob(Person.NOT_EMPLOYED, Person.NOT_EMPLOYED_SALARY);
             }
         }
         if (text.equals("Строитель")) {
             if (!getJobStr(allSettings).equals("Строитель")) {
-                showAlertDialogForChangingJob(1, 10000);
+                showAlertDialogForChangingJob(Person.BUILDER, Person.BUILDER_SALARY);
             }
         }
         if (text.equals("Сборщик")) {
             if (!getJobStr(allSettings).equals("Сборщик")) {
-                showAlertDialogForChangingJob(2, 8000);
+                showAlertDialogForChangingJob(Person.COLLECTOR, Person.COLLECTOR_SALARY);
             }
         }
         if (text.equals("Механик")) {
             if (!getJobStr(allSettings).equals("Механик")) {
-                showAlertDialogForChangingJob(3, 11000);
+                showAlertDialogForChangingJob(Person.MECHANIC, Person.MECHANIC_SALARY);
             }
         }
         if (text.equals("Фермер")) {
             if (!getJobStr(allSettings).equals("Фермер")) {
-                showAlertDialogForChangingJob(4, 6000);
+                showAlertDialogForChangingJob(Person.FARMER, Person.FARMER_SALARY);
             }
         }
         if (text.equals("Курьер")) {
             if (!getJobStr(allSettings).equals("Курьер")) {
-                showAlertDialogForChangingJob(5, 7000);
+                showAlertDialogForChangingJob(Person.COURIER, Person.COURIER_SALARY);
             }
         }
         if (text.equals("Ученый")) {
             if (!getJobStr(allSettings).equals("Ученый")) {
-                showAlertDialogForChangingJob(6, 12000);
+                showAlertDialogForChangingJob(Person.SCIENTIST, Person.SCIENTIST_SALARY);
             }
         }
         if (text.equals("Министр")) {
             if (!getJobStr(allSettings).equals("Министр")) {
-                showAlertDialogForChangingJob(7, 11000);
+                showAlertDialogForChangingJob(Person.MINISTER, Person.MINISTER_SALARY);
             }
         }
         if (text.equals("Охранник")) {
             if (!getJobStr(allSettings).equals("Охранник")) {
-                showAlertDialogForChangingJob(8, 7000);
+                showAlertDialogForChangingJob(Person.SECURITY, Person.SECURITY_SALARY);
             }
         }
         if (text.equals("Разработчик")) {
             if (!getJobStr(allSettings).equals("Разработчик")) {
-                showAlertDialogForChangingJob(9, 12000);
+                showAlertDialogForChangingJob(Person.DEVELOPER, Person.DEVELOPER_SALARY);
             }
         }
         if (text.equals("Уборщик")) {
             if (!getJobStr(allSettings).equals("Уборщик")) {
-                showAlertDialogForChangingJob(10, 6000);
+                showAlertDialogForChangingJob(Person.CLEANER, Person.CLEANER_SALARY);
             }
         }
         if (text.equals("Финансист")) {
@@ -389,13 +387,13 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                         .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 bundle = new Bundle();
-                                bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + 11 + "'WHERE ID='" + myId + "'");
+                                bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + Person.FINANSIST + "'WHERE ID='" + myId + "'");
                                 message = handler.obtainMessage(0);
                                 message.setData(bundle);
                                 DbThread.getBackgroundHandler().sendMessage(message);
 
                                 bundle = new Bundle();
-                                bundle.putString("query", "UPDATE " + "population" + " SET SALARY='" + 10000 + "'WHERE ID='" + myId + "'");
+                                bundle.putString("query", "UPDATE " + "population" + " SET SALARY='" + Person.FINANSIST_SALARY + "'WHERE ID='" + myId + "'");
                                 message = handler.obtainMessage(0);
                                 message.setData(bundle);
                                 DbThread.getBackgroundHandler().sendMessage(message);
@@ -408,8 +406,8 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                                     message.setData(bundle);
                                     DbThread.getBackgroundHandler().sendMessage(message);
                                 }
-                                allSettings.edit().putInt("CURRENT_PERS_SALARY", 10000).apply();
-                                allSettings.edit().putInt("CURRENT_PERS_JOB", 11).apply();
+                                allSettings.edit().putInt("CURRENT_PERS_SALARY", Person.FINANSIST_SALARY).apply();
+                                allSettings.edit().putInt("CURRENT_PERS_JOB", Person.FINANSIST).apply();
                                 personSalary.setText(printSalary(allSettings));
                                 String printSkills = printSkills(allSettings);
                                 String printTraits = printTraits(allSettings);
@@ -431,7 +429,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         }
         if (text.equals("Торговец")) {
             if (!getJobStr(allSettings).equals("Торговец")) {
-                showAlertDialogForChangingJob(12, 11000);
+                showAlertDialogForChangingJob(Person.SALESMAN, Person.SALESMAN_SALARY);
             }
         }
     }
@@ -473,7 +471,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                 .setNegativeButton("Отмена",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                spinnerJobs.setSelection(allSettings.getInt("CURRENT_PERS_JOB", 0));
+                                spinnerJobs.setSelection(allSettings.getInt("CURRENT_PERS_JOB", Person.NOT_EMPLOYED));
                                 dialog.cancel();
                             }
                         });

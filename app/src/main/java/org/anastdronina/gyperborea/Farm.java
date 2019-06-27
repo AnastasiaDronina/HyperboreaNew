@@ -7,6 +7,15 @@ public class Farm implements Parcelable {
     private int id, status, farmerId;
     private String name, crop;
 
+    // FARMS' STATUSES //
+    public static final int NOT_USED = 0;
+    public static final int SOWING_COMPLETED = 1;
+    public static final int SPROUTED = 2;
+    public static final int BLOOM = 3;
+    public static final int RIPENING = 4;
+    public static final int HARVEST = 5;
+    // ............... //
+
     public Farm(int id, String name, String crop, int status, int farmerId) {
         this.id = id;
         this.status = status;
@@ -78,22 +87,22 @@ public class Farm implements Parcelable {
     public String statusString(int statusInt) {
         String statusStr = "";
         switch (statusInt) {
-            case 0:
+            case NOT_USED:
                 statusStr = "Не используется";
                 break;
-            case 1:
+            case SOWING_COMPLETED:
                 statusStr = "Посев завершен";
                 break;
-            case 2:
+            case SPROUTED:
                 statusStr = "Взошли ростки";
                 break;
-            case 3:
+            case BLOOM:
                 statusStr = "Цветение";
                 break;
-            case 4:
+            case RIPENING:
                 statusStr = "Созревание";
                 break;
-            case 5:
+            case HARVEST:
                 statusStr = "Сбор урожая";
                 break;
         }

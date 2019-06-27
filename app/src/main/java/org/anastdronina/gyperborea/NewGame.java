@@ -64,9 +64,7 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
         btnSupply = findViewById(R.id.btnSupply);
         btnNextTurn = findViewById(R.id.btnNextTurn);
         tvNotEnoughtMoney = new TextView(getApplicationContext());
-        tvNotEnoughtMoney.setText("У Вас недостаточно денег для выплаты зарплат. ЗП списываются с Вашего баланса в рублях. " +
-                "Вы можете конвертировать доллары в рубли или уволить кого-то из сотрудников, чтобы исправить проблему. " +
-                "Также можно просто начать игру заново. ");
+        tvNotEnoughtMoney.setText(R.string.not_enough_money_to_pay_salaries);
         moneyD = findViewById(R.id.moneyD);
         moneyR = findViewById(R.id.moneyR);
         date = findViewById(R.id.date);
@@ -317,7 +315,7 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
 
             for (int i = 0; i < farms.size(); i++) {
                 if ((farms.get(i).getFarmerId() != 0) && !(farms.get(i).getCrop().equals("Не выбрано"))) {
-                    if (farms.get(i).getStatus() == 5) {
+                    if (farms.get(i).getStatus() == Farm.HARVEST) {
                         DatabaseHelper myDb = new DatabaseHelper(this);
                         myDb.insertStockData(farms.get(i).getCrop(), "Еда", 100);
 
