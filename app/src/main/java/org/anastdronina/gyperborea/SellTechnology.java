@@ -31,8 +31,6 @@ public class SellTechnology extends AppCompatActivity {
     private SharedPreferences allSettings;
     private DateAndMoney dateAndMoney;
     private DbManager dbManager;
-//    private Handler handler;
-//    private Message message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +49,7 @@ public class SellTechnology extends AppCompatActivity {
         moneyR = findViewById(R.id.moneyR);
         dateAndMoney = new DateAndMoney();
 
-        dialogSellTec.setTitle("Продать технологию?");
+        dialogSellTec.setTitle(R.string.sell_tech);
         dialogSellTec.setView(sellTecView);
 
         dialogSellTec.setButton(DialogInterface.BUTTON_POSITIVE, "Продать", new DialogInterface.OnClickListener() {
@@ -94,7 +92,7 @@ public class SellTechnology extends AppCompatActivity {
                             learnedTecList.setLayoutManager(layoutManager);
                             learnedTecList.setAdapter(peopleAdapter);
                         } else {
-                            sellTecInfo.setText("У вас пока нет технологий для продажи. ");
+                            sellTecInfo.setText(R.string.you_dont_have_techs_to_sell);
                         }
                     }
                 };
@@ -137,7 +135,7 @@ public class SellTechnology extends AppCompatActivity {
                     learnedTecList.setLayoutManager(layoutManager);
                     learnedTecList.setAdapter(peopleAdapter);
                 } else {
-                    sellTecInfo.setText("У вас пока нет технологий для продажи. ");
+                    sellTecInfo.setText(R.string.you_dont_have_techs_to_sell);
                 }
             }
         };

@@ -13,7 +13,47 @@
 
     <string name="farmer_busy">Этот фермер сейчас занят обслуживанием теплицы, ему нельзя изменить професиию </string>
 
-    <string name="stop_learning_tech">"Изучение текущей технологии будет остановлено, закрепленный ученый будет сброшен, но прогресс не будет сохранен. То есть если Вы решите изучать эту технологию, нужно будет начать сначала. "</string>
+    <string name="stop_learning_tech">Изучение текущей технологии будет остановлено, закрепленный ученый будет сброшен, но прогресс не будет сохранен. То есть если Вы решите изучать эту технологию, нужно будет начать сначала. </string>
+
+    <string name="choose_farmer">Выберите фермера из списка: </string>
+
+    <string name="change_farm_name">Изменить название теплицы </string>
+
+    <string name="farmer_not_pinned">Ответственный фермер: Не назначен</string>
+
+    <string name="cant_change_crop">Выращиваемую культуру можно будет изменить только после сбора урожая </string>
+
+    <string name="confirm">Подтвердите действие</string>
+
+    <string name="not_right_format_cents">Неверный формат!  \nПример заполнения: 54000.55 или 500.00 Цифры после точки - это центы. </string>
+
+    <string name="not_enough_money_to_buy">Недостаточно денег </string>
+
+    <string name="not_right_format_kop">"Неверный формат! \nПример заполнения: 500.00 или 54000.55. Цифры после точки - это копейки. </string>
+
+    <string name="coef_will_be_cleared_wanna_continue">Набранный коэффициент улучшения будет сброшен. Уверены, что хотите изменить профессию? </string>
+
+    <string name="define_country_or_president">Введите название государства и имя правителя. </string>
+
+    <string name="sell_tech">Продать технологию? </string>
+
+    <string name="you_dont_have_techs_to_sell">У вас пока нет технологий для продажи. </string>
+
+    <string name="not_available_in_demo">Еще не доступно в демо-версии. </string>
+
+    <string name="learn_tech">Изучить технологию? </string>
+
+    <string name="tech_info">Информация о технологии </string>
+
+    <string name="choose_scientist">Выберите ученого из списка: </string>
+
+    <string name="learning_will_be_stopped">Изучения технологии будет прервано </string>
+
+    <string name="cant_change_scientist">Изменение ученого в момент изучения технологии невозможно. </string>
+
+    <string name="nothing_to_stop">Пока сбрасывать нечего  </string>
+
+    <string name="choose_scientist_first">Для изучения необходимо сначала выбрать ученого! </string>
 
     <string-array name="jobs">
         <item>Не работает</item>

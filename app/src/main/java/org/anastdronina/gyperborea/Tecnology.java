@@ -51,16 +51,8 @@ public class Tecnology implements Parcelable {
         return monthsToLearn;
     }
 
-    public void setMonthsToLearn(int monthsToLearn) {
-        this.monthsToLearn = monthsToLearn;
-    }
-
     public long getPrice() {
         return price;
-    }
-
-    public void setPrice(long price) {
-        this.price = price;
     }
 
     public String getName() {
@@ -75,18 +67,9 @@ public class Tecnology implements Parcelable {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public boolean isLearned() {
         return isLearned;
     }
-
-    public void setLearned(boolean learned) {
-        isLearned = learned;
-    }
-
     @Override
     public int describeContents() {
         return 0;

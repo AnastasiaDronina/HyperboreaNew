@@ -76,9 +76,9 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
         btnDolToRub.setOnClickListener(this);
         btnToPeople.setOnClickListener(this);
 
-        uSureDialogRub.setTitle("Подтвердите действие");
+        uSureDialogRub.setTitle(R.string.confirm);
         uSureDialogRub.setView(tvForDialogRub);
-        uSureDialogDol.setTitle("Подтвердите действие");
+        uSureDialogDol.setTitle(R.string.confirm);
         uSureDialogDol.setView(tvForDialogDol);
 
         uSureDialogRub.setButton(DialogInterface.BUTTON_POSITIVE, "Да", new DialogInterface.OnClickListener() {
@@ -296,10 +296,10 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
 
     public void showErrorMsg(String currency) {
         if (currency.equals("cent")) {
-            Toast.makeText(getApplicationContext(), "Неверный формат! \nПример заполнения: 54000.55 или 500.00 Цифры после точки - это центы. ", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.not_right_format_cents, Toast.LENGTH_LONG).show();
         }
         if (currency.equals("kop")) {
-            Toast.makeText(getApplicationContext(), "Неверный формат! \nПример заполнения: 500.00 или 54000.55. Цифры после точки - это копейки. ", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), R.string.not_right_format_kop, Toast.LENGTH_LONG).show();
         }
     }
 

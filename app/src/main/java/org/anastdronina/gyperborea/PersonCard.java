@@ -33,9 +33,6 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
     private SharedPreferences allSettings;
     private String printCoef;
     private DbThread.DbListener listener;
-    //    private Handler handler;
-//    private Message message;
-//    private Bundle bundle;
     DbManager dbManager;
 
 
@@ -58,12 +55,10 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         dialogName.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         dialogSurname = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogSurname.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
-        //dialogChangeJob = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
-        //dialogChangeJob.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         editPersonName = new EditText(this);
         editPersonSurname = new EditText(this);
         tvFoDialogChangeJob = new TextView(this);
-        tvFoDialogChangeJob.setText("Набранный коэффициент улучшения будет сброшен. Уверены, что хотите изменить профессию? ");
+        tvFoDialogChangeJob.setText(R.string.coef_will_be_cleared_wanna_continue);
         spinnerJobs = findViewById(R.id.spinnerJobs);
         adapter = ArrayAdapter.createFromResource(this, R.array.jobs, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

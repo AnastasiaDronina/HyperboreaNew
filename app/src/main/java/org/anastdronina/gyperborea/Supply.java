@@ -67,10 +67,10 @@ public class Supply extends AppCompatActivity implements View.OnClickListener {
                 intent = new Intent(this, Market.class);
                 break;
             case R.id.btnNutrition:
-                Toast.makeText(getApplicationContext(), "Еще не доступно в демо-версии. ", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.not_available_in_demo, Toast.LENGTH_LONG).show();
                 break;
             case R.id.btnDelivery:
-                Toast.makeText(getApplicationContext(), "Еще не доступно в демо-версии. ", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.not_available_in_demo, Toast.LENGTH_LONG).show();
                 break;
             default:
         }

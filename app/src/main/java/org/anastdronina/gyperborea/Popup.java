@@ -16,19 +16,14 @@ import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 public class Popup extends AppCompatActivity implements View.OnClickListener {
     private EditText editCountryName;
     private EditText editPresidentName;
-    private String presidentName = "";
-    private String countryName = "";
 
     private Button popupApply, popupBack;
     private RadioGroup levels;
     private RadioButton chekedRadioButton;
     private RadioButton easyLevel, middleLevel, hardLevel;
     private SharedPreferences allSettings;
-    //    private Bundle innerBundle;
     private DbThread.DbListener listener;
     DbManager dbManager;
-//    Handler handler, innerHandler;
-//    Message message, innerMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,14 +129,11 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         Intent intent = null;
         switch (v.getId()) {
             case R.id.popupApply:
-                countryName = editCountryName.getText().toString();
-                presidentName = editPresidentName.getText().toString();
-
-                if (countryName.length() > 0 && presidentName.length() > 0) {
+                if (editCountryName.getText().toString().length() > 0 && editPresidentName.getText().toString().length() > 0) {
                     SharedPreferences allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
                     allSettings.edit().putBoolean("NEW_GAME", false).apply();
-                    allSettings.edit().putString("COUNTRY_NAME", countryName).apply();
-                    allSettings.edit().putString("PRESIDENT_NAME", presidentName).apply();
+                    allSettings.edit().putString("COUNTRY_NAME", editCountryName.getText().toString()).apply();
+                    allSettings.edit().putString("PRESIDENT_NAME", editPresidentName.getText().toString()).apply();
 
                     int checkedId = levels.getCheckedRadioButtonId();
                     chekedRadioButton = (RadioButton) findViewById(checkedId);
@@ -164,7 +156,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                     intent = new Intent(this, NewGame.class);
                 } else {
                     Toast.makeText(this,
-                            "Введите название государства и имя правителя. ", Toast.LENGTH_LONG).show();
+                            R.string.define_country_or_president, Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.popupBack:

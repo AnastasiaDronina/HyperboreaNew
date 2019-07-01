@@ -34,8 +34,6 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     private TextView date, moneyD, moneyR;
     private DbThread.DbListener listener;
     private DbManager dbManager;
-//    private Handler handler;
-//    private Message message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

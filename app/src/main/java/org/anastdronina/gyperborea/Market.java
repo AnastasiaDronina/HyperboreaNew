@@ -182,7 +182,7 @@ public class Market extends AppCompatActivity {
                 }
             }
             if (!gotEnoughtMoney) {
-                Toast.makeText(getApplicationContext(), "Недостаточно денег", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.not_enough_money_to_buy, Toast.LENGTH_SHORT).show();
             } else {
                 allSettings.edit().putInt("CURRENT_ITEM_ID", marketItem.getId()).apply();
                 allSettings.edit().putString("CURRENT_ITEM_NAME", marketItem.getName()).apply();

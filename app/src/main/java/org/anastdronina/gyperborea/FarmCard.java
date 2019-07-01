@@ -65,9 +65,9 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
         dialogChangeFarmer = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogChangeFarmName = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
 
-        dialogChangeFarmer.setTitle("Выберите фермера из списка: ");
+        dialogChangeFarmer.setTitle(R.string.choose_farmer);
         dialogChangeFarmer.setView(lvChangeFarmer);
-        dialogChangeFarmName.setTitle("Изменить название теплицы ");
+        dialogChangeFarmName.setTitle(R.string.change_farm_name);
         dialogChangeFarmName.setView(editFarmName);
 
         dialogChangeFarmName.setButton(DialogInterface.BUTTON_POSITIVE, "Сохранить", new DialogInterface.OnClickListener() {
@@ -180,7 +180,7 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
         spinnerCrops.setSelection(crop);
 
         if (farmFarmerId == 0) {
-            tvFarmFarmer.setText("Ответственный фермер: Не назначен");
+            tvFarmFarmer.setText(R.string.farmer_not_pinned);
         } else {
             dbManager.loadData(DbManager.WhatData.population);
             listener = new DbThread.DbListener() {
@@ -230,7 +230,7 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
         String text = parent.getItemAtPosition(position).toString();
         if (allSettings.getInt("CURRENT_FARM_STATUS", 0) != 0) {
             if (!allSettings.getString("CURRENT_FARM_CROP", "").equals(text)) {
-                Toast.makeText(getApplicationContext(), "Выращиваемую культуру можно будет изменить только после сбора урожая", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.cant_change_crop, Toast.LENGTH_SHORT).show();
                 int previousPosition = Arrays.asList((getResources().getStringArray(R.array.crops))).indexOf(allSettings.getString("CURRENT_FARM_CROP", ""));
                 spinnerCrops.setSelection(previousPosition);
             }

@@ -79,13 +79,13 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
 
         tecnologiesList = findViewById(R.id.tecnologies_list);
 
-        dialogLearnTec.setTitle("Изучить технологию?");
+        dialogLearnTec.setTitle(R.string.learn_tech);
         dialogLearnTec.setView(learnTecView);
-        dialogAboutTec.setTitle("Информация о технологии");
+        dialogAboutTec.setTitle(R.string.tech_info);
         dialogAboutTec.setView(aboutTecView);
-        dialogChangeScientist.setTitle("Выберите ученого из списка: ");
+        dialogChangeScientist.setTitle(R.string.choose_scientist);
         dialogChangeScientist.setView(lvChangeScientist);
-        dialogStopLearning.setTitle("Изучения технологии будет прервано ");
+        dialogStopLearning.setTitle(R.string.learning_will_be_stopped);
         dialogStopLearning.setView(tvForDialodStopLearning);
 
 
@@ -195,14 +195,14 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
                     };
                     DbThread.getInstance().addListener(listener);
                 } else
-                    Toast.makeText(getApplicationContext(), "Изменение ученого в момент изучения технологии невозможно.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.cant_change_scientist, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnStopLearning:
                 if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0
                         || allSettings.getString("SCIENTIST_IN_USE_NAME", "").length() > 0) {
                     dialogStopLearning.show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Пока сбрасывать нечего ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.nothing_to_stop, Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.btnToPeople:
@@ -243,7 +243,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
         @Override
         public void onClick(View v) {
             if (allSettings.getInt("SCIENTIST_IN_USE_ID", 0) == 0) {
-                Toast.makeText(getApplicationContext(), "Для изучения необходимо сначала выбрать ученого! ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.choose_scientist_first, Toast.LENGTH_SHORT).show();
             } else {
                 allSettings.edit().putInt("CURRENT_TEC_ID", tech.getId()).apply();
                 allSettings.edit().putString("CURRENT_TEC_NAME", tech.getName()).apply();

@@ -36,9 +36,6 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
     private boolean result;
     private ArrayList<Farm> farms;
     private DbManager dbManager;
-//    private Handler handler;
-//    private Message message;
-//    private Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +92,6 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
                 }
             }
         });
-
-        TextView tvGameOver = findViewById(R.id.tvGameOver);
 
         dialogGameOver = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogGameOver.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
