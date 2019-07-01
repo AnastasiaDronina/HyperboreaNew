@@ -54,7 +54,7 @@ public class People extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        message = handler.obtainMessage(1);
+        message = handler.obtainMessage(DbThread.LOAD_POPULATION_DATA);
         DbThread.getBackgroundHandler().sendMessage(message);
 
         listener = new DbThread.DbListener() {

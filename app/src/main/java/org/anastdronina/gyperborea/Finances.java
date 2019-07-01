@@ -39,7 +39,7 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
         setContentView(R.layout.activity_finances);
 
         handler = new Handler();
-        message = handler.obtainMessage(7);
+        message = handler.obtainMessage(DbThread.SET_COEF_IN_FINANCES_ACTIVITY);
         DbThread.getBackgroundHandler().sendMessage(message);
 
         listener = new DbThread.DbListener() {

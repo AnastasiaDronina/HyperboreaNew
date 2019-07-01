@@ -81,7 +81,7 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
 
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_NAME='" + editFarmName.getText() + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
@@ -116,7 +116,7 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
                     allPeople = new ArrayList<>();
 
                     handler = new Handler();
-                    message = handler.obtainMessage(1);
+                    message = handler.obtainMessage(DbThread.LOAD_POPULATION_DATA);
                     DbThread.getBackgroundHandler().sendMessage(message);
 
                     listener = new DbThread.DbListener() {
@@ -193,7 +193,7 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
             tvFarmFarmer.setText("Ответственный фермер: Не назначен");
         } else {
             handler = new Handler();
-            message = handler.obtainMessage(1);
+            message = handler.obtainMessage(DbThread.LOAD_POPULATION_DATA);
             DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
@@ -206,12 +206,10 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
                             }
                         }
                     }
+                    tvFarmFarmer.setText("Ответственный фермер: " + farmer.getName() + " " + farmer.getSurname());
                 }
             };
             DbThread.getInstance().addListener(listener);
-
-
-            tvFarmFarmer.setText("Ответственный фермер: " + farmer.getName() + " " + farmer.getSurname());
         }
     }
 
@@ -252,70 +250,70 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
             if (text.equals("Не выбрано")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Не выбрано" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Огурцы")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Огурцы" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Картофель")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Картофель" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Помидоры")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Помидоры" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Пшеница")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Пшеница" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Рожь")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Рожь" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Лук")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Лук" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Морковь")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Морковь" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Укроп")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Укроп" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
             if (text.equals("Свёкла")) {
                 bundle = new Bundle();
                 bundle.putString("query", "UPDATE " + "farms" + " SET FARM_CROP='" + "Свёкла" + "'WHERE FARM_ID='" + farmId + "'");
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
             }
@@ -359,7 +357,7 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
                     + allSettings.getString("CURRENT_FARM_FARMER_NAME", ""));
             bundle = new Bundle();
             bundle.putString("query", "UPDATE " + "farms" + " SET FARM_FARMER_ID='" + pinnedFarmerId + "'WHERE FARM_ID='" + farmId + "'");
-            message = handler.obtainMessage(0);
+            message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
             message.setData(bundle);
             DbThread.getBackgroundHandler().sendMessage(message);
             allSettings.edit().putInt("FARMER_IN_USE_ID", pinnedFarmerId).apply();

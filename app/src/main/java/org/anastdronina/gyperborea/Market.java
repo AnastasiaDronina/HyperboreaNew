@@ -52,6 +52,7 @@ public class Market extends AppCompatActivity {
 
         dialogBuyItem.setTitle("Купить товар? ");
         dialogBuyItem.setView(tvForDialogBuyItem);
+        handler = new Handler();
 
 
         dialogBuyItem.setButton(DialogInterface.BUTTON_POSITIVE, "Купить", new DialogInterface.OnClickListener() {
@@ -67,21 +68,27 @@ public class Market extends AppCompatActivity {
                     allSettings.edit().putLong("MONEY_DOLLARS", moneyDollars - price).apply();
                 }
 
-                //add to stock
-                DatabaseThread databaseThread = new DatabaseThread();
-                databaseThread.start();
+                Handler innerHandler = new Handler();
+                Bundle innerBundle = new Bundle();
+                innerBundle.putString("productName", allSettings.getString("CURRENT_ITEM_NAME", ""));
+                innerBundle.putString("productType", allSettings.getString("CURRENT_ITEM_TYPE", ""));
+                innerBundle.putInt("productAmount", allSettings.getInt("CURRENT_ITEM_AMOUNT", 0));
+                Message innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
 
                 //delete from market
                 bundle = new Bundle();
                 bundle.putString("query", "delete from market where ITEM_ID='" + allSettings.getInt("CURRENT_ITEM_ID", 0) + "'");
                 handler = new Handler();
-                message = handler.obtainMessage(0);
+                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                 message.setData(bundle);
                 DbThread.getBackgroundHandler().sendMessage(message);
 
                 marketItems = new ArrayList<>();
 
-                message = handler.obtainMessage(5);
+                message = handler.obtainMessage(DbThread.LOAD_MARKET_DATA);
                 DbThread.getBackgroundHandler().sendMessage(message);
                 listener = new DbThread.DbListener() {
                     @Override
@@ -109,7 +116,7 @@ public class Market extends AppCompatActivity {
 
         marketItems = new ArrayList<>();
 
-        message = handler.obtainMessage(5);
+        message = handler.obtainMessage(DbThread.LOAD_MARKET_DATA);
         DbThread.getBackgroundHandler().sendMessage(message);
         listener = new DbThread.DbListener() {
             @Override
@@ -255,17 +262,5 @@ public class Market extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-    }
-
-    private class DatabaseThread extends Thread {
-        @Override
-        public void run() {
-            super.run();
-            DatabaseHelper myDb = new DatabaseHelper(getApplicationContext());
-            myDb.insertStockData(
-                    allSettings.getString("CURRENT_ITEM_NAME", ""),
-                    allSettings.getString("CURRENT_ITEM_TYPE", ""),
-                    allSettings.getInt("CURRENT_ITEM_AMOUNT", 0));
-        }
     }
 }

@@ -56,7 +56,7 @@ public class Agriculture extends AppCompatActivity {
         super.onResume();
 
         handler = new Handler();
-        message = handler.obtainMessage(4);
+        message = handler.obtainMessage(DbThread.LOAD_FARMS_DATA);
         DbThread.getBackgroundHandler().sendMessage(message);
 
         listener = new DbThread.DbListener() {

@@ -47,7 +47,7 @@ public class ResetPreferences extends AppCompatActivity implements View.OnClickL
                 allSettings.edit().putInt("FARMER_IN_USE_ID", 0).apply();
                 allSettings.edit().putString("SOLD_TECHNOLOGIES", "").apply();
 
-                getApplicationContext().deleteDatabase("hyperborea.db");
+                Hyperborea.getAppContext().deleteDatabase("hyperborea.db");
 
                 intent = new Intent(this, MainActivity.class);
                 break;

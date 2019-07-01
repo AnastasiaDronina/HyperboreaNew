@@ -69,7 +69,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     @Override
     protected void onResume() {
         super.onResume();
-        message = handler.obtainMessage(3);
+        message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
         DbThread.getBackgroundHandler().sendMessage(message);
         listener = new DbThread.DbListener() {
             @Override
@@ -97,7 +97,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
         if (text.equals("Не выбрано")) {
-            message = handler.obtainMessage(3);
+            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
             DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
@@ -111,7 +111,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             DbThread.getInstance().addListener(listener);
         }
         if (text.equals("Еда")) {
-            message = handler.obtainMessage(3);
+            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
             DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
@@ -131,7 +131,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             DbThread.getInstance().addListener(listener);
         }
         if (text.equals("Ресурсы")) {
-            message = handler.obtainMessage(3);
+            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
             DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
@@ -151,7 +151,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             DbThread.getInstance().addListener(listener);
         }
         if (text.equals("Оборудование")) {
-            message = handler.obtainMessage(3);
+            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
             DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override
@@ -171,7 +171,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             DbThread.getInstance().addListener(listener);
         }
         if (text.equals("Транспорт")) {
-            message = handler.obtainMessage(3);
+            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
             DbThread.getBackgroundHandler().sendMessage(message);
             listener = new DbThread.DbListener() {
                 @Override

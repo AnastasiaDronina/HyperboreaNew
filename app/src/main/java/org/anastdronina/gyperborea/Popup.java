@@ -3,6 +3,8 @@ package org.anastdronina.gyperborea;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +12,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
@@ -24,8 +29,10 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     private RadioButton chekedRadioButton;
     private RadioButton easyLevel, middleLevel, hardLevel;
     private SharedPreferences allSettings;
-
+    private Bundle innerBundle;
     private DbThread.DbListener listener;
+    Handler handler, innerHandler;
+    Message message, innerMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +52,340 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         popupApply.setOnClickListener(this);
         popupBack.setOnClickListener(this);
 
-        InsertData insertData = new InsertData();
-        insertData.start();
+        handler = new Handler();
+        message = handler.obtainMessage(DbThread.CREATE_DATABASE);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
+        listener = new DbThread.DbListener() {
+            @Override
+            public void onDataLoaded(Bundle bundle) {
+                //inserting data in db
+                innerHandler = new Handler();
+                innerBundle = new Bundle();
+
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Дмитрий", "Аксенов", "Жаворонок", "Торопыжка", "Некультурный")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 21, 0, 0, 0, 1, 0, 0, 1, 0)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Денис", "Сергеев", "Способный ученик", "Технарь", "Бездонный желудок")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 53, 0, 1, 0, 0, 1, 0, 0, 0)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Степан", "Одинцов", "Декоратор", "Гурман", "Брезгливый")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 28, 0, 0, 0, 0, 1, 1, 0, 0)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Вадим", "Дьячков", "Веган", "Болтун", "Громкий храп")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 34, 0, 0, 1, 0, 0, 1, 0, 0)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Владислав", "Кошелев", "Способный ученик", "Декоратор", "Пацифист")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 30, 1, 0, 1, 0, 0, 0, 0, 0)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Святослав", "Гуляев", "Анемия", "Гурман", "Неконструктивный")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 25, 0, 1, 0, 0, 0, 0, 1, 0)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Артём", "Тетерин", "Руки из лапши", "Бездонный желудок", "Жаворонок")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 28, 0, 0, 0, 1, 0, 1, 0, 0)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Эдуард", "Лыткин", "Буйвол", "Декоратор", "Нарколепсия")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 18, 0, 0, 0, 0, 1, 0, 0, 1)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Иннокентий", "Харитонов", "Медленная обучаемость", "Брезгливый", "Торопыжка")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 34, 0, 1, 1, 0, 0, 0, 0, 0)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Илья", "Некрасов", "Трипофобия", "Технарь", "Декоратор")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0, 23, 1, 0, 0, 0, 0, 1, 0, 1)));
+                innerBundle.putInt("finMonthsWorked", 0);
+                innerBundle.putDouble("finCoef", 0.0);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec1", "desc1")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(3, 300, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec2", "desc2")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(10, 1000, 1)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec3", "desc3")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(5, 500, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec4", "desc4")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(8, 800, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec5", "desc5")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(12, 1200, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec1.1", "desc1.1")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(2, 200, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec2.1", "desc2.1")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(7, 700, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec3.1", "desc3.1")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(9, 900, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec4.1", "desc4.1")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(4, 400, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("tec5.1", "desc5.1")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(18, 1800, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Самосвал");
+                innerBundle.putString("productType", "Транспорт");
+                innerBundle.putInt("productAmount", 2);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Огурцы");
+                innerBundle.putString("productType", "Еда");
+                innerBundle.putInt("productAmount", 10);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Ресурс1");
+                innerBundle.putString("productType", "Ресурсы");
+                innerBundle.putInt("productAmount", 2);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Лук");
+                innerBundle.putString("productType", "Еда");
+                innerBundle.putInt("productAmount", 30);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Ресурс2");
+                innerBundle.putString("productType", "Ресурсы");
+                innerBundle.putInt("productAmount", 10);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Помидоры");
+                innerBundle.putString("productType", "Еда");
+                innerBundle.putInt("productAmount", 10);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Помидоры");
+                innerBundle.putString("productType", "Еда");
+                innerBundle.putInt("productAmount", 10);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Оборудование3");
+                innerBundle.putString("productType", "Оборудование");
+                innerBundle.putInt("productAmount", 2);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Ресурс3");
+                innerBundle.putString("productType", "Ресурсы");
+                innerBundle.putInt("productAmount", 6);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Оборудование2");
+                innerBundle.putString("productType", "Оборудование");
+                innerBundle.putInt("productAmount", 7);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Легковой автомобиль");
+                innerBundle.putString("productType", "Транспорт");
+                innerBundle.putInt("productAmount", 5);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Оборудование1");
+                innerBundle.putString("productType", "Оборудование");
+                innerBundle.putInt("productAmount", 10);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putString("productName", "Трактор");
+                innerBundle.putString("productType", "Транспорт");
+                innerBundle.putInt("productAmount", 3);
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Теплица 1", "Не выбрано")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_FARMS_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Теплица 2", "Не выбрано")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_FARMS_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Теплица 3", "Не выбрано")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_FARMS_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Теплица 4", "Не выбрано")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_FARMS_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Теплица 5", "Не выбрано")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(0, 0)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_FARMS_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Картофель", "руб", "Еда")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(10, 300)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_MARKET_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Оборудование42", "руб", "Оборудование")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(5, 50000)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_MARKET_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+                innerBundle = new Bundle();
+                innerBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList("Бетономешалка", "$", "Транспорт")));
+                innerBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(1, 50000)));
+                innerMessage = innerHandler.obtainMessage(DbThread.INSERT_MARKET_DATA);
+                innerMessage.setData(innerBundle);
+                DbThread.getBackgroundHandler().sendMessage(innerMessage);
+
+
+            }
+        };
+        DbThread.getInstance().addListener(listener);
 
     }
 
@@ -56,12 +395,6 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         if (!allSettings.getBoolean("NEW_GAME", true)) {
             finish();
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        DbThread.getInstance().addListener(listener);
     }
 
     @Override
@@ -123,68 +456,5 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-    }
-
-    class InsertData extends Thread {
-        @Override
-        public void run() {
-            super.run();
-            DatabaseHelper myDb = new DatabaseHelper(getApplicationContext());
-            myDb.insertPeopleData("Дмитрий", "Аксенов", 0, 0, 21, 0, 0, 0, 1, 0,
-                    0, 1, 0, "Жаворонок", "Торопыжка", "Некультурный", 0, 0.0);
-            myDb.insertPeopleData("Денис", "Сергеев", 0, 0, 53, 0, 1, 0, 0, 1,
-                    0, 0, 0, "Способный ученик", "Технарь", "Бездонный желудок", 0, 0.0);
-            myDb.insertPeopleData("Степан", "Одинцов", 0, 0, 28, 0, 0, 0, 0, 1,
-                    1, 0, 0, "Декоратор", "Гурман", "Брезгливый", 0, 0.0);
-            myDb.insertPeopleData("Вадим", "Дьячков", 0, 0, 34, 0, 0, 1, 0, 0,
-                    1, 0, 0, "Веган", "Болтун", "Громкий храп", 0, 0.0);
-            myDb.insertPeopleData("Владислав", "Кошелев", 0, 0, 30, 1, 0, 1, 0, 0,
-                    0, 0, 0, "Способный ученик", "Декоратор", "Пацифист", 0, 0.0);
-            myDb.insertPeopleData("Святослав", "Гуляев", 0, 0, 25, 0, 1, 0, 0, 0,
-                    0, 1, 0, "Анемия", "Гурман", "Неконструктивный", 0, 0.0);
-            myDb.insertPeopleData("Артём", "Тетерин", 0, 0, 28, 0, 0, 0, 1, 0,
-                    1, 0, 0, "Руки из лапши", "Бездонный желудок", "Жаворонок", 0, 0.0);
-            myDb.insertPeopleData("Эдуард", "Лыткин", 0, 0, 18, 0, 0, 0, 0, 1,
-                    0, 0, 1, "Буйвол", "Декоратор", "Нарколепсия", 0, 0.0);
-            myDb.insertPeopleData("Иннокентий", "Харитонов", 0, 0, 34, 0, 1, 1, 0, 0,
-                    0, 0, 0, "Медленная обучаемость", "Брезгливый", "Торопыжка", 0, 0.0);
-            myDb.insertPeopleData("Илья", "Некрасов", 0, 0, 23, 1, 0, 0, 0, 0,
-                    1, 0, 1, "Трипофобия", "Технарь", "Декоратор", 0, 0.0);
-
-            //filling tecnologies table in db
-            myDb.insertTecnologiesData("tec1", "desc1", 3, 300, 0);
-            myDb.insertTecnologiesData("tec2", "desc2", 10, 1000, 1);
-            myDb.insertTecnologiesData("tec3", "desc3", 5, 500, 0);
-            myDb.insertTecnologiesData("tec4", "desc4", 8, 800, 0);
-            myDb.insertTecnologiesData("tec5", "desc5", 12, 1200, 0);
-            myDb.insertTecnologiesData("tec1.1", "desc1.1", 2, 200, 0);
-            myDb.insertTecnologiesData("tec2.1", "desc2.1", 7, 700, 0);
-            myDb.insertTecnologiesData("tec3.1", "desc3.1", 9, 900, 0);
-            myDb.insertTecnologiesData("tec4.1", "desc4.1", 4, 400, 0);
-            myDb.insertTecnologiesData("tec5.1", "desc5.1", 18, 1800, 0);
-
-            myDb.insertStockData("Самосвал", "Транспорт", 2);
-            myDb.insertStockData("Огурцы", "Еда", 10);
-            myDb.insertStockData("Ресурс1", "Ресурсы", 2);
-            myDb.insertStockData("Лук", "Еда", 30);
-            myDb.insertStockData("Ресурс2", "Ресурсы", 10);
-            myDb.insertStockData("Помидоры", "Еда", 10);
-            myDb.insertStockData("Оборудование3", "Оборудование", 2);
-            myDb.insertStockData("Ресурс3", "Ресурсы", 6);
-            myDb.insertStockData("Оборудование2", "Оборудование", 7);
-            myDb.insertStockData("Легковой автомобиль", "Транспорт", 5);
-            myDb.insertStockData("Оборудование1", "Оборудование", 10);
-            myDb.insertStockData("Трактор", "Транспорт", 3);
-
-            myDb.insertFarmsData("Теплица 1", "Не выбрано", 0, 0);
-            myDb.insertFarmsData("Теплица 2", "Не выбрано", 0, 0);
-            myDb.insertFarmsData("Теплица 3", "Не выбрано", 0, 0);
-            myDb.insertFarmsData("Теплица 4", "Не выбрано", 0, 0);
-            myDb.insertFarmsData("Теплица 5", "Не выбрано", 0, 0);
-
-            myDb.insertMarketData("Картофель", 10, 300, "руб", "Еда");
-            myDb.insertMarketData("Оборудование42", 5, 50000, "руб", "Оборудование");
-            myDb.insertMarketData("Бетономешалка", 1, 50000, "$", "Транспорт");
-        }
     }
 }

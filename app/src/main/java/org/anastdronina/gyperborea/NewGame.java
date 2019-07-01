@@ -35,6 +35,7 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
     private ArrayList<Integer> finIds;
     private ArrayList<Double> finCoefs;
     private ArrayList<Integer> finMonthsWorked;
+    private boolean result;
     private ArrayList<Farm> farms;
     private Handler handler;
     private Message message;
@@ -44,11 +45,6 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
-
-        finIds = new ArrayList<>();
-        finCoefs = new ArrayList<>();
-        finMonthsWorked = new ArrayList<>();
-        farms = new ArrayList<>();
 
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         dateAndMoney = new DateAndMoney();
@@ -174,178 +170,136 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onStart() {
         super.onStart();
-        DbThread.getInstance().addListener(listener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        DbThread.getInstance().removeListener(listener);
     }
 
     public boolean nextTurn() {
-        boolean result = true;
+        result = true;
 
         //paying salaris and changing finances coef
 
         population = new ArrayList<Person>();
 
-        handler = new Handler();
-        message = handler.obtainMessage(1);
-        DbThread.getBackgroundHandler().sendMessage(message);
-
         listener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
-                population = bundle.getParcelableArrayList("allPopulation");
-                if (population != null) {
-                    for (int i = 0; i < population.size(); i++) {
-                        salaries = salaries + population.get(i).getSalary();
-                    }
-                }
-            }
-        };
-        DbThread.getInstance().addListener(listener);
+                salaries = bundle.getLong("salaries");
+                finIds = bundle.getIntegerArrayList("financeIds");
+                finCoefs = (ArrayList<Double>) bundle.getSerializable("financeCoefs");
+                finMonthsWorked = bundle.getIntegerArrayList("financeMonthsWorked");
+                farms = bundle.getParcelableArrayList("farms");
 
-        message = handler.obtainMessage(8);
-        DbThread.getBackgroundHandler().sendMessage(message);
-
-        listener = new DbThread.DbListener() {
-            @Override
-            public void onDataLoaded(Bundle bundle) {
-                finIds = bundle.getIntegerArrayList("finIds");
-            }
-        };
-        DbThread.getInstance().addListener(listener);
-
-        message = handler.obtainMessage(9);
-        DbThread.getBackgroundHandler().sendMessage(message);
-
-        listener = new DbThread.DbListener() {
-            @Override
-            public void onDataLoaded(Bundle bundle) {
-                finCoefs = (ArrayList<Double>) bundle.getSerializable("finCoefs");
-            }
-        };
-        DbThread.getInstance().addListener(listener);
-
-        message = handler.obtainMessage(10);
-        DbThread.getBackgroundHandler().sendMessage(message);
-
-        listener = new DbThread.DbListener() {
-            @Override
-            public void onDataLoaded(Bundle bundle) {
-                finMonthsWorked = bundle.getIntegerArrayList("finMonthsWorked");
-            }
-        };
-        DbThread.getInstance().addListener(listener);
-
-
-        if (allSettings.getLong("MONEY_RUBLES", 0) < salaries) {
-            result = false;
-        } else {
-            //changing month and year if it needs
-            int currentMonth = allSettings.getInt("MONTH_ID", 0);
-            if (currentMonth == 12) {
-                allSettings.edit().putInt("MONTH_ID", 1).apply();
-                allSettings.edit().putInt("YEAR", allSettings.getInt("YEAR", 0) + 1).apply();
-            } else {
-                allSettings.edit().putInt("MONTH_ID", currentMonth + 1).apply();
-            }
-
-            //changing money value and finanses coef
-            allSettings.edit().putLong("MONEY_RUBLES", allSettings.getLong("MONEY_RUBLES", 0) - salaries).apply();
-
-
-            for (int i = 0; i < finIds.size(); i++) {
-                double newCoef = finCoefs.get(i) + 0.2;
-                newCoef = Math.round(newCoef * 10.0) / 10.0;
-                if (newCoef > 3.0) {
-                    newCoef = 3.0;
-                }
-                bundle = new Bundle();
-                bundle.putString("query", "UPDATE " + "population" + " SET FIN_MONTHS_WORKED='" + finMonthsWorked.get(i) + 1 + "'WHERE ID='" + finIds.get(i) + "'");
-                message = handler.obtainMessage(0);
-                message.setData(bundle);
-                DbThread.getBackgroundHandler().sendMessage(message);
-
-                bundle = new Bundle();
-                bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + newCoef + "'WHERE ID='" + finIds.get(i) + "'");
-                message = handler.obtainMessage(0);
-                message.setData(bundle);
-                DbThread.getBackgroundHandler().sendMessage(message);
-            }
-
-
-            date.setText(dateAndMoney.getDate(allSettings));
-            moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-            moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
-
-            //learning current technology
-            if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0) {
-                int tecId = allSettings.getInt("TEC_IS_BEEING_LEARNED_ID", 0);
-                int monthsLeft = allSettings.getInt("MONTHS_LEFT_TO_LEARN", 0) - 1;
-                if (monthsLeft == 0) {
-                    bundle = new Bundle();
-                    bundle.putString("query", "UPDATE " + "tecnologies" + " SET TEC_IS_LEARNED='" + 1 + "'WHERE TEC_ID='" + tecId + "'");
-                    message = handler.obtainMessage(0);
-                    message.setData(bundle);
-                    DbThread.getBackgroundHandler().sendMessage(message);
-
-
-                    allSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
-                    allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
-                    allSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", 0).apply();
+                if (allSettings.getLong("MONEY_RUBLES", 0) < salaries) {
+                    result = false;
                 } else {
-                    allSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", monthsLeft).apply();
-                }
-            }
+                    //changing month and year if it needs
+                    int currentMonth = allSettings.getInt("MONTH_ID", 0);
+                    if (currentMonth == 12) {
+                        allSettings.edit().putInt("MONTH_ID", 1).apply();
+                        allSettings.edit().putInt("YEAR", allSettings.getInt("YEAR", 0) + 1).apply();
+                    } else {
+                        allSettings.edit().putInt("MONTH_ID", currentMonth + 1).apply();
+                    }
 
-            //changing farms statuses
-            message = handler.obtainMessage(4);
-            DbThread.getBackgroundHandler().sendMessage(message);
+                    //changing money value and finanses coef
+                    allSettings.edit().putLong("MONEY_RUBLES", allSettings.getLong("MONEY_RUBLES", 0) - salaries).apply();
 
-            listener = new DbThread.DbListener() {
-                @Override
-                public void onDataLoaded(Bundle bundle) {
-                    farms = bundle.getParcelableArrayList("farms");
-                }
-            };
-            DbThread.getInstance().addListener(listener);
 
-            for (int i = 0; i < farms.size(); i++) {
-                if ((farms.get(i).getFarmerId() != 0) && !(farms.get(i).getCrop().equals("Не выбрано"))) {
-                    if (farms.get(i).getStatus() == Farm.HARVEST) {
-                        DatabaseHelper myDb = new DatabaseHelper(this);
-                        myDb.insertStockData(farms.get(i).getCrop(), "Еда", 100);
-
+                    for (int i = 0; i < finIds.size(); i++) {
+                        double newCoef = finCoefs.get(i) + 0.2;
+                        newCoef = Math.round(newCoef * 10.0) / 10.0;
+                        if (newCoef > 3.0) {
+                            newCoef = 3.0;
+                        }
                         bundle = new Bundle();
-                        bundle.putString("query", "UPDATE " + "farms" + " SET FARM_STATUS='" + 0 + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
-                        message = handler.obtainMessage(0);
+                        bundle.putString("query", "UPDATE " + "population" + " SET FIN_MONTHS_WORKED='" + finMonthsWorked.get(i) + 1 + "'WHERE ID='" + finIds.get(i) + "'");
+                        message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                         message.setData(bundle);
                         DbThread.getBackgroundHandler().sendMessage(message);
 
-                    } else {
-                        int statusChanged = farms.get(i).getStatus() + 1;
-
                         bundle = new Bundle();
-                        bundle.putString("query", "UPDATE " + "farms" + " SET FARM_STATUS='" + statusChanged + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
-                        message = handler.obtainMessage(0);
+                        bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + newCoef + "'WHERE ID='" + finIds.get(i) + "'");
+                        message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
                         message.setData(bundle);
                         DbThread.getBackgroundHandler().sendMessage(message);
                     }
+
+
+                    date.setText(dateAndMoney.getDate(allSettings));
+                    moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
+                    moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+
+                    //learning current technology
+                    if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0) {
+                        int tecId = allSettings.getInt("TEC_IS_BEEING_LEARNED_ID", 0);
+                        int monthsLeft = allSettings.getInt("MONTHS_LEFT_TO_LEARN", 0) - 1;
+                        if (monthsLeft == 0) {
+                            bundle = new Bundle();
+                            bundle.putString("query", "UPDATE " + "tecnologies" + " SET TEC_IS_LEARNED='" + 1 + "'WHERE TEC_ID='" + tecId + "'");
+                            message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
+                            message.setData(bundle);
+                            DbThread.getBackgroundHandler().sendMessage(message);
+
+
+                            allSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
+                            allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
+                            allSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", 0).apply();
+                        } else {
+                            allSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", monthsLeft).apply();
+                        }
+                    }
+
+                    //changing farms statuses
+                    for (int i = 0; i < farms.size(); i++) {
+                        if ((farms.get(i).getFarmerId() != 0) && !(farms.get(i).getCrop().equals("Не выбрано"))) {
+                            if (farms.get(i).getStatus() == Farm.HARVEST) {
+                                bundle = new Bundle();
+                                bundle.putString("productName", farms.get(i).getCrop());
+                                bundle.putString("productType", "Еда");
+                                bundle.putInt("productAmount", 100);
+                                message = handler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+                                message.setData(bundle);
+                                DbThread.getBackgroundHandler().sendMessage(message);
+
+                                bundle = new Bundle();
+                                bundle.putString("query", "UPDATE " + "farms" + " SET FARM_STATUS='" + 0 + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
+                                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
+                                message.setData(bundle);
+                                DbThread.getBackgroundHandler().sendMessage(message);
+
+                            } else {
+                                int statusChanged = farms.get(i).getStatus() + 1;
+
+                                bundle = new Bundle();
+                                bundle.putString("query", "UPDATE " + "farms" + " SET FARM_STATUS='" + statusChanged + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
+                                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
+                                message.setData(bundle);
+                                DbThread.getBackgroundHandler().sendMessage(message);
+                            }
+                        }
+                    }
+
+                    //changing turn value
+                    int turnValue = allSettings.getInt("TURN", 0);
+                    if (turnValue == 9) {
+                        dialogGameOver.show();
+                    } else {
+                        turnValue++;
+                        allSettings.edit().putInt("TURN", turnValue).apply();
+                    }
                 }
             }
+        };
+        DbThread.getInstance().addListener(listener);
 
-            //changing turn value
-            int turnValue = allSettings.getInt("TURN", 0);
-            if (turnValue == 9) {
-                dialogGameOver.show();
-            } else {
-                turnValue++;
-                allSettings.edit().putInt("TURN", turnValue).apply();
-            }
-        }
+        handler = new Handler();
+        message = handler.obtainMessage(DbThread.COUNT_INFO_FOR_NEXT_TURN);
+        DbThread.getBackgroundHandler().sendMessage(message);
+
         return result;
     }
 

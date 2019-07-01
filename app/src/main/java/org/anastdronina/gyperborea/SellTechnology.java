@@ -71,7 +71,7 @@ public class SellTechnology extends AppCompatActivity {
                     }
                 }
 
-                message = handler.obtainMessage(2);
+                message = handler.obtainMessage(DbThread.LOAD_TECH_DATA);
                 DbThread.getBackgroundHandler().sendMessage(message);
 
 
@@ -117,7 +117,7 @@ public class SellTechnology extends AppCompatActivity {
         soldTechnologies = allSettings.getString("SOLD_TECHNOLOGIES", "").split(",");
         learnedTechs = new ArrayList<>();
 
-        message = handler.obtainMessage(2);
+        message = handler.obtainMessage(DbThread.LOAD_TECH_DATA);
         DbThread.getBackgroundHandler().sendMessage(message);
 
         listener = new DbThread.DbListener() {

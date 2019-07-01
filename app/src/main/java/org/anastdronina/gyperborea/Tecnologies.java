@@ -178,7 +178,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
             case R.id.changeScientist:
                 if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() == 0) {
                     scientists = new ArrayList<>();
-                    message = handler.obtainMessage(1);
+                    message = handler.obtainMessage(DbThread.LOAD_POPULATION_DATA);
                     DbThread.getBackgroundHandler().sendMessage(message);
                     listener = new DbThread.DbListener() {
                         @Override
@@ -455,7 +455,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
                     + allSettings.getString("SCIENTIST_IN_USE_NAME", ""));
         } else pinnedScientist.setText("Для изучения закреплен ученый: Не выбрано");
         tecs = new ArrayList<>();
-        message = handler.obtainMessage(2);
+        message = handler.obtainMessage(DbThread.LOAD_TECH_DATA);
         DbThread.getBackgroundHandler().sendMessage(message);
         listener = new DbThread.DbListener() {
             @Override
