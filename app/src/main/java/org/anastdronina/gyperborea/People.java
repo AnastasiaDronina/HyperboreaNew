@@ -40,10 +40,6 @@ public class People extends AppCompatActivity {
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         dateAndMoney = new DateAndMoney();
 
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
-
         population = new ArrayList<>();
         peopleList = findViewById(R.id.peopleList);
     }
@@ -51,7 +47,6 @@ public class People extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         dbManager.loadData(DbManager.WhatData.population);
         listener = new DbThread.DbListener() {
             @Override
@@ -65,6 +60,10 @@ public class People extends AppCompatActivity {
             }
         };
         DbThread.getInstance().addListener(listener);
+
+        date.setText(dateAndMoney.getDate(allSettings));
+        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
+        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
     }
 
     @Override
@@ -99,10 +98,10 @@ public class People extends AppCompatActivity {
             super(itemView);
             this.context = context;
 
-            this.rowName = (TextView) itemView.findViewById(R.id.personName);
-            this.rowJob = (TextView) itemView.findViewById(R.id.personJob);
-            this.rowSalary = (TextView) itemView.findViewById(R.id.personSalary);
-            this.rowAge = (TextView) itemView.findViewById(R.id.personAge);
+            this.rowName = itemView.findViewById(R.id.personName);
+            this.rowJob = itemView.findViewById(R.id.personJob);
+            this.rowSalary = itemView.findViewById(R.id.personSalary);
+            this.rowAge = itemView.findViewById(R.id.personAge);
 
             itemView.setOnClickListener(this);
         }

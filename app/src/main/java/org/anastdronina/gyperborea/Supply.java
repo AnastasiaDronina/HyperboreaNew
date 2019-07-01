@@ -34,10 +34,6 @@ public class Supply extends AppCompatActivity implements View.OnClickListener {
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         dateAndMoney = new DateAndMoney();
 
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
-
         btnStock.setOnClickListener(this);
         btnAgriculture.setOnClickListener(this);
         btnMarket.setOnClickListener(this);

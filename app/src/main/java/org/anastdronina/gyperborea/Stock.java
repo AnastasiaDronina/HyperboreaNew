@@ -200,8 +200,8 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             super(itemView);
             this.context = context;
 
-            this.productName = (TextView) itemView.findViewById(R.id.scientistName);
-            this.productAmount = (TextView) itemView.findViewById(R.id.scientistLevel);
+            this.productName = itemView.findViewById(R.id.scientistName);
+            this.productAmount = itemView.findViewById(R.id.scientistLevel);
 
             itemView.setOnClickListener(this);
         }
@@ -211,9 +211,9 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             this.product = product;
             productName.setText(product.getName());
             if (product.getType().equals("Еда")) {
-                amount = Integer.toString(product.getAmount()) + " кг ";
+                amount = product.getAmount() + " кг ";
             } else {
-                amount = Integer.toString(product.getAmount()) + " шт ";
+                amount = product.getAmount() + " шт ";
             }
             productAmount.setText(amount);
         }

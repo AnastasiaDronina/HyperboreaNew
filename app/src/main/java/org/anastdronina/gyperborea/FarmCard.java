@@ -102,7 +102,7 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
             @Override
             public void onClick(View v) {
                 if (allSettings.getInt("CURRENT_FARM_STATUS", Farm.NOT_USED) != Farm.NOT_USED) {
-                    Toast.makeText(getApplicationContext(), "Переназначить фермера можно будет после сбора урожая ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.cant_change_farmer, Toast.LENGTH_SHORT).show();
                 } else {
                     farmersAvailable = new ArrayList<>();
                     allPeople = new ArrayList<>();
@@ -285,8 +285,8 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
             super(itemView);
             this.context = context;
 
-            this.farmerName = (TextView) itemView.findViewById(R.id.scientistName);
-            this.farmerLevel = (TextView) itemView.findViewById(R.id.scientistLevel);
+            this.farmerName = itemView.findViewById(R.id.scientistName);
+            this.farmerLevel = itemView.findViewById(R.id.scientistLevel);
 
             itemView.setOnClickListener(this);
         }

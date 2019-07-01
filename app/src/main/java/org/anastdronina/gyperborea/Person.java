@@ -103,10 +103,6 @@ public class Person implements Parcelable {
         return salary;
     }
 
-    public void setSalary(int salary) {
-        this.salary = salary;
-    }
-
     public String getName() {
         return name;
     }
@@ -119,96 +115,48 @@ public class Person implements Parcelable {
         return surname;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
     public int getJob() {
         return job;
-    }
-
-    public void setJob(int job) {
-        this.job = job;
     }
 
     public int getAge() {
         return age;
     }
 
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public int getBuilding() {
         return building;
-    }
-
-    public void setBuilding(int building) {
-        this.building = building;
     }
 
     public int getManufacture() {
         return manufacture;
     }
 
-    public void setManufacture(int manufacture) {
-        this.manufacture = manufacture;
-    }
-
     public int getFarm() {
         return farm;
-    }
-
-    public void setFarm(int farm) {
-        this.farm = farm;
     }
 
     public int getAthletic() {
         return athletic;
     }
 
-    public void setAthletic(int athletic) {
-        this.athletic = athletic;
-    }
-
     public int getLearning() {
         return learning;
-    }
-
-    public void setLearning(int learning) {
-        this.learning = learning;
     }
 
     public int getTalking() {
         return talking;
     }
 
-    public void setTalking(int talking) {
-        this.talking = talking;
-    }
-
     public int getStrength() {
         return strength;
-    }
-
-    public void setStrength(int strength) {
-        this.strength = strength;
     }
 
     public int getArt() {
         return art;
     }
 
-    public void setArt(int art) {
-        this.art = art;
-    }
-
     public ArrayList<String> getTraits() {
         return traits;
-    }
-
-    public void setTraits(ArrayList<String> traits) {
-        this.traits = traits;
     }
 
     @Override

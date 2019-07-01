@@ -55,6 +55,13 @@
 
     <string name="choose_scientist_first">Для изучения необходимо сначала выбрать ученого! </string>
 
+    <string name="cant_change_farmer">Переназначить фермера можно будет после сбора урожая </string>
+
+    <string name="buy_item">Купить товар? </string>
+
+    <string name="current_coef_will_be_deleted">Изменение профессии сбросит текущий коэффициент улучшения </string>
+
+
     <string-array name="jobs">
         <item>Не работает</item>
         <item>Строитель</item>

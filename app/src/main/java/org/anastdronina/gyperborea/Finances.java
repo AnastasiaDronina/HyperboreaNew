@@ -141,9 +141,6 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
                 allSettings.edit().putInt("MONEY_CENTS", Integer.parseInt(resDol[1])).apply();
                 allSettings.edit().putLong("MONEY_RUBLES", Integer.parseInt(resRub[0])).apply();
                 allSettings.edit().putInt("MONEY_KOP", Integer.parseInt(resRub[1])).apply();
-
-                moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-                moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
             }
         });
     }
@@ -151,7 +148,6 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
-
         date.setText(dateAndMoney.getDate(allSettings));
         moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
         moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));

@@ -39,13 +39,7 @@ public class Agriculture extends AppCompatActivity {
         date = findViewById(R.id.date);
         moneyR = findViewById(R.id.moneyR);
         moneyD = findViewById(R.id.moneyD);
-
         agricultureLv = findViewById(R.id.agricultureList);
-
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
-
         farmsList = new ArrayList<>();
     }
 
@@ -54,7 +48,6 @@ public class Agriculture extends AppCompatActivity {
         super.onResume();
 
         dbManager.loadData(DbManager.WhatData.farms);
-
         listener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
@@ -97,9 +90,9 @@ public class Agriculture extends AppCompatActivity {
             super(itemView);
             this.context = context;
 
-            this.farmName = (TextView) itemView.findViewById(R.id.farmName);
-            this.farmsCrop = (TextView) itemView.findViewById(R.id.farmsCrop);
-            this.farmsStatus = (TextView) itemView.findViewById(R.id.farmsStatus);
+            this.farmName = itemView.findViewById(R.id.farmName);
+            this.farmsCrop = itemView.findViewById(R.id.farmsCrop);
+            this.farmsStatus = itemView.findViewById(R.id.farmsStatus);
 
             itemView.setOnClickListener(this);
         }

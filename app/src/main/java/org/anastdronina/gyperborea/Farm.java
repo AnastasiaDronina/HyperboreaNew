@@ -7,14 +7,13 @@ public class Farm implements Parcelable {
     private int id, status, farmerId;
     private String name, crop;
 
-    // FARMS' STATUSES //
+    // FARMS' STATUSES
     public static final int NOT_USED = 0;
     public static final int SOWING_COMPLETED = 1;
     public static final int SPROUTED = 2;
     public static final int BLOOM = 3;
     public static final int RIPENING = 4;
     public static final int HARVEST = 5;
-    // ............... //
 
     public Farm(int id, String name, String crop, int status, int farmerId) {
         this.id = id;
@@ -56,16 +55,8 @@ public class Farm implements Parcelable {
         return status;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
     public int getFarmerId() {
         return farmerId;
-    }
-
-    public void setFarmerId(int farmerId) {
-        this.farmerId = farmerId;
     }
 
     public String getName() {
@@ -78,10 +69,6 @@ public class Farm implements Parcelable {
 
     public String getCrop() {
         return crop;
-    }
-
-    public void setCrop(String crop) {
-        this.crop = crop;
     }
 
     public String statusString(int statusInt) {

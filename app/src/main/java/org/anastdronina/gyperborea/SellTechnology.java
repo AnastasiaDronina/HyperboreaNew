@@ -98,10 +98,6 @@ public class SellTechnology extends AppCompatActivity {
                 };
                 DbThread.getInstance().addListener(listener);
 
-                date.setText(dateAndMoney.getDate(allSettings));
-                moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-                moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
-
             }
         });
     }
@@ -170,8 +166,8 @@ public class SellTechnology extends AppCompatActivity {
             super(itemView);
             this.context = context;
 
-            this.tecName = (TextView) itemView.findViewById(R.id.tec_name);
-            this.tecPrice = (TextView) itemView.findViewById(R.id.tec_price);
+            this.tecName = itemView.findViewById(R.id.tec_name);
+            this.tecPrice = itemView.findViewById(R.id.tec_price);
 
             itemView.setOnClickListener(this);
         }

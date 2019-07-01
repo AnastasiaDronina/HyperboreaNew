@@ -12,7 +12,6 @@ public class DbManager {
     private Bundle bundle;
     private Message message;
     private Handler handler;
-
     public enum WhatData {population, tech, stock, farms, market}
 
     public void createNewDatabase() {
@@ -53,6 +52,7 @@ public class DbManager {
                 message = handler.obtainMessage(DbThread.LOAD_MARKET_DATA);
                 DbThread.getBackgroundHandler().sendMessage(message);
                 break;
+            default:
         }
     }
 
@@ -88,7 +88,7 @@ public class DbManager {
     public void insertPopulationData(String name, String surname, int job, int salary, int age, int building, int manufacture, int farm, int athletic, int learning, int talking, int strength, int art, String trait1, String trait2, String trait3, int finMonthWorked, Double finCoef) {
         bundle = new Bundle();
         handler = new Handler();
-        bundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList(name, surname, trait1, trait2, trait3)));
+        bundle.putStringArrayList("stringValues", new ArrayList<>(Arrays.asList(name, surname, trait1, trait2, trait3)));
         bundle.putIntegerArrayList("intValues",
                 new ArrayList(Arrays.asList(job, salary, age, building, manufacture, farm, athletic, learning, talking, strength, art)));
         bundle.putInt("finMonthsWorked", finMonthWorked);
@@ -121,7 +121,7 @@ public class DbManager {
     public void insertMarketData(String name, String currency, String type, int amount, int price) {
         bundle = new Bundle();
         handler = new Handler();
-        bundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList(name, currency, type)));
+        bundle.putStringArrayList("stringValues", new ArrayList<>(Arrays.asList(name, currency, type)));
         bundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(amount, price)));
         message = handler.obtainMessage(DbThread.INSERT_MARKET_DATA);
         message.setData(bundle);

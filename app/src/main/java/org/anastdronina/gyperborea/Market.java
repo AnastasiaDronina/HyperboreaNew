@@ -47,7 +47,7 @@ public class Market extends AppCompatActivity {
         moneyR = findViewById(R.id.moneyR);
         moneyD = findViewById(R.id.moneyD);
 
-        dialogBuyItem.setTitle("Купить товар? ");
+        dialogBuyItem.setTitle(R.string.buy_item);
         dialogBuyItem.setView(tvForDialogBuyItem);
 
 
@@ -86,10 +86,6 @@ public class Market extends AppCompatActivity {
                     }
                 };
                 DbThread.getInstance().addListener(listener);
-
-                date.setText(dateAndMoney.getDate(allSettings));
-                moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-                moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
             }
         });
     }
@@ -144,9 +140,9 @@ public class Market extends AppCompatActivity {
             super(itemView);
             this.context = context;
 
-            this.marketItemName = (TextView) itemView.findViewById(R.id.marketItemName);
-            this.marketItemAmount = (TextView) itemView.findViewById(R.id.marketItemAmount);
-            this.marketItemPrice = (TextView) itemView.findViewById(R.id.marketItemPrice);
+            this.marketItemName = itemView.findViewById(R.id.marketItemName);
+            this.marketItemAmount = itemView.findViewById(R.id.marketItemAmount);
+            this.marketItemPrice = itemView.findViewById(R.id.marketItemPrice);
 
             itemView.setOnClickListener(this);
         }

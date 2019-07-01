@@ -29,26 +29,7 @@ public class ResetPreferences extends AppCompatActivity implements View.OnClickL
         SharedPreferences allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         switch (v.getId()) {
             case R.id.buttonOk:
-                allSettings.edit().putInt("TURN", 0).apply();
-                allSettings.edit().putBoolean("NEW_GAME", true).apply();
-                allSettings.edit().putString("PRESIDENT_NAME", "").apply();
-                allSettings.edit().putString("COUNTRY_NAME", "").apply();
-                allSettings.edit().putString("LEVEL", "Middle").apply();
-                allSettings.edit().putLong("MONEY_DOLLARS", 200000).apply();
-                allSettings.edit().putInt("MONEY_CENTS", 0).apply();
-                allSettings.edit().putLong("MONEY_RUBLES", 20000000).apply();
-                allSettings.edit().putInt("MONEY_KOP", 0).apply();
-                allSettings.edit().putInt("MONTH_ID", 1).apply();
-                allSettings.edit().putInt("YEAR", 2019).apply();
-                allSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
-                allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
-                allSettings.edit().putInt("SCIENTIST_IN_USE_ID", 0).apply();
-                allSettings.edit().putString("SCIENTIST_IN_USE_NAME", "").apply();
-                allSettings.edit().putInt("FARMER_IN_USE_ID", 0).apply();
-                allSettings.edit().putString("SOLD_TECHNOLOGIES", "").apply();
-
-                Hyperborea.getAppContext().deleteDatabase("hyperborea.db");
-
+                startNewGame(allSettings);
                 intent = new Intent(this, MainActivity.class);
                 break;
             case R.id.buttonNo:
@@ -63,5 +44,27 @@ public class ResetPreferences extends AppCompatActivity implements View.OnClickL
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    public void startNewGame(SharedPreferences allSettings) {
+        allSettings.edit().putInt("TURN", 0).apply();
+        allSettings.edit().putBoolean("NEW_GAME", true).apply();
+        allSettings.edit().putString("PRESIDENT_NAME", "").apply();
+        allSettings.edit().putString("COUNTRY_NAME", "").apply();
+        allSettings.edit().putString("LEVEL", "Middle").apply();
+        allSettings.edit().putLong("MONEY_DOLLARS", 200000).apply();
+        allSettings.edit().putInt("MONEY_CENTS", 0).apply();
+        allSettings.edit().putLong("MONEY_RUBLES", 20000000).apply();
+        allSettings.edit().putInt("MONEY_KOP", 0).apply();
+        allSettings.edit().putInt("MONTH_ID", 1).apply();
+        allSettings.edit().putInt("YEAR", 2019).apply();
+        allSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
+        allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
+        allSettings.edit().putInt("SCIENTIST_IN_USE_ID", 0).apply();
+        allSettings.edit().putString("SCIENTIST_IN_USE_NAME", "").apply();
+        allSettings.edit().putInt("FARMER_IN_USE_ID", 0).apply();
+        allSettings.edit().putString("SOLD_TECHNOLOGIES", "").apply();
+
+        Hyperborea.getAppContext().deleteDatabase("hyperborea.db");
     }
 }

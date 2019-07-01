@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
@@ -28,12 +27,10 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
     private long salaries;
     private SharedPreferences allSettings;
     private DbThread.DbListener listener;
-    private List<Person> population;
     private AlertDialog dialogNextTurn, dialogGameOver, dialogNotEnoughtMoney;
     private ArrayList<Integer> finIds;
     private ArrayList<Double> finCoefs;
     private ArrayList<Integer> finMonthsWorked;
-    private boolean result;
     private ArrayList<Farm> farms;
     private DbManager dbManager;
 
@@ -87,9 +84,7 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
         dialogNextTurn.setButton(DialogInterface.BUTTON_POSITIVE, "Ок", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (nextTurn() == false) {
-                    dialogNotEnoughtMoney.show();
-                }
+                nextTurn();
             }
         });
 
@@ -172,13 +167,9 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
         super.onStop();
     }
 
-    public boolean nextTurn() {
-        result = true;
+    public void nextTurn() {
 
         //paying salaris and changing finances coef
-
-        population = new ArrayList<Person>();
-
         listener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
@@ -189,7 +180,7 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
                 farms = bundle.getParcelableArrayList("farms");
 
                 if (allSettings.getLong("MONEY_RUBLES", 0) < salaries) {
-                    result = false;
+                    dialogNotEnoughtMoney.show();
                 } else {
                     //changing month and year if it needs
                     int currentMonth = allSettings.getInt("MONTH_ID", 0);
@@ -259,10 +250,7 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
             }
         };
         DbThread.getInstance().addListener(listener);
-
         dbManager.countInfoForNextTurn();
-
-        return result;
     }
 
     public void startNewGame() {

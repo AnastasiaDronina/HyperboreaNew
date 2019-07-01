@@ -226,9 +226,9 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
             super(itemView);
             this.context = context;
 
-            this.tecName = (TextView) itemView.findViewById(R.id.tec_name);
-            this.tecMonths = (TextView) itemView.findViewById(R.id.tec_months);
-            this.tecPrice = (TextView) itemView.findViewById(R.id.tec_price);
+            this.tecName = itemView.findViewById(R.id.tec_name);
+            this.tecMonths = itemView.findViewById(R.id.tec_months);
+            this.tecPrice = itemView.findViewById(R.id.tec_price);
 
             itemView.setOnClickListener(this);
         }
@@ -312,8 +312,8 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
             super(itemView);
             this.context = context;
 
-            this.sciName = (TextView) itemView.findViewById(R.id.scientistName);
-            this.sciLevel = (TextView) itemView.findViewById(R.id.scientistLevel);
+            this.sciName = itemView.findViewById(R.id.scientistName);
+            this.sciLevel = itemView.findViewById(R.id.scientistLevel);
 
             itemView.setOnClickListener(this);
         }
@@ -453,7 +453,6 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
             @Override
             public void onDataLoaded(Bundle bundle) {
                 tecs = bundle.getParcelableArrayList("techs");
-                //убираем из списка уже изученные технологии и заменяем их на следующие этого же типа
                 tecnologies = changeTecnologiesList(tecs);
                 if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0) {
                     String tecInLearning = allSettings.getString("TEC_IS_BEEING_LEARNED", "");

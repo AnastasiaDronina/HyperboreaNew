@@ -23,7 +23,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     private RadioButton easyLevel, middleLevel, hardLevel;
     private SharedPreferences allSettings;
     private DbThread.DbListener listener;
-    DbManager dbManager;
+    private DbManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +136,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                     allSettings.edit().putString("PRESIDENT_NAME", editPresidentName.getText().toString()).apply();
 
                     int checkedId = levels.getCheckedRadioButtonId();
-                    chekedRadioButton = (RadioButton) findViewById(checkedId);
+                    chekedRadioButton = findViewById(checkedId);
                     if (chekedRadioButton.equals(easyLevel)) {
                         allSettings.edit().putString("LEVEL", "Easy").apply();
                         allSettings.edit().putLong("MONEY_DOLLARS", 300000).apply();

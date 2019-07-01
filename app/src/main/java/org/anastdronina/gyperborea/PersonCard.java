@@ -95,9 +95,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
 
 //setting coefs if any
         printCoef(allSettings);
-
         skillsAndTraits.setText(printSkills + printTraits);
-
 
         dialogName.setTitle("Редактировать имя");
         dialogName.setView(editPersonName);
@@ -145,7 +143,6 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
-        //db = openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
         if (allSettings.getInt("CURRENT_PERS_ID", 0) == allSettings.getInt("SCIENTIST_IN_USE_ID", 0)) {
             Toast.makeText(getApplicationContext(), R.string.scientist_busy, Toast.LENGTH_SHORT).show();
             spinnerJobs.setSelection(Arrays.asList((getResources().getStringArray(R.array.jobs))).indexOf("Ученый"));
@@ -357,7 +354,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
             if (!getJobStr(allSettings).equals("Финансист")) {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
                 alertDialogBuilder
-                        .setTitle("Изменение профессии сбросит текущий коэффициент улучшения")
+                        .setTitle(R.string.current_coef_will_be_deleted)
                         .setCancelable(false)
                         .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -399,7 +396,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
     public void showAlertDialogForChangingJob(final int job, final int salary) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
         alertDialogBuilder
-                .setTitle("Изменение профессии сбросит текущий коэффициент улучшения. ")
+                .setTitle(R.string.current_coef_will_be_deleted)
                 .setCancelable(false)
                 .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
