@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,15 +25,14 @@ public class People extends AppCompatActivity {
     private DateAndMoney dateAndMoney;
     private TextView date, moneyD, moneyR;
     private DbThread.DbListener listener;
-    private Handler handler;
-    private Message message;
+    private DbManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_people);
 
-        handler = new Handler();
+        dbManager = new DbManager();
         date = findViewById(R.id.date);
         moneyD = findViewById(R.id.moneyD);
         moneyR = findViewById(R.id.moneyR);
@@ -54,9 +51,8 @@ public class People extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        message = handler.obtainMessage(DbThread.LOAD_POPULATION_DATA);
-        DbThread.getBackgroundHandler().sendMessage(message);
 
+        dbManager.loadData(DbManager.WhatData.population);
         listener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {

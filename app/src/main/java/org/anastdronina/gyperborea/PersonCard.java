@@ -3,8 +3,6 @@ package org.anastdronina.gyperborea;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -35,9 +33,10 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
     private SharedPreferences allSettings;
     private String printCoef;
     private DbThread.DbListener listener;
-    private Handler handler;
-    private Message message;
-    private Bundle bundle;
+    //    private Handler handler;
+//    private Message message;
+//    private Bundle bundle;
+    DbManager dbManager;
 
 
     @Override
@@ -45,8 +44,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_person_card);
 
-        handler = new Handler();
-        bundle = new Bundle();
+        dbManager = new DbManager();
         dateAndMoney = new DateAndMoney();
         personName = findViewById(R.id.personName);
         personSurname = findViewById(R.id.personSurname);
@@ -115,10 +113,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 personName.setText(editPersonName.getText());
-                bundle.putString("query", "UPDATE " + "population" + " SET NAME='" + editPersonName.getText() + "'WHERE ID='" + myId + "'");
-                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                message.setData(bundle);
-                DbThread.getBackgroundHandler().sendMessage(message);
+                dbManager.performQuery("UPDATE " + "population" + " SET NAME='" + editPersonName.getText() + "'WHERE ID='" + myId + "'");
             }
         });
         personName.setOnClickListener(new View.OnClickListener() {
@@ -133,10 +128,7 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 personSurname.setText(editPersonSurname.getText());
-                bundle.putString("query", "UPDATE " + "population" + " SET SURNAME='" + editPersonSurname.getText() + "'WHERE ID='" + myId + "'");
-                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                message.setData(bundle);
-                DbThread.getBackgroundHandler().sendMessage(message);
+                dbManager.performQuery("UPDATE " + "population" + " SET SURNAME='" + editPersonSurname.getText() + "'WHERE ID='" + myId + "'");
             }
         });
 
@@ -293,8 +285,8 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
 
     public void printCoef(SharedPreferences allSettings) {
         if (allSettings.getInt("CURRENT_PERS_JOB", Person.NOT_EMPLOYED) == Person.FINANSIST) {
-            message = handler.obtainMessage(DbThread.PRINT_COEF_ASYNC, allSettings.getInt("CURRENT_PERS_ID", 0), 0);
-            DbThread.getBackgroundHandler().sendMessage(message);
+            dbManager.printCoefAsync(allSettings.getInt("CURRENT_PERS_ID", 0));
+
             listener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundlee) {
@@ -374,25 +366,12 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                         .setCancelable(false)
                         .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                bundle = new Bundle();
-                                bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + Person.FINANSIST + "'WHERE ID='" + myId + "'");
-                                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                                message.setData(bundle);
-                                DbThread.getBackgroundHandler().sendMessage(message);
-
-                                bundle = new Bundle();
-                                bundle.putString("query", "UPDATE " + "population" + " SET SALARY='" + Person.FINANSIST_SALARY + "'WHERE ID='" + myId + "'");
-                                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                                message.setData(bundle);
-                                DbThread.getBackgroundHandler().sendMessage(message);
+                                dbManager.performQuery("UPDATE " + "population" + " SET JOB='" + Person.FINANSIST + "'WHERE ID='" + myId + "'");
+                                dbManager.performQuery("UPDATE " + "population" + " SET SALARY='" + Person.FINANSIST_SALARY + "'WHERE ID='" + myId + "'");
 
                                 if (allSettings.getInt("CURRENT_PERS_LEARNING", 0) > 0) {
                                     double coef = 0.2 * allSettings.getInt("CURRENT_PERS_LEARNING", 0);
-                                    bundle = new Bundle();
-                                    bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + coef + "'WHERE ID='" + myId + "'");
-                                    message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                                    message.setData(bundle);
-                                    DbThread.getBackgroundHandler().sendMessage(message);
+                                    dbManager.performQuery("UPDATE " + "population" + " SET FIN_COEF='" + coef + "'WHERE ID='" + myId + "'");
                                 }
                                 allSettings.edit().putInt("CURRENT_PERS_SALARY", Person.FINANSIST_SALARY).apply();
                                 allSettings.edit().putInt("CURRENT_PERS_JOB", Person.FINANSIST).apply();
@@ -429,24 +408,9 @@ public class PersonCard extends AppCompatActivity implements AdapterView.OnItemS
                 .setCancelable(false)
                 .setPositiveButton("Oк", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        bundle = new Bundle();
-                        bundle.putString("query", "UPDATE " + "population" + " SET JOB='" + job + "'WHERE ID='" + myId + "'");
-                        message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                        message.setData(bundle);
-                        DbThread.getBackgroundHandler().sendMessage(message);
-
-                        bundle = new Bundle();
-                        bundle.putString("query", "UPDATE " + "population" + " SET SALARY='" + salary + "'WHERE ID='" + myId + "'");
-                        message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                        message.setData(bundle);
-                        DbThread.getBackgroundHandler().sendMessage(message);
-
-                        bundle = new Bundle();
-                        bundle.putString("query", "UPDATE " + "population" + " SET FIN_COEF='" + 0.0 + "'WHERE ID='" + myId + "'");
-                        message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                        message.setData(bundle);
-                        DbThread.getBackgroundHandler().sendMessage(message);
-
+                        dbManager.performQuery("UPDATE " + "population" + " SET JOB='" + job + "'WHERE ID='" + myId + "'");
+                        dbManager.performQuery("UPDATE " + "population" + " SET SALARY='" + salary + "'WHERE ID='" + myId + "'");
+                        dbManager.performQuery("UPDATE " + "population" + " SET FIN_COEF='" + 0.0 + "'WHERE ID='" + myId + "'");
                         allSettings.edit().putInt("CURRENT_PERS_SALARY", salary).apply();
                         allSettings.edit().putInt("CURRENT_PERS_JOB", job).apply();
                         personSalary.setText(printSalary(allSettings));

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,15 +30,16 @@ public class SellTechnology extends AppCompatActivity {
     private AlertDialog dialogSellTec;
     private SharedPreferences allSettings;
     private DateAndMoney dateAndMoney;
-    private Handler handler;
-    private Message message;
+    private DbManager dbManager;
+//    private Handler handler;
+//    private Message message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sell_technology);
 
-        handler = new Handler();
+        dbManager = new DbManager();
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         sellTecInfo = findViewById(R.id.sellTecInfo);
         learnedTecList = findViewById(R.id.learnedTecList);
@@ -71,9 +70,7 @@ public class SellTechnology extends AppCompatActivity {
                     }
                 }
 
-                message = handler.obtainMessage(DbThread.LOAD_TECH_DATA);
-                DbThread.getBackgroundHandler().sendMessage(message);
-
+                dbManager.loadData(DbManager.WhatData.tech);
 
                 listener = new DbThread.DbListener() {
                     @Override
@@ -117,8 +114,7 @@ public class SellTechnology extends AppCompatActivity {
         soldTechnologies = allSettings.getString("SOLD_TECHNOLOGIES", "").split(",");
         learnedTechs = new ArrayList<>();
 
-        message = handler.obtainMessage(DbThread.LOAD_TECH_DATA);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        dbManager.loadData(DbManager.WhatData.tech);
 
         listener = new DbThread.DbListener() {
             @Override

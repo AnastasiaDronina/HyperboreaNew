@@ -4,8 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -29,18 +27,16 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
     private SharedPreferences allSettings;
     private DateAndMoney dateAndMoney;
     private double coef;
-    private Handler handler;
-    private Message message;
     private DbThread.DbListener listener;
+    private DbManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finances);
 
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.SET_COEF_IN_FINANCES_ACTIVITY);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        dbManager = new DbManager();
+        dbManager.setCoefInFinances();
 
         listener = new DbThread.DbListener() {
             @Override

@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +27,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
 
     private ArrayList<Tecnology> tecs, tecnologies;
     private TecAdapter tecAdapter;
-    RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.LayoutManager layoutManager;
     private ArrayList<Person> scientists;
     private RecyclerView tecnologiesList, lvChangeScientist;
     private AlertDialog dialogLearnTec, dialogAboutTec, dialogChangeScientist, dialogStopLearning;
@@ -40,8 +38,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
     private ArrayList<Person> population;
     private DateAndMoney dateAndMoney;
     private ImageButton btnToPeople;
-    private Handler handler;
-    private Message message;
+    private DbManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +47,11 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
 
         population = new ArrayList<>();
 
-        handler = new Handler();
+        dbManager = new DbManager();
         dialogStopLearning = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogStopLearning.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         tvForDialodStopLearning = new TextView(getApplicationContext());
-        tvForDialodStopLearning.setText("Изучение текущей технологии будет остановлено, " +
-                "закрепленный ученый будет сброшен, " +
-                "но прогресс не будет сохранен. " +
-                "То есть если Вы решите изучать эту технологию, нужно будет начать сначала. ");
+        tvForDialodStopLearning.setText(R.string.stop_learning_tech);
         dateAndMoney = new DateAndMoney();
         dialogLearnTec = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogLearnTec.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
@@ -178,8 +172,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
             case R.id.changeScientist:
                 if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() == 0) {
                     scientists = new ArrayList<>();
-                    message = handler.obtainMessage(DbThread.LOAD_POPULATION_DATA);
-                    DbThread.getBackgroundHandler().sendMessage(message);
+                    dbManager.loadData(DbManager.WhatData.population);
                     listener = new DbThread.DbListener() {
                         @Override
                         public void onDataLoaded(Bundle bundle) {
@@ -455,8 +448,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
                     + allSettings.getString("SCIENTIST_IN_USE_NAME", ""));
         } else pinnedScientist.setText("Для изучения закреплен ученый: Не выбрано");
         tecs = new ArrayList<>();
-        message = handler.obtainMessage(DbThread.LOAD_TECH_DATA);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        dbManager.loadData(DbManager.WhatData.tech);
         listener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {

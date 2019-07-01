@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,14 +26,14 @@ public class Agriculture extends AppCompatActivity {
     private SharedPreferences allSettings;
     private DateAndMoney dateAndMoney;
     private TextView date, moneyR, moneyD;
-    private Handler handler;
-    private Message message;
+    private DbManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agriculture);
 
+        dbManager = new DbManager();
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         dateAndMoney = new DateAndMoney();
         date = findViewById(R.id.date);
@@ -55,9 +53,7 @@ public class Agriculture extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.LOAD_FARMS_DATA);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        dbManager.loadData(DbManager.WhatData.farms);
 
         listener = new DbThread.DbListener() {
             @Override

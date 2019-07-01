@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -31,15 +29,14 @@ public class Market extends AppCompatActivity {
     private AlertDialog dialogBuyItem;
     private TextView tvForDialogBuyItem, date, moneyR, moneyD;
     private DbThread.DbListener listener;
-    private Handler handler;
-    private Message message;
-    private Bundle bundle;
+    private DbManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_market);
 
+        dbManager = new DbManager();
         lvMarket = findViewById(R.id.lvMarket);
         allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         dialogBuyItem = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
@@ -52,7 +49,6 @@ public class Market extends AppCompatActivity {
 
         dialogBuyItem.setTitle("Купить товар? ");
         dialogBuyItem.setView(tvForDialogBuyItem);
-        handler = new Handler();
 
 
         dialogBuyItem.setButton(DialogInterface.BUTTON_POSITIVE, "Купить", new DialogInterface.OnClickListener() {
@@ -68,28 +64,16 @@ public class Market extends AppCompatActivity {
                     allSettings.edit().putLong("MONEY_DOLLARS", moneyDollars - price).apply();
                 }
 
-                Handler innerHandler = new Handler();
-                Bundle innerBundle = new Bundle();
-                innerBundle.putString("productName", allSettings.getString("CURRENT_ITEM_NAME", ""));
-                innerBundle.putString("productType", allSettings.getString("CURRENT_ITEM_TYPE", ""));
-                innerBundle.putInt("productAmount", allSettings.getInt("CURRENT_ITEM_AMOUNT", 0));
-                Message innerMessage = innerHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
-                innerMessage.setData(innerBundle);
-                DbThread.getBackgroundHandler().sendMessage(innerMessage);
-
+                dbManager.insertStockData(allSettings.getString("CURRENT_ITEM_NAME", ""),
+                        allSettings.getString("CURRENT_ITEM_TYPE", ""),
+                        allSettings.getInt("CURRENT_ITEM_AMOUNT", 0));
 
                 //delete from market
-                bundle = new Bundle();
-                bundle.putString("query", "delete from market where ITEM_ID='" + allSettings.getInt("CURRENT_ITEM_ID", 0) + "'");
-                handler = new Handler();
-                message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-                message.setData(bundle);
-                DbThread.getBackgroundHandler().sendMessage(message);
+                dbManager.performQuery("delete from market where ITEM_ID='" + allSettings.getInt("CURRENT_ITEM_ID", 0) + "'");
 
                 marketItems = new ArrayList<>();
+                dbManager.loadData(DbManager.WhatData.market);
 
-                message = handler.obtainMessage(DbThread.LOAD_MARKET_DATA);
-                DbThread.getBackgroundHandler().sendMessage(message);
                 listener = new DbThread.DbListener() {
                     @Override
                     public void onDataLoaded(Bundle bundle) {
@@ -115,9 +99,8 @@ public class Market extends AppCompatActivity {
         super.onResume();
 
         marketItems = new ArrayList<>();
+        dbManager.loadData(DbManager.WhatData.market);
 
-        message = handler.obtainMessage(DbThread.LOAD_MARKET_DATA);
-        DbThread.getBackgroundHandler().sendMessage(message);
         listener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {

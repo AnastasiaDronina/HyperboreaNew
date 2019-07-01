@@ -3,8 +3,6 @@ package org.anastdronina.gyperborea;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,15 +33,16 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     private DateAndMoney dateAndMoney;
     private TextView date, moneyD, moneyR;
     private DbThread.DbListener listener;
-    private Handler handler;
-    private Message message;
+    private DbManager dbManager;
+//    private Handler handler;
+//    private Message message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock);
 
-        handler = new Handler();
+        dbManager = new DbManager();
         products = new ArrayList<>();
         stockListView = findViewById(R.id.stockListView);
         stockListView.setHasFixedSize(true);
@@ -69,8 +68,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     @Override
     protected void onResume() {
         super.onResume();
-        message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        dbManager.loadData(DbManager.WhatData.stock);
         listener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
@@ -97,8 +95,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
         if (text.equals("Не выбрано")) {
-            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
-            DbThread.getBackgroundHandler().sendMessage(message);
+            dbManager.loadData(DbManager.WhatData.stock);
             listener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
@@ -111,8 +108,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             DbThread.getInstance().addListener(listener);
         }
         if (text.equals("Еда")) {
-            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
-            DbThread.getBackgroundHandler().sendMessage(message);
+            dbManager.loadData(DbManager.WhatData.stock);
             listener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
@@ -131,8 +127,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             DbThread.getInstance().addListener(listener);
         }
         if (text.equals("Ресурсы")) {
-            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
-            DbThread.getBackgroundHandler().sendMessage(message);
+            dbManager.loadData(DbManager.WhatData.stock);
             listener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
@@ -151,8 +146,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             DbThread.getInstance().addListener(listener);
         }
         if (text.equals("Оборудование")) {
-            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
-            DbThread.getBackgroundHandler().sendMessage(message);
+            dbManager.loadData(DbManager.WhatData.stock);
             listener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
@@ -171,8 +165,7 @@ public class Stock extends AppCompatActivity implements AdapterView.OnItemSelect
             DbThread.getInstance().addListener(listener);
         }
         if (text.equals("Транспорт")) {
-            message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
-            DbThread.getBackgroundHandler().sendMessage(message);
+            dbManager.loadData(DbManager.WhatData.stock);
             listener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
