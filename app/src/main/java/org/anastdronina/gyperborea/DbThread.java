@@ -30,9 +30,7 @@ public class DbThread extends Thread {
     public static final int LOAD_MARKET_DATA = 5;
     public static final int PRINT_COEF_ASYNC = 6;
     public static final int SET_COEF_IN_FINANCES_ACTIVITY = 7;
-    public static final int GET_FIN_IDS = 8;
-    public static final int GET_FIN_COEFS = 9;
-    public static final int GET_FIN_MONTHS_WORKED = 10;
+    
     public static final int COUNT_INFO_FOR_NEXT_TURN = 11;
     public static final int CREATE_DATABASE = 12;
     public static final int INSERT_STOCK_DATA = 13;
@@ -213,51 +211,6 @@ public class DbThread extends Thread {
                         }
                         coef = Math.round(coef * 10.0) / 10.0;
                         bundle.putDouble("coef", coef);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
-                        break;
-                    case GET_FIN_IDS:
-                        res = db.rawQuery("select * from " + "population", null);
-                        ArrayList finIds = new ArrayList<Integer>();
-                        while (res.moveToNext()) {
-                            Integer finId = res.getInt(res.getColumnIndex("ID"));
-                            int job = Integer.parseInt(res.getString(res.getColumnIndex("JOB")));
-                            if (job == Person.FINANSIST) {
-                                finIds.add(finId);
-                            }
-                        }
-                        bundle.putIntegerArrayList("finIds", finIds);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
-                        break;
-                    case GET_FIN_COEFS:
-                        res = db.rawQuery("select * from " + "population", null);
-                        ArrayList<Double> finCoefs = new ArrayList<>();
-                        while (res.moveToNext()) {
-                            double finCoef = res.getDouble(res.getColumnIndex("FIN_COEF"));
-                            int job = Integer.parseInt(res.getString(res.getColumnIndex("JOB")));
-                            if (job == Person.FINANSIST) {
-                                finCoefs.add(finCoef);
-                            }
-                        }
-                        bundle.putSerializable("finCoefs", finCoefs);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
-                        break;
-                    case GET_FIN_MONTHS_WORKED:
-                        res = db.rawQuery("select * from " + "population", null);
-                        ArrayList finMonthsWorked = new ArrayList<Integer>();
-                        while (res.moveToNext()) {
-                            int monthsWorked = res.getInt(res.getColumnIndex("FIN_MONTHS_WORKED"));
-                            int job = Integer.parseInt(res.getString(res.getColumnIndex("JOB")));
-                            if (job == Person.FINANSIST) {
-                                finMonthsWorked.add(monthsWorked);
-                            }
-                        }
-                        bundle.putIntegerArrayList("finMonthsWorked", finMonthsWorked);
                         uiMessage = uiHandler.obtainMessage(1);
                         uiMessage.setData(bundle);
                         uiHandler.sendMessage(uiMessage);

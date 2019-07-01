@@ -68,24 +68,6 @@ public class DbManager {
         DbThread.getBackgroundHandler().sendMessage(message);
     }
 
-    public void getFinIds() {
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.GET_FIN_IDS);
-        DbThread.getBackgroundHandler().sendMessage(message);
-    }
-
-    public void getFinCoefs() {
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.GET_FIN_COEFS);
-        DbThread.getBackgroundHandler().sendMessage(message);
-    }
-
-    public void getFinMonthsWorked() {
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.GET_FIN_MONTHS_WORKED);
-        DbThread.getBackgroundHandler().sendMessage(message);
-    }
-
     public void countInfoForNextTurn() {
         handler = new Handler();
         message = handler.obtainMessage(DbThread.COUNT_INFO_FOR_NEXT_TURN);
