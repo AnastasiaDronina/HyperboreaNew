@@ -23,68 +23,80 @@ import java.util.List;
 
 import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
-public class Tecnologies extends AppCompatActivity implements View.OnClickListener {
-
-    private ArrayList<Tecnology> tecs, tecnologies;
-    private TecAdapter tecAdapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private ArrayList<Person> scientists;
-    private RecyclerView tecnologiesList, lvChangeScientist;
-    private AlertDialog dialogLearnTec, dialogAboutTec, dialogChangeScientist, dialogStopLearning;
-    private TextView learnTecView, aboutTecView, learningTecInfo, pinnedScientist, date, moneyR, moneyD, tvForDialodStopLearning;
-    private Button changeScientist, btnStopLearning;
-    private SharedPreferences allSettings;
-    private DbThread.DbListener listener;
-    private ArrayList<Person> population;
-    private DateAndMoney dateAndMoney;
+public class Technologies extends AppCompatActivity implements View.OnClickListener {
+    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView rvTechnologies;
+    private RecyclerView rvChangeScientist;
+    private AlertDialog dialogLearnTec;
+    private AlertDialog dialogAboutTec;
+    private AlertDialog dialogChangeScientist;
+    private AlertDialog dialogStopLearning;
+    private TextView tvLearnTech;
+    private TextView tvAboutTech;
+    private TextView tvLearningTechInfo;
+    private TextView tvPinnedScientist;
+    private TextView tvDate;
+    private TextView tvMoneyR;
+    private TextView tvMoneyD;
+    private TextView tvForDialodStopLearning;
+    private Button btnChangeScientist;
+    private Button btnStopLearning;
     private ImageButton btnToPeople;
-    private DbManager dbManager;
+    private ArrayList<Technology> mTechsList;
+    private ArrayList<Technology> mTechnologiesList;
+    private TechAdapter mTechAdapter;
+    private ArrayList<Person> mScientistsList;
+    private SharedPreferences mSettings;
+    private DbThread.DbListener mListener;
+    private ArrayList<Person> mPopulationList;
+    private DateAndMoney mDateAndMoney;
+    private DbManager mDbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tecnologies);
 
-        population = new ArrayList<>();
+        mPopulationList = new ArrayList<>();
 
-        dbManager = new DbManager();
+        mDbManager = new DbManager();
         dialogStopLearning = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogStopLearning.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         tvForDialodStopLearning = new TextView(getApplicationContext());
         tvForDialodStopLearning.setText(R.string.stop_learning_tech);
-        dateAndMoney = new DateAndMoney();
+        mDateAndMoney = new DateAndMoney();
         dialogLearnTec = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogLearnTec.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         dialogAboutTec = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogAboutTec.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         dialogChangeScientist = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogChangeScientist.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
-        learnTecView = new TextView(this);
-        aboutTecView = new TextView(this);
-        lvChangeScientist = new RecyclerView(this);
-        pinnedScientist = findViewById(R.id.pinnedScientist);
-        learningTecInfo = findViewById(R.id.sellTecInfo);
-        changeScientist = findViewById(R.id.changeScientist);
+        tvLearnTech = new TextView(this);
+        tvAboutTech = new TextView(this);
+        rvChangeScientist = new RecyclerView(this);
+        tvPinnedScientist = findViewById(R.id.pinnedScientist);
+        tvLearningTechInfo = findViewById(R.id.sellTecInfo);
+        btnChangeScientist = findViewById(R.id.changeScientist);
         btnStopLearning = findViewById(R.id.btnStopLearning);
-        date = findViewById(R.id.date);
-        moneyR = findViewById(R.id.moneyR);
-        moneyD = findViewById(R.id.moneyD);
+        tvDate = findViewById(R.id.date);
+        tvMoneyR = findViewById(R.id.moneyR);
+        tvMoneyD = findViewById(R.id.moneyD);
         btnToPeople = findViewById(R.id.btnToPeople);
         btnToPeople.setOnClickListener(this);
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
 
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+        tvDate.setText(mDateAndMoney.getDate(mSettings));
+        tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+        tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
 
-        tecnologiesList = findViewById(R.id.tecnologies_list);
+        rvTechnologies = findViewById(R.id.tecnologies_list);
 
         dialogLearnTec.setTitle(R.string.learn_tech);
-        dialogLearnTec.setView(learnTecView);
+        dialogLearnTec.setView(tvLearnTech);
         dialogAboutTec.setTitle(R.string.tech_info);
-        dialogAboutTec.setView(aboutTecView);
+        dialogAboutTec.setView(tvAboutTech);
         dialogChangeScientist.setTitle(R.string.choose_scientist);
-        dialogChangeScientist.setView(lvChangeScientist);
+        dialogChangeScientist.setView(rvChangeScientist);
         dialogStopLearning.setTitle(R.string.learning_will_be_stopped);
         dialogStopLearning.setView(tvForDialodStopLearning);
 
@@ -92,28 +104,27 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
         dialogLearnTec.setButton(DialogInterface.BUTTON_POSITIVE, "Начать изучение", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                int tecId = allSettings.getInt("CURRENT_TEC_ID", 0);
-                String tecName = allSettings.getString("CURRENT_TEC_NAME", "");
-                int tecMonths = allSettings.getInt("CURRENT_TEC_MONTHS", 0);
-                long tecPrice = allSettings.getLong("CURRENT_TEC_PRICE", 0);
-                allSettings.edit().putString("TEC_IS_BEEING_LEARNED", tecName).apply();
-                allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", tecId).apply();
-                allSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", tecMonths).apply();
-                allSettings.edit().putLong("TEC_PRICE", tecPrice).apply();
-                for (int i = 0; i < tecnologies.size(); i++) {
-                    if (tecnologies.get(i).getName().equals(tecName)) {
-                        tecnologies.remove(i);
+                int tecId = mSettings.getInt("CURRENT_TEC_ID", 0);
+                String tecName = mSettings.getString("CURRENT_TEC_NAME", "");
+                int tecMonths = mSettings.getInt("CURRENT_TEC_MONTHS", 0);
+                long tecPrice = mSettings.getLong("CURRENT_TEC_PRICE", 0);
+                mSettings.edit().putString("TEC_IS_BEEING_LEARNED", tecName).apply();
+                mSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", tecId).apply();
+                mSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", tecMonths).apply();
+                mSettings.edit().putLong("TEC_PRICE", tecPrice).apply();
+                for (int i = 0; i < mTechnologiesList.size(); i++) {
+                    if (mTechnologiesList.get(i).getName().equals(tecName)) {
+                        mTechnologiesList.remove(i);
                         break;
                     }
                 }
+                mTechAdapter = new TechAdapter(getApplicationContext(), R.layout.tecnologies_row, mTechnologiesList);
+                rvTechnologies.setHasFixedSize(true);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+                rvTechnologies.setLayoutManager(layoutManager);
+                rvTechnologies.setAdapter(mTechAdapter);
 
-                tecAdapter = new TecAdapter(getApplicationContext(), R.layout.tecnologies_row, tecnologies);
-                tecnologiesList.setHasFixedSize(true);
-                layoutManager = new LinearLayoutManager(getApplicationContext());
-                tecnologiesList.setLayoutManager(layoutManager);
-                tecnologiesList.setAdapter(tecAdapter);
-
-                learningTecInfo.setText("В процессе изучения технология: " + tecName
+                tvLearningTechInfo.setText("В процессе изучения технология: " + tecName
                         + " \nОсталось: " + tecMonths + " мес \nЦена продажи: " + tecPrice + " $");
             }
         });
@@ -127,23 +138,24 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
         dialogStopLearning.setButton(DialogInterface.BUTTON_POSITIVE, "Ок", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
-                allSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
-                allSettings.edit().putInt("SCIENTIST_IN_USE_ID", 0).apply();
-                allSettings.edit().putString("SCIENTIST_IN_USE_NAME", "").apply();
+                mSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
+                mSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
+                mSettings.edit().putInt("SCIENTIST_IN_USE_ID", 0).apply();
+                mSettings.edit().putString("SCIENTIST_IN_USE_NAME", "").apply();
                 printTechs();
-                learningTecInfo.setText("");
+                tvLearningTechInfo.setText("");
             }
         });
 
-        dialogStopLearning.setButton(DialogInterface.BUTTON_NEGATIVE, "Отмена", new DialogInterface.OnClickListener() {
+        dialogStopLearning.setButton(DialogInterface.BUTTON_NEGATIVE, "Отмена",
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
             }
         });
 
-        changeScientist.setOnClickListener(this);
+        btnChangeScientist.setOnClickListener(this);
         btnStopLearning.setOnClickListener(this);
 
     }
@@ -157,49 +169,50 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onStart() {
         super.onStart();
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        DbThread.getInstance().removeListener(listener);
+        DbThread.getInstance().removeListener(mListener);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.changeScientist:
-                if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() == 0) {
-                    scientists = new ArrayList<>();
-                    dbManager.loadData(DbManager.WhatData.population);
-                    listener = new DbThread.DbListener() {
+                if (mSettings.getString("TEC_IS_BEEING_LEARNED", "").length() == 0) {
+                    mScientistsList = new ArrayList<>();
+                    mDbManager.loadData(DbManager.WhatData.POPULATION);
+                    mListener = new DbThread.DbListener() {
                         @Override
                         public void onDataLoaded(Bundle bundle) {
-                            population = bundle.getParcelableArrayList("allPopulation");
-                            if (population != null) {
-                                for (int i = 0; i < population.size(); i++) {
-                                    if (population.get(i).getJob() == 6) {
-                                        scientists.add(population.get(i));
+                            mPopulationList = bundle.getParcelableArrayList("allPopulation");
+                            if (mPopulationList != null) {
+                                for (int i = 0; i < mPopulationList.size(); i++) {
+                                    if (mPopulationList.get(i).getJob() == 6) {
+                                        mScientistsList.add(mPopulationList.get(i));
 
                                     }
                                 }
-                                ScientistAdapter scientistAdapter = new ScientistAdapter(getApplicationContext(), R.layout.scientists_row, scientists);
-                                lvChangeScientist.setHasFixedSize(true);
-                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                                lvChangeScientist.setLayoutManager(layoutManager);
-                                lvChangeScientist.setAdapter(scientistAdapter);
+                                ScientistAdapter scientistAdapter
+                                        = new ScientistAdapter(getApplicationContext(), R.layout.scientists_row, mScientistsList);
+                                rvChangeScientist.setHasFixedSize(true);
+                                mLayoutManager = new LinearLayoutManager(getApplicationContext());
+                                rvChangeScientist.setLayoutManager(mLayoutManager);
+                                rvChangeScientist.setAdapter(scientistAdapter);
                                 dialogChangeScientist.show();
                             }
                         }
                     };
-                    DbThread.getInstance().addListener(listener);
+                    DbThread.getInstance().addListener(mListener);
                 } else
                     Toast.makeText(getApplicationContext(), R.string.cant_change_scientist, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnStopLearning:
-                if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0
-                        || allSettings.getString("SCIENTIST_IN_USE_NAME", "").length() > 0) {
+                if (mSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0
+                        || mSettings.getString("SCIENTIST_IN_USE_NAME", "").length() > 0) {
                     dialogStopLearning.show();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.nothing_to_stop, Toast.LENGTH_SHORT).show();
@@ -219,7 +232,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
         private final TextView tecMonths;
         private final TextView tecPrice;
 
-        private Tecnology tech;
+        private Technology tech;
         private Context context;
 
         public TecHolder(Context context, View itemView) {
@@ -233,7 +246,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
             itemView.setOnClickListener(this);
         }
 
-        public void bindTech(Tecnology tech) {
+        public void bindTech(Technology tech) {
             this.tech = tech;
             tecName.setText(tech.getName());
             tecMonths.setText(tech.getMonthsToLearn() + " мес");
@@ -242,39 +255,40 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
 
         @Override
         public void onClick(View v) {
-            if (allSettings.getInt("SCIENTIST_IN_USE_ID", 0) == 0) {
-                Toast.makeText(getApplicationContext(), R.string.choose_scientist_first, Toast.LENGTH_SHORT).show();
+            if (mSettings.getInt("SCIENTIST_IN_USE_ID", 0) == 0) {
+                Toast.makeText(getApplicationContext(), R.string.choose_scientist_first,
+                        Toast.LENGTH_SHORT).show();
             } else {
-                allSettings.edit().putInt("CURRENT_TEC_ID", tech.getId()).apply();
-                allSettings.edit().putString("CURRENT_TEC_NAME", tech.getName()).apply();
-                allSettings.edit().putString("CURRENT_TEC_DESCRIPTION", tech.getDescription()).apply();
-                allSettings.edit().putInt("CURRENT_TEC_MONTHS", tech.getMonthsToLearn()).apply();
-                allSettings.edit().putLong("CURRENT_TEC_PRICE", tech.getPrice()).apply();
-                allSettings.edit().putBoolean("CURRENT_TEC_ISLEARNED", tech.isLearned()).apply();
+                mSettings.edit().putInt("CURRENT_TEC_ID", tech.getId()).apply();
+                mSettings.edit().putString("CURRENT_TEC_NAME", tech.getName()).apply();
+                mSettings.edit().putString("CURRENT_TEC_DESCRIPTION", tech.getDescription()).apply();
+                mSettings.edit().putInt("CURRENT_TEC_MONTHS", tech.getMonthsToLearn()).apply();
+                mSettings.edit().putLong("CURRENT_TEC_PRICE", tech.getPrice()).apply();
+                mSettings.edit().putBoolean("CURRENT_TEC_ISLEARNED", tech.isLearned()).apply();
 
-                if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() == 0) {
-                    learnTecView.setText("\n" + allSettings.getString("CURRENT_TEC_NAME", "").toUpperCase() + "\n\nОписание: \n"
-                            + allSettings.getString("CURRENT_TEC_DESCRIPTION", "") + "\n\nДля изучения необходимо: "
-                            + allSettings.getInt("CURRENT_TEC_MONTHS", 0) + " мес. \n\nЦена продажи: "
-                            + allSettings.getLong("CURRENT_TEC_PRICE", 0) + " $");
+                if (mSettings.getString("TEC_IS_BEEING_LEARNED", "").length() == 0) {
+                    tvLearnTech.setText("\n" + mSettings.getString("CURRENT_TEC_NAME", "").toUpperCase()
+                            + "\n\nОписание: \n" + mSettings.getString("CURRENT_TEC_DESCRIPTION", "")
+                            + "\n\nДля изучения необходимо: " + mSettings.getInt("CURRENT_TEC_MONTHS", 0)
+                            + " мес. \n\nЦена продажи: " + mSettings.getLong("CURRENT_TEC_PRICE", 0) + " $");
                     dialogLearnTec.show();
                 } else {
-                    aboutTecView.setText("\n" + allSettings.getString("CURRENT_TEC_NAME", "").toUpperCase() + "\n\nОписание: \n"
-                            + allSettings.getString("CURRENT_TEC_DESCRIPTION", "") + "\n\nДля изучения необходимо: "
-                            + allSettings.getInt("CURRENT_TEC_MONTHS", 0) + " мес. \n\nЦена продажи: "
-                            + allSettings.getLong("CURRENT_TEC_PRICE", 0) + " $");
+                    tvAboutTech.setText("\n" + mSettings.getString("CURRENT_TEC_NAME", "").toUpperCase()
+                            + "\n\nОписание: \n" + mSettings.getString("CURRENT_TEC_DESCRIPTION", "")
+                            + "\n\nДля изучения необходимо: " + mSettings.getInt("CURRENT_TEC_MONTHS", 0)
+                            + " мес. \n\nЦена продажи: " + mSettings.getLong("CURRENT_TEC_PRICE", 0) + " $");
                     dialogAboutTec.show();
                 }
             }
         }
     }
 
-    public class TecAdapter extends RecyclerView.Adapter<TecHolder> {
-        private final List<Tecnology> techs;
+    public class TechAdapter extends RecyclerView.Adapter<TecHolder> {
+        private final List<Technology> techs;
         private Context context;
         private int itemResource;
 
-        TecAdapter(Context context, int itemResourse, List<Tecnology> techs) {
+        TechAdapter(Context context, int itemResourse, List<Technology> techs) {
             this.context = context;
             this.techs = techs;
             this.itemResource = itemResourse;
@@ -290,7 +304,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
 
         @Override
         public void onBindViewHolder(@NonNull TecHolder holder, int position) {
-            Tecnology tech = this.techs.get(position);
+            Technology tech = this.techs.get(position);
             holder.bindTech(tech);
         }
 
@@ -326,10 +340,10 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
 
         @Override
         public void onClick(View v) {
-            allSettings.edit().putInt("SCIENTIST_IN_USE_ID", scientist.getId()).apply();
-            allSettings.edit().putString("SCIENTIST_IN_USE_NAME", scientist.getName() + " " + scientist.getSurname()).apply();
-            pinnedScientist.setText("Для изучения закреплен ученый: "
-                    + allSettings.getString("SCIENTIST_IN_USE_NAME", ""));
+            mSettings.edit().putInt("SCIENTIST_IN_USE_ID", scientist.getId()).apply();
+            mSettings.edit().putString("SCIENTIST_IN_USE_NAME", scientist.getName() + " " + scientist.getSurname()).apply();
+            tvPinnedScientist.setText("Для изучения закреплен ученый: "
+                    + mSettings.getString("SCIENTIST_IN_USE_NAME", ""));
             dialogChangeScientist.dismiss();
         }
     }
@@ -365,7 +379,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
         }
     }
 
-    public ArrayList<Tecnology> changeTecnologiesList(ArrayList<Tecnology> tecnologies) {
+    public ArrayList<Technology> changeTecnologiesList(ArrayList<Technology> tecnologies) {
         boolean tec1IsLearned = false, tec2IsLearned = false, tec3IsLearned = false, tec4IsLearned = false, tec5IsLearned = false;
 
         int i;
@@ -428,7 +442,7 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
         }
 
         for (i = 0; i < tecnologies.size(); i++) {
-            if (tecnologies.get(i).getName().equals(allSettings.getString("TEC_IS_BEEING_LEARNED", ""))) {
+            if (tecnologies.get(i).getName().equals(mSettings.getString("TEC_IS_BEEING_LEARNED", ""))) {
                 tecnologies.remove(i);
             }
         }
@@ -442,33 +456,33 @@ public class Tecnologies extends AppCompatActivity implements View.OnClickListen
     }
 
     public void printTechs() {
-        int sciId = allSettings.getInt("SCIENTIST_IN_USE_ID", -1);
+        int sciId = mSettings.getInt("SCIENTIST_IN_USE_ID", -1);
         if (sciId != -1) {
-            pinnedScientist.setText("Для изучения закреплен ученый: "
-                    + allSettings.getString("SCIENTIST_IN_USE_NAME", ""));
-        } else pinnedScientist.setText("Для изучения закреплен ученый: Не выбрано");
-        tecs = new ArrayList<>();
-        dbManager.loadData(DbManager.WhatData.tech);
-        listener = new DbThread.DbListener() {
+            tvPinnedScientist.setText("Для изучения закреплен ученый: "
+                    + mSettings.getString("SCIENTIST_IN_USE_NAME", ""));
+        } else tvPinnedScientist.setText("Для изучения закреплен ученый: Не выбрано");
+        mTechsList = new ArrayList<>();
+        mDbManager.loadData(DbManager.WhatData.TECH);
+        mListener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
-                tecs = bundle.getParcelableArrayList("techs");
-                tecnologies = changeTecnologiesList(tecs);
-                if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0) {
-                    String tecInLearning = allSettings.getString("TEC_IS_BEEING_LEARNED", "");
-                    int monthsLeftToLearn = allSettings.getInt("MONTHS_LEFT_TO_LEARN", 0);
-                    long price = allSettings.getLong("TEC_PRICE", 0);
-                    learningTecInfo.setText("В процессе изучения технология: " + tecInLearning
+                mTechsList = bundle.getParcelableArrayList("techs");
+                mTechnologiesList = changeTecnologiesList(mTechsList);
+                if (mSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0) {
+                    String tecInLearning = mSettings.getString("TEC_IS_BEEING_LEARNED", "");
+                    int monthsLeftToLearn = mSettings.getInt("MONTHS_LEFT_TO_LEARN", 0);
+                    long price = mSettings.getLong("TEC_PRICE", 0);
+                    tvLearningTechInfo.setText("В процессе изучения технология: " + tecInLearning
                             + " \nОсталось: " + monthsLeftToLearn + " мес \nЦена продажи: " + price + " $");
                 }
-                tecAdapter = new TecAdapter(getApplicationContext(), R.layout.tecnologies_row, tecnologies);
-                tecnologiesList.setHasFixedSize(true);
-                layoutManager = new LinearLayoutManager(getApplicationContext());
-                tecnologiesList.setLayoutManager(layoutManager);
-                tecnologiesList.setAdapter(tecAdapter);
+                mTechAdapter = new TechAdapter(getApplicationContext(), R.layout.tecnologies_row, mTechnologiesList);
+                rvTechnologies.setHasFixedSize(true);
+                mLayoutManager = new LinearLayoutManager(getApplicationContext());
+                rvTechnologies.setLayoutManager(mLayoutManager);
+                rvTechnologies.setAdapter(mTechAdapter);
 
             }
         };
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
     }
 }

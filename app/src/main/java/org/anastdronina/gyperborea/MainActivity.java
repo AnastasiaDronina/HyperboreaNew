@@ -12,13 +12,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button startNewGame = findViewById(R.id.startNewGame);
-        Button aboutGame = findViewById(R.id.aboutGame);
-        Button gameSettings = findViewById(R.id.gameSettings);
+        Button btnDtartNewGame = findViewById(R.id.startNewGame);
+        Button btnAboutGame = findViewById(R.id.aboutGame);
+        Button btnGameSettings = findViewById(R.id.gameSettings);
 
-        startNewGame.setOnClickListener(this);
-        aboutGame.setOnClickListener(this);
-        gameSettings.setOnClickListener(this);
+        btnDtartNewGame.setOnClickListener(this);
+        btnAboutGame.setOnClickListener(this);
+        btnGameSettings.setOnClickListener(this);
     }
 
     @Override

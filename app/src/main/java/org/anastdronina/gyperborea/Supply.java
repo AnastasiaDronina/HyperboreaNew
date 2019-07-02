@@ -13,10 +13,16 @@ import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
 public class Supply extends AppCompatActivity implements View.OnClickListener {
 
-    private Button btnStock, btnAgriculture, btnMarket, btnNutrition, btnDelivery;
-    private TextView date, moneyD, moneyR;
-    private SharedPreferences allSettings;
-    private DateAndMoney dateAndMoney;
+    private Button btnStock;
+    private Button btnAgriculture;
+    private Button btnMarket;
+    private Button btnNutrition;
+    private Button btnDelivery;
+    private TextView tvDate;
+    private TextView tvMoneyD;
+    private TextView tvMoneyR;
+    private SharedPreferences mSettings;
+    private DateAndMoney mDateAndMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +34,11 @@ public class Supply extends AppCompatActivity implements View.OnClickListener {
         btnMarket = findViewById(R.id.btnMarket);
         btnNutrition = findViewById(R.id.btnNutrition);
         btnDelivery = findViewById(R.id.btnDelivery);
-        date = findViewById(R.id.date);
-        moneyD = findViewById(R.id.moneyD);
-        moneyR = findViewById(R.id.moneyR);
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
-        dateAndMoney = new DateAndMoney();
+        tvDate = findViewById(R.id.date);
+        tvMoneyD = findViewById(R.id.moneyD);
+        tvMoneyR = findViewById(R.id.moneyR);
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        mDateAndMoney = new DateAndMoney();
 
         btnStock.setOnClickListener(this);
         btnAgriculture.setOnClickListener(this);
@@ -44,9 +50,9 @@ public class Supply extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+        tvDate.setText(mDateAndMoney.getDate(mSettings));
+        tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+        tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
     }
 
     @Override

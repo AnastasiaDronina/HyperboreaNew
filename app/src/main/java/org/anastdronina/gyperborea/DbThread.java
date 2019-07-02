@@ -14,13 +14,13 @@ import java.util.Arrays;
 
 public class DbThread extends Thread {
 
-    private static DbThread mInstance;
-    private static DbListener dbListener;
-    private static SQLiteDatabase db;
-    private static Handler backgroundHandler;
-    private static Message uiMessage;
-    private static Bundle bundle;
-    private static ContentValues contentValues;
+    private static DbThread sInstance;
+    private static DbListener sListener;
+    private static SQLiteDatabase sDb;
+    private static Handler sBackgoundHandler;
+    private static Message sUiMessage;
+    private static Bundle sBundle;
+    private static ContentValues sContentValues;
 
     public static final int PERFORM_SQL_QUERY = 0;
     public static final int LOAD_POPULATION_DATA = 1;
@@ -30,7 +30,7 @@ public class DbThread extends Thread {
     public static final int LOAD_MARKET_DATA = 5;
     public static final int PRINT_COEF_ASYNC = 6;
     public static final int SET_COEF_IN_FINANCES_ACTIVITY = 7;
-    
+
     public static final int COUNT_INFO_FOR_NEXT_TURN = 11;
     public static final int CREATE_DATABASE = 12;
     public static final int INSERT_STOCK_DATA = 13;
@@ -43,14 +43,14 @@ public class DbThread extends Thread {
     }
 
     public static void init(Context context) {
-        if (mInstance == null) {
-            mInstance = new DbThread(context);
-            mInstance.start();
+        if (sInstance == null) {
+            sInstance = new DbThread(context);
+            sInstance.start();
         }
     }
 
     public static DbThread getInstance() {
-        return mInstance;
+        return sInstance;
     }
 
     public interface DbListener {
@@ -58,38 +58,38 @@ public class DbThread extends Thread {
     }
 
     public void addListener(DbListener listener) {
-        this.dbListener = listener;
+        this.sListener = listener;
     }
 
     public void removeListener(DbListener listener) {
-        dbListener = null;
+        sListener = null;
     }
 
     public static Handler getBackgroundHandler() {
-        return backgroundHandler;
+        return sBackgoundHandler;
     }
 
     @Override
     public void run() {
         super.run();
         Looper.prepare();
-        db = Hyperborea.getAppContext().openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
+        sDb = Hyperborea.getAppContext().openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
 
-        backgroundHandler = new Handler() {
+        sBackgoundHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
-                db = Hyperborea.getAppContext().openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
+                sDb = Hyperborea.getAppContext().openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
                 Cursor res;
-                bundle = new Bundle();
+                sBundle = new Bundle();
 
                 switch (msg.what) {
                     case PERFORM_SQL_QUERY:
-                        db.execSQL(msg.getData().getString("query"));
+                        sDb.execSQL(msg.getData().getString("query"));
                         break;
                     case LOAD_POPULATION_DATA:
-                        res = db.rawQuery("select * from " + "population", null);
+                        res = sDb.rawQuery("select * from " + "population", null);
                         ArrayList<Person> allPopulation = new ArrayList<>();
                         while (res.moveToNext()) {
                             int id = Integer.parseInt(res.getString(res.getColumnIndex("ID")));
@@ -113,14 +113,15 @@ public class DbThread extends Thread {
                             allPopulation.add(new Person(id, name, surname, job, salary, age, building, manufacture, farm, athletic, learning, talking, strength, art,
                                     new ArrayList<>(Arrays.asList(trait1, trait2, trait3))));
                         }
-                        bundle.putParcelableArrayList("allPopulation", allPopulation);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
+                        res.close();
+                        sBundle.putParcelableArrayList("allPopulation", allPopulation);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        sUiMessage.setData(sBundle);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case LOAD_TECH_DATA:
-                        res = db.rawQuery("select * from " + "tecnologies", null);
-                        ArrayList<Tecnology> techs = new ArrayList<>();
+                        res = sDb.rawQuery("select * from " + "tecnologies", null);
+                        ArrayList<Technology> techs = new ArrayList<>();
                         while (res.moveToNext()) {
                             int id = res.getInt(res.getColumnIndex("TEC_ID"));
                             String name = res.getString(res.getColumnIndex("TEC_NAME"));
@@ -132,15 +133,16 @@ public class DbThread extends Thread {
                             if (isLearnedInt == 1) {
                                 isLearned = true;
                             }
-                            techs.add(new Tecnology(id, name, description, monthsToLearn, price, isLearned));
+                            techs.add(new Technology(id, name, description, monthsToLearn, price, isLearned));
                         }
-                        bundle.putParcelableArrayList("techs", techs);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
+                        res.close();
+                        sBundle.putParcelableArrayList("techs", techs);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        sUiMessage.setData(sBundle);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case LOAD_STOCK_DATA:
-                        res = db.rawQuery("select * from " + "stock", null);
+                        res = sDb.rawQuery("select * from " + "stock", null);
                         ArrayList<Product> products = new ArrayList<>();
                         while (res.moveToNext()) {
                             int id = res.getInt(res.getColumnIndex("PRODUCT_ID"));
@@ -149,13 +151,14 @@ public class DbThread extends Thread {
                             int amount = res.getInt(res.getColumnIndex("PRODUCT_AMOUNT"));
                             products.add(new Product(id, name, type, amount));
                         }
-                        bundle.putParcelableArrayList("products", products);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
+                        res.close();
+                        sBundle.putParcelableArrayList("products", products);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        sUiMessage.setData(sBundle);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case LOAD_FARMS_DATA:
-                        res = db.rawQuery("select * from " + "farms", null);
+                        res = sDb.rawQuery("select * from " + "farms", null);
                         ArrayList<Farm> farms = new ArrayList<>();
                         while (res.moveToNext()) {
                             int id = Integer.parseInt(res.getString(res.getColumnIndex("FARM_ID")));
@@ -165,13 +168,14 @@ public class DbThread extends Thread {
                             int farmerId = Integer.parseInt(res.getString(res.getColumnIndex("FARM_FARMER_ID")));
                             farms.add(new Farm(id, name, crop, status, farmerId));
                         }
-                        bundle.putParcelableArrayList("farms", farms);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
+                        res.close();
+                        sBundle.putParcelableArrayList("farms", farms);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        sUiMessage.setData(sBundle);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case LOAD_MARKET_DATA:
-                        res = db.rawQuery("select * from " + "market", null);
+                        res = sDb.rawQuery("select * from " + "market", null);
                         ArrayList<MarketItem> marketItems = new ArrayList<>();
                         while (res.moveToNext()) {
                             int id = res.getInt(res.getColumnIndex("ITEM_ID"));
@@ -182,13 +186,14 @@ public class DbThread extends Thread {
                             String type = res.getString(res.getColumnIndex("ITEM_TYPE"));
                             marketItems.add(new MarketItem(id, name, amount, price, currency, type));
                         }
-                        bundle.putParcelableArrayList("marketItems", marketItems);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
+                        res.close();
+                        sBundle.putParcelableArrayList("marketItems", marketItems);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        sUiMessage.setData(sBundle);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case PRINT_COEF_ASYNC:
-                        res = db.rawQuery("select * from " + "population", null);
+                        res = sDb.rawQuery("select * from " + "population", null);
                         String printCoef = "";
                         while (res.moveToNext()) {
                             int id = Integer.parseInt(res.getString(res.getColumnIndex("ID")));
@@ -197,26 +202,28 @@ public class DbThread extends Thread {
                                 printCoef = "\nКОЭФФИЦИЕНТ УЛУЧШЕНИЯ ФИНАНСОВ: " + finCoef;
                             }
                         }
-                        bundle.putString("printCoef", printCoef);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
+                        res.close();
+                        sBundle.putString("printCoef", printCoef);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        sUiMessage.setData(sBundle);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case SET_COEF_IN_FINANCES_ACTIVITY:
-                        res = db.rawQuery("select * from " + "population", null);
+                        res = sDb.rawQuery("select * from " + "population", null);
                         Double coef = 0.0;
                         while (res.moveToNext()) {
                             double finCoef = res.getDouble(res.getColumnIndex("FIN_COEF"));
                             coef += finCoef;
                         }
+                        res.close();
                         coef = Math.round(coef * 10.0) / 10.0;
-                        bundle.putDouble("coef", coef);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
+                        sBundle.putDouble("coef", coef);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        sUiMessage.setData(sBundle);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case COUNT_INFO_FOR_NEXT_TURN:
-                        res = db.rawQuery("select * from " + "population", null);
+                        res = sDb.rawQuery("select * from " + "population", null);
                         long salaries = 0;
                         ArrayList<Integer> financeIds = new ArrayList<>();
                         ArrayList<Double> financeCoefs = new ArrayList<>();
@@ -236,12 +243,13 @@ public class DbThread extends Thread {
                                 financeMonthsWorked.add(monthsWorked);
                             }
                         }
-                        bundle.putLong("salaries", salaries);
-                        bundle.putIntegerArrayList("financeIds", financeIds);
-                        bundle.putSerializable("financeCoefs", financeCoefs);
-                        bundle.putIntegerArrayList("financeMonthsWorked", financeMonthsWorked);
+                        res.close();
+                        sBundle.putLong("salaries", salaries);
+                        sBundle.putIntegerArrayList("financeIds", financeIds);
+                        sBundle.putSerializable("financeCoefs", financeCoefs);
+                        sBundle.putIntegerArrayList("financeMonthsWorked", financeMonthsWorked);
 
-                        res = db.rawQuery("select * from " + "farms", null);
+                        res = sDb.rawQuery("select * from " + "farms", null);
                         while (res.moveToNext()) {
                             int id = Integer.parseInt(res.getString(res.getColumnIndex("FARM_ID")));
                             String name = res.getString(res.getColumnIndex("FARM_NAME"));
@@ -250,82 +258,82 @@ public class DbThread extends Thread {
                             int farmerId = Integer.parseInt(res.getString(res.getColumnIndex("FARM_FARMER_ID")));
                             farmss.add(new Farm(id, name, crop, status, farmerId));
                         }
-
-                        bundle.putParcelableArrayList("farms", farmss);
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiMessage.setData(bundle);
-                        uiHandler.sendMessage(uiMessage);
+                        res.close();
+                        sBundle.putParcelableArrayList("farms", farmss);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        sUiMessage.setData(sBundle);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case CREATE_DATABASE:
-                        db.execSQL("create table " + "population" + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, " +
+                        sDb.execSQL("create table " + "population" + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, " +
                                 "JOB INTEGER, SALARY INTEGER, AGE INTEGER, BUILDING INTEGER, MANUFACTURE INTEGER, FARM INTEGER, " +
                                 "ATHLETIC INTEGER, LEARNING INTEGER, TALKING INTEGER, STRENGTH INTEGER, ART INTEGER, TRAIT1 TEXT, " +
                                 "TRAIT2 TEXT, TRAIT3 TEXT, FIN_MONTHS_WORKED INTEGER, FIN_COEF REAL)");
-                        db.execSQL("create table " + "tecnologies" + " (TEC_ID INTEGER PRIMARY KEY AUTOINCREMENT, TEC_NAME TEXT, TEC_DESCRIPTION TEXT, " +
+                        sDb.execSQL("create table " + "tecnologies" + " (TEC_ID INTEGER PRIMARY KEY AUTOINCREMENT, TEC_NAME TEXT, TEC_DESCRIPTION TEXT, " +
                                 "TEC_MONTHS_TO_LEARN INTEGER, TEC_PRICE INTEGER, TEC_IS_LEARNED INTEGER)");
-                        db.execSQL("create table " + "stock" + " (PRODUCT_ID INTEGER PRIMARY KEY AUTOINCREMENT, PRODUCT_NAME TEXT, " +
+                        sDb.execSQL("create table " + "stock" + " (PRODUCT_ID INTEGER PRIMARY KEY AUTOINCREMENT, PRODUCT_NAME TEXT, " +
                                 "PRODUCT_TYPE TEXT, PRODUCT_AMOUNT INTEGER)");
-                        db.execSQL("create table " + "farms" + " (FARM_ID INTEGER PRIMARY KEY AUTOINCREMENT, FARM_NAME TEXT, " +
+                        sDb.execSQL("create table " + "farms" + " (FARM_ID INTEGER PRIMARY KEY AUTOINCREMENT, FARM_NAME TEXT, " +
                                 "FARM_CROP TEXT, FARM_STATUS INTEGER, FARM_FARMER_ID INTEGER)");
-                        db.execSQL("create table " + "market" + " (ITEM_ID INTEGER PRIMARY KEY AUTOINCREMENT, ITEM_NAME TEXT, " +
+                        sDb.execSQL("create table " + "market" + " (ITEM_ID INTEGER PRIMARY KEY AUTOINCREMENT, ITEM_NAME TEXT, " +
                                 "ITEM_AMOUNT INTEGER, ITEM_PRICE INTEGER, ITEM_CURRENCY TEXT, ITEM_TYPE TEXT)");
-                        uiMessage = uiHandler.obtainMessage(1);
-                        uiHandler.sendMessage(uiMessage);
+                        sUiMessage = uiHandler.obtainMessage(1);
+                        uiHandler.sendMessage(sUiMessage);
                         break;
                     case INSERT_STOCK_DATA:
-                        contentValues = new ContentValues();
-                        contentValues.put("PRODUCT_NAME", msg.getData().getString("productName"));
-                        contentValues.put("PRODUCT_TYPE", msg.getData().getString("productType"));
-                        contentValues.put("PRODUCT_AMOUNT", msg.getData().getInt("productAmount"));
-                        db.insert("stock", null, contentValues);
+                        sContentValues = new ContentValues();
+                        sContentValues.put("PRODUCT_NAME", msg.getData().getString("productName"));
+                        sContentValues.put("PRODUCT_TYPE", msg.getData().getString("productType"));
+                        sContentValues.put("PRODUCT_AMOUNT", msg.getData().getInt("productAmount"));
+                        sDb.insert("stock", null, sContentValues);
                         break;
                     case INSERT_POPULATION_DATA:
-                        contentValues = new ContentValues();
-                        contentValues.put("NAME", msg.getData().getStringArrayList("stringValues").get(0));
-                        contentValues.put("SURNAME", msg.getData().getStringArrayList("stringValues").get(1));
-                        contentValues.put("JOB", msg.getData().getIntegerArrayList("intValues").get(0));
-                        contentValues.put("SALARY", msg.getData().getIntegerArrayList("intValues").get(1));
-                        contentValues.put("AGE", msg.getData().getIntegerArrayList("intValues").get(2));
-                        contentValues.put("BUILDING", msg.getData().getIntegerArrayList("intValues").get(3));
-                        contentValues.put("MANUFACTURE", msg.getData().getIntegerArrayList("intValues").get(4));
-                        contentValues.put("FARM", msg.getData().getIntegerArrayList("intValues").get(5));
-                        contentValues.put("ATHLETIC", msg.getData().getIntegerArrayList("intValues").get(6));
-                        contentValues.put("LEARNING", msg.getData().getIntegerArrayList("intValues").get(7));
-                        contentValues.put("TALKING", msg.getData().getIntegerArrayList("intValues").get(8));
-                        contentValues.put("STRENGTH", msg.getData().getIntegerArrayList("intValues").get(9));
-                        contentValues.put("ART", msg.getData().getIntegerArrayList("intValues").get(10));
-                        contentValues.put("TRAIT1", msg.getData().getStringArrayList("stringValues").get(2));
-                        contentValues.put("TRAIT2", msg.getData().getStringArrayList("stringValues").get(3));
-                        contentValues.put("TRAIT3", msg.getData().getStringArrayList("stringValues").get(4));
-                        contentValues.put("FIN_MONTHS_WORKED", msg.getData().getInt("finMonthsWorked"));
-                        contentValues.put("FIN_COEF", msg.getData().getDouble("finCoef"));
-                        db.insert("population", null, contentValues);
+                        sContentValues = new ContentValues();
+                        sContentValues.put("NAME", msg.getData().getStringArrayList("stringValues").get(0));
+                        sContentValues.put("SURNAME", msg.getData().getStringArrayList("stringValues").get(1));
+                        sContentValues.put("JOB", msg.getData().getIntegerArrayList("intValues").get(0));
+                        sContentValues.put("SALARY", msg.getData().getIntegerArrayList("intValues").get(1));
+                        sContentValues.put("AGE", msg.getData().getIntegerArrayList("intValues").get(2));
+                        sContentValues.put("BUILDING", msg.getData().getIntegerArrayList("intValues").get(3));
+                        sContentValues.put("MANUFACTURE", msg.getData().getIntegerArrayList("intValues").get(4));
+                        sContentValues.put("FARM", msg.getData().getIntegerArrayList("intValues").get(5));
+                        sContentValues.put("ATHLETIC", msg.getData().getIntegerArrayList("intValues").get(6));
+                        sContentValues.put("LEARNING", msg.getData().getIntegerArrayList("intValues").get(7));
+                        sContentValues.put("TALKING", msg.getData().getIntegerArrayList("intValues").get(8));
+                        sContentValues.put("STRENGTH", msg.getData().getIntegerArrayList("intValues").get(9));
+                        sContentValues.put("ART", msg.getData().getIntegerArrayList("intValues").get(10));
+                        sContentValues.put("TRAIT1", msg.getData().getStringArrayList("stringValues").get(2));
+                        sContentValues.put("TRAIT2", msg.getData().getStringArrayList("stringValues").get(3));
+                        sContentValues.put("TRAIT3", msg.getData().getStringArrayList("stringValues").get(4));
+                        sContentValues.put("FIN_MONTHS_WORKED", msg.getData().getInt("finMonthsWorked"));
+                        sContentValues.put("FIN_COEF", msg.getData().getDouble("finCoef"));
+                        sDb.insert("population", null, sContentValues);
                         break;
                     case INSERT_TECH_DATA:
-                        contentValues = new ContentValues();
-                        contentValues.put("TEC_NAME", msg.getData().getStringArrayList("stringValues").get(0));
-                        contentValues.put("TEC_DESCRIPTION", msg.getData().getStringArrayList("stringValues").get(1));
-                        contentValues.put("TEC_MONTHS_TO_LEARN", msg.getData().getIntegerArrayList("intValues").get(0));
-                        contentValues.put("TEC_PRICE", msg.getData().getIntegerArrayList("intValues").get(1));
-                        contentValues.put("TEC_IS_LEARNED", msg.getData().getIntegerArrayList("intValues").get(2));
-                        db.insert("tecnologies", null, contentValues);
+                        sContentValues = new ContentValues();
+                        sContentValues.put("TEC_NAME", msg.getData().getStringArrayList("stringValues").get(0));
+                        sContentValues.put("TEC_DESCRIPTION", msg.getData().getStringArrayList("stringValues").get(1));
+                        sContentValues.put("TEC_MONTHS_TO_LEARN", msg.getData().getIntegerArrayList("intValues").get(0));
+                        sContentValues.put("TEC_PRICE", msg.getData().getIntegerArrayList("intValues").get(1));
+                        sContentValues.put("TEC_IS_LEARNED", msg.getData().getIntegerArrayList("intValues").get(2));
+                        sDb.insert("tecnologies", null, sContentValues);
                         break;
                     case INSERT_FARMS_DATA:
-                        contentValues = new ContentValues();
-                        contentValues.put("FARM_NAME", msg.getData().getStringArrayList("stringValues").get(0));
-                        contentValues.put("FARM_CROP", msg.getData().getStringArrayList("stringValues").get(1));
-                        contentValues.put("FARM_STATUS", msg.getData().getIntegerArrayList("intValues").get(0));
-                        contentValues.put("FARM_FARMER_ID", msg.getData().getIntegerArrayList("intValues").get(1));
-                        db.insert("farms", null, contentValues);
+                        sContentValues = new ContentValues();
+                        sContentValues.put("FARM_NAME", msg.getData().getStringArrayList("stringValues").get(0));
+                        sContentValues.put("FARM_CROP", msg.getData().getStringArrayList("stringValues").get(1));
+                        sContentValues.put("FARM_STATUS", msg.getData().getIntegerArrayList("intValues").get(0));
+                        sContentValues.put("FARM_FARMER_ID", msg.getData().getIntegerArrayList("intValues").get(1));
+                        sDb.insert("farms", null, sContentValues);
                         break;
                     case INSERT_MARKET_DATA:
-                        contentValues = new ContentValues();
-                        contentValues.put("ITEM_NAME", msg.getData().getStringArrayList("stringValues").get(0));
-                        contentValues.put("ITEM_AMOUNT", msg.getData().getIntegerArrayList("intValues").get(0));
-                        contentValues.put("ITEM_PRICE", msg.getData().getIntegerArrayList("intValues").get(1));
-                        contentValues.put("ITEM_CURRENCY", msg.getData().getStringArrayList("stringValues").get(1));
-                        contentValues.put("ITEM_TYPE", msg.getData().getStringArrayList("stringValues").get(2));
-                        db.insert("market", null, contentValues);
+                        sContentValues = new ContentValues();
+                        sContentValues.put("ITEM_NAME", msg.getData().getStringArrayList("stringValues").get(0));
+                        sContentValues.put("ITEM_AMOUNT", msg.getData().getIntegerArrayList("intValues").get(0));
+                        sContentValues.put("ITEM_PRICE", msg.getData().getIntegerArrayList("intValues").get(1));
+                        sContentValues.put("ITEM_CURRENCY", msg.getData().getStringArrayList("stringValues").get(1));
+                        sContentValues.put("ITEM_TYPE", msg.getData().getStringArrayList("stringValues").get(2));
+                        sDb.insert("market", null, sContentValues);
                         break;
                     default:
                 }
@@ -339,7 +347,7 @@ public class DbThread extends Thread {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 1) { //data successfully loaded
-                dbListener.onDataLoaded(msg.getData());
+                sListener.onDataLoaded(msg.getData());
             }
         }
     };

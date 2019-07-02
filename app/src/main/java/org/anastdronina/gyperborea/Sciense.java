@@ -11,32 +11,34 @@ import android.widget.TextView;
 import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
 public class Sciense extends AppCompatActivity implements View.OnClickListener {
-
-    private Button btnTecnologies, btnSellTecnologies;
-    private DateAndMoney dateAndMoney;
-    private SharedPreferences allSettings;
-    private TextView date, moneyR, moneyD;
+    private Button btnTecnologies;
+    private Button btnSellTecnologies;
+    private TextView tvDate;
+    private TextView tvMoneyR;
+    private TextView tvMoneyD;
+    private DateAndMoney mDateAndMoney;
+    private SharedPreferences mSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sciense);
 
-        dateAndMoney = new DateAndMoney();
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        mDateAndMoney = new DateAndMoney();
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
 
         btnTecnologies = findViewById(R.id.btn_tecnologies);
         btnSellTecnologies = findViewById(R.id.btn_sell_tecnologies);
-        date = findViewById(R.id.date);
-        moneyR = findViewById(R.id.moneyR);
-        moneyD = findViewById(R.id.moneyD);
+        tvDate = findViewById(R.id.date);
+        tvMoneyR = findViewById(R.id.moneyR);
+        tvMoneyD = findViewById(R.id.moneyD);
 
         btnTecnologies.setOnClickListener(this);
         btnSellTecnologies.setOnClickListener(this);
 
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+        tvDate.setText(mDateAndMoney.getDate(mSettings));
+        tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+        tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
     }
 
     @Override
@@ -44,7 +46,7 @@ public class Sciense extends AppCompatActivity implements View.OnClickListener {
         Intent intent = null;
         switch (v.getId()) {
             case R.id.btn_tecnologies:
-                intent = new Intent(this, Tecnologies.class);
+                intent = new Intent(this, Technologies.class);
                 break;
             case R.id.btn_sell_tecnologies:
                 intent = new Intent(this, SellTechnology.class);

@@ -43,7 +43,7 @@
             android:name=".Sciense"
             android:theme="@style/AppTheme"/>
         <activity
-            android:name=".Tecnologies"
+            android:name=".Technologies"
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".SellTechnology"

@@ -7,12 +7,12 @@ import com.squareup.leakcanary.LeakCanary;
 
 public class Hyperborea extends Application {
 
-    private static Application hyperborea;
+    private static Application sHyperborea;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        hyperborea = this;
+        sHyperborea = this;
 
         DbThread.init(this.getApplicationContext());
 
@@ -24,7 +24,7 @@ public class Hyperborea extends Application {
     }
 
     public static Application getApplication() {
-        return hyperborea;
+        return sHyperborea;
     }
 
     public static Context getAppContext() {

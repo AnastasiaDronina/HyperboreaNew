@@ -9,123 +9,124 @@ import java.util.Arrays;
 
 
 public class DbManager {
-    private Bundle bundle;
-    private Message message;
-    private Handler handler;
-    public enum WhatData {population, tech, stock, farms, market}
+    private Bundle mBundle;
+    private Message mMessage;
+    private Handler mHandler;
+
+    public enum WhatData {POPULATION, TECH, STOCK, FARMS, MARKET}
 
     public void createNewDatabase() {
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.CREATE_DATABASE);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mHandler = new Handler();
+        mMessage = mHandler.obtainMessage(DbThread.CREATE_DATABASE);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void performQuery(String query) {
-        bundle = new Bundle();
-        handler = new Handler();
-        bundle.putString("query", query);
-        message = handler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
-        message.setData(bundle);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mBundle = new Bundle();
+        mHandler = new Handler();
+        mBundle.putString("query", query);
+        mMessage = mHandler.obtainMessage(DbThread.PERFORM_SQL_QUERY);
+        mMessage.setData(mBundle);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void loadData(WhatData whatData) {
-        handler = new Handler();
+        mHandler = new Handler();
         switch (whatData) {
-            case population:
-                message = handler.obtainMessage(DbThread.LOAD_POPULATION_DATA);
-                DbThread.getBackgroundHandler().sendMessage(message);
+            case POPULATION:
+                mMessage = mHandler.obtainMessage(DbThread.LOAD_POPULATION_DATA);
+                DbThread.getBackgroundHandler().sendMessage(mMessage);
                 break;
-            case tech:
-                message = handler.obtainMessage(DbThread.LOAD_TECH_DATA);
-                DbThread.getBackgroundHandler().sendMessage(message);
+            case TECH:
+                mMessage = mHandler.obtainMessage(DbThread.LOAD_TECH_DATA);
+                DbThread.getBackgroundHandler().sendMessage(mMessage);
                 break;
-            case stock:
-                message = handler.obtainMessage(DbThread.LOAD_STOCK_DATA);
-                DbThread.getBackgroundHandler().sendMessage(message);
+            case STOCK:
+                mMessage = mHandler.obtainMessage(DbThread.LOAD_STOCK_DATA);
+                DbThread.getBackgroundHandler().sendMessage(mMessage);
                 break;
-            case farms:
-                message = handler.obtainMessage(DbThread.LOAD_FARMS_DATA);
-                DbThread.getBackgroundHandler().sendMessage(message);
+            case FARMS:
+                mMessage = mHandler.obtainMessage(DbThread.LOAD_FARMS_DATA);
+                DbThread.getBackgroundHandler().sendMessage(mMessage);
                 break;
-            case market:
-                message = handler.obtainMessage(DbThread.LOAD_MARKET_DATA);
-                DbThread.getBackgroundHandler().sendMessage(message);
+            case MARKET:
+                mMessage = mHandler.obtainMessage(DbThread.LOAD_MARKET_DATA);
+                DbThread.getBackgroundHandler().sendMessage(mMessage);
                 break;
             default:
         }
     }
 
     public void printCoefAsync(int personId) {
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.PRINT_COEF_ASYNC, personId, 0);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mHandler = new Handler();
+        mMessage = mHandler.obtainMessage(DbThread.PRINT_COEF_ASYNC, personId, 0);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void setCoefInFinances() {
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.SET_COEF_IN_FINANCES_ACTIVITY);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mHandler = new Handler();
+        mMessage = mHandler.obtainMessage(DbThread.SET_COEF_IN_FINANCES_ACTIVITY);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void countInfoForNextTurn() {
-        handler = new Handler();
-        message = handler.obtainMessage(DbThread.COUNT_INFO_FOR_NEXT_TURN);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mHandler = new Handler();
+        mMessage = mHandler.obtainMessage(DbThread.COUNT_INFO_FOR_NEXT_TURN);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void insertStockData(String productName, String productType, int productAmount) {
-        bundle = new Bundle();
-        handler = new Handler();
-        bundle.putString("productName", productName);
-        bundle.putString("productType", productType);
-        bundle.putInt("productAmount", productAmount);
-        message = handler.obtainMessage(DbThread.INSERT_STOCK_DATA);
-        message.setData(bundle);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mBundle = new Bundle();
+        mHandler = new Handler();
+        mBundle.putString("productName", productName);
+        mBundle.putString("productType", productType);
+        mBundle.putInt("productAmount", productAmount);
+        mMessage = mHandler.obtainMessage(DbThread.INSERT_STOCK_DATA);
+        mMessage.setData(mBundle);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void insertPopulationData(String name, String surname, int job, int salary, int age, int building, int manufacture, int farm, int athletic, int learning, int talking, int strength, int art, String trait1, String trait2, String trait3, int finMonthWorked, Double finCoef) {
-        bundle = new Bundle();
-        handler = new Handler();
-        bundle.putStringArrayList("stringValues", new ArrayList<>(Arrays.asList(name, surname, trait1, trait2, trait3)));
-        bundle.putIntegerArrayList("intValues",
+        mBundle = new Bundle();
+        mHandler = new Handler();
+        mBundle.putStringArrayList("stringValues", new ArrayList<>(Arrays.asList(name, surname, trait1, trait2, trait3)));
+        mBundle.putIntegerArrayList("intValues",
                 new ArrayList(Arrays.asList(job, salary, age, building, manufacture, farm, athletic, learning, talking, strength, art)));
-        bundle.putInt("finMonthsWorked", finMonthWorked);
-        bundle.putDouble("finCoef", finCoef);
-        message = handler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
-        message.setData(bundle);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mBundle.putInt("finMonthsWorked", finMonthWorked);
+        mBundle.putDouble("finCoef", finCoef);
+        mMessage = mHandler.obtainMessage(DbThread.INSERT_POPULATION_DATA);
+        mMessage.setData(mBundle);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void insertTechData(String name, String description, int monthsToLearn, int price, int isLEarned) {
-        bundle = new Bundle();
-        handler = new Handler();
-        bundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList(name, description)));
-        bundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(monthsToLearn, price, isLEarned)));
-        message = handler.obtainMessage(DbThread.INSERT_TECH_DATA);
-        message.setData(bundle);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mBundle = new Bundle();
+        mHandler = new Handler();
+        mBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList(name, description)));
+        mBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(monthsToLearn, price, isLEarned)));
+        mMessage = mHandler.obtainMessage(DbThread.INSERT_TECH_DATA);
+        mMessage.setData(mBundle);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void insertFarmsData(String name, String crop, int status, int farmerId) {
-        bundle = new Bundle();
-        handler = new Handler();
-        bundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList(name, crop)));
-        bundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(status, farmerId)));
-        message = handler.obtainMessage(DbThread.INSERT_FARMS_DATA);
-        message.setData(bundle);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mBundle = new Bundle();
+        mHandler = new Handler();
+        mBundle.putStringArrayList("stringValues", new ArrayList<String>(Arrays.asList(name, crop)));
+        mBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(status, farmerId)));
+        mMessage = mHandler.obtainMessage(DbThread.INSERT_FARMS_DATA);
+        mMessage.setData(mBundle);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
     public void insertMarketData(String name, String currency, String type, int amount, int price) {
-        bundle = new Bundle();
-        handler = new Handler();
-        bundle.putStringArrayList("stringValues", new ArrayList<>(Arrays.asList(name, currency, type)));
-        bundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(amount, price)));
-        message = handler.obtainMessage(DbThread.INSERT_MARKET_DATA);
-        message.setData(bundle);
-        DbThread.getBackgroundHandler().sendMessage(message);
+        mBundle = new Bundle();
+        mHandler = new Handler();
+        mBundle.putStringArrayList("stringValues", new ArrayList<>(Arrays.asList(name, currency, type)));
+        mBundle.putIntegerArrayList("intValues", new ArrayList(Arrays.asList(amount, price)));
+        mMessage = mHandler.obtainMessage(DbThread.INSERT_MARKET_DATA);
+        mMessage.setData(mBundle);
+        DbThread.getBackgroundHandler().sendMessage(mMessage);
     }
 
 }

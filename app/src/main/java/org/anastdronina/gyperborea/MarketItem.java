@@ -5,25 +5,29 @@ import android.os.Parcelable;
 
 public class MarketItem implements Parcelable {
 
-    private int id, amount, price;
-    String name, currency, type;
+    private int mId;
+    private int mAmount;
+    private int mPrice;
+    private String mName;
+    private String mCurrency;
+    private String mType;
 
     public MarketItem(int id, String name, int amount, int price, String currency, String type) {
-        this.id = id;
-        this.amount = amount;
-        this.price = price;
-        this.name = name;
-        this.currency = currency;
-        this.type = type;
+        mId = id;
+        mAmount = amount;
+        mPrice = price;
+        mName = name;
+        mCurrency = currency;
+        mType = type;
     }
 
     protected MarketItem(Parcel in) {
-        id = in.readInt();
-        amount = in.readInt();
-        price = in.readInt();
-        name = in.readString();
-        currency = in.readString();
-        type = in.readString();
+        mId = in.readInt();
+        mAmount = in.readInt();
+        mPrice = in.readInt();
+        mName = in.readString();
+        mCurrency = in.readString();
+        mType = in.readString();
     }
 
     public static final Creator<MarketItem> CREATOR = new Creator<MarketItem>() {
@@ -39,51 +43,35 @@ public class MarketItem implements Parcelable {
     };
 
     public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+        return mType;
     }
 
     public int getId() {
-        return id;
+        return mId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        mId = id;
     }
 
     public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
+        return mAmount;
     }
 
     public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
+        return mPrice;
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        mName = name;
     }
 
     public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
+        return mCurrency;
     }
 
     @Override
@@ -93,11 +81,11 @@ public class MarketItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeInt(amount);
-        dest.writeInt(price);
-        dest.writeString(name);
-        dest.writeString(currency);
-        dest.writeString(type);
+        dest.writeInt(mId);
+        dest.writeInt(mAmount);
+        dest.writeInt(mPrice);
+        dest.writeString(mName);
+        dest.writeString(mCurrency);
+        dest.writeString(mType);
     }
 }

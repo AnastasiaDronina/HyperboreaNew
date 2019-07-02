@@ -2,7 +2,7 @@ package org.anastdronina.gyperborea;
 
 public class Traits {
 
-    private String[] traits = {
+    private String[] mTraits = {
             "Бездонный желудок",
             "Деревенщина",
             "Пацифист",
@@ -27,7 +27,7 @@ public class Traits {
             "Гурман"
     };
 
-    private String[] descriptions = {
+    private String[] mDescriptions = {
             "У него в желудке, вероятно, находятся чёрные дыры",
             "Явно не блещет умом",
             "Боится насилия",
@@ -53,10 +53,10 @@ public class Traits {
     };
 
     public String[] getTraits() {
-        return traits;
+        return mTraits;
     }
 
     public String[] getDescriptions() {
-        return descriptions;
+        return mDescriptions;
     }
 }

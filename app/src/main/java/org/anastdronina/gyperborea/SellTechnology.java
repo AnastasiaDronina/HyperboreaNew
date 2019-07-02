@@ -20,84 +20,88 @@ import java.util.List;
 import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
 public class SellTechnology extends AppCompatActivity {
-
-    private TextView sellTecInfo, sellTecView, date, moneyD, moneyR;
-    private DbThread.DbListener listener;
-    private ArrayList<Tecnology> tecs;
-    private String[] soldTechnologies;
-    private RecyclerView learnedTecList;
-    private ArrayList<Tecnology> learnedTechs;
+    private TextView tvSellTecInfo;
+    private TextView tvSellTecView;
+    private TextView tvDate;
+    private TextView tvMoneyD;
+    private TextView tvMoneyR;
+    private RecyclerView rvLearnedTechs;
     private AlertDialog dialogSellTec;
-    private SharedPreferences allSettings;
-    private DateAndMoney dateAndMoney;
-    private DbManager dbManager;
+    private DbThread.DbListener mListener;
+    private ArrayList<Technology> mTechsList;
+    private String[] mSoldTechsArray;
+    private ArrayList<Technology> mLearnedTechsList;
+    private SharedPreferences mSettings;
+    private DateAndMoney mDateAndMoney;
+    private DbManager mDbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sell_technology);
 
-        dbManager = new DbManager();
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
-        sellTecInfo = findViewById(R.id.sellTecInfo);
-        learnedTecList = findViewById(R.id.learnedTecList);
+        mDbManager = new DbManager();
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        tvSellTecInfo = findViewById(R.id.sellTecInfo);
+        rvLearnedTechs = findViewById(R.id.learnedTecList);
         dialogSellTec = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogSellTec.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
-        sellTecView = new TextView(this);
-        date = findViewById(R.id.date);
-        moneyD = findViewById(R.id.moneyD);
-        moneyR = findViewById(R.id.moneyR);
-        dateAndMoney = new DateAndMoney();
+        tvSellTecView = new TextView(this);
+        tvDate = findViewById(R.id.date);
+        tvMoneyD = findViewById(R.id.moneyD);
+        tvMoneyR = findViewById(R.id.moneyR);
+        mDateAndMoney = new DateAndMoney();
 
         dialogSellTec.setTitle(R.string.sell_tech);
-        dialogSellTec.setView(sellTecView);
+        dialogSellTec.setView(tvSellTecView);
 
         dialogSellTec.setButton(DialogInterface.BUTTON_POSITIVE, "Продать", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String tecName = allSettings.getString("CURRENT_TEC_NAME", "");
-                long tecPrice = allSettings.getLong("CURRENT_TEC_PRICE", 0);
-                long res = allSettings.getLong("MONEY_DOLLARS", 0) + tecPrice;
-                allSettings.edit().putLong("MONEY_DOLLARS", res).apply();
-                for (int i = 0; i < learnedTechs.size(); i++) {
-                    if (learnedTechs.get(i).getName().equals(tecName)) {
-                        int id = learnedTechs.get(i).getId();
-                        allSettings.edit().putString("SOLD_TECHNOLOGIES", allSettings.getString("SOLD_TECHNOLOGIES", "") + id + ",").apply();
-                        learnedTechs.remove(i);
+                String tecName = mSettings.getString("CURRENT_TEC_NAME", "");
+                long tecPrice = mSettings.getLong("CURRENT_TEC_PRICE", 0);
+                long res = mSettings.getLong("MONEY_DOLLARS", 0) + tecPrice;
+                mSettings.edit().putLong("MONEY_DOLLARS", res).apply();
+                for (int i = 0; i < mLearnedTechsList.size(); i++) {
+                    if (mLearnedTechsList.get(i).getName().equals(tecName)) {
+                        int id = mLearnedTechsList.get(i).getId();
+                        mSettings.edit().putString("SOLD_TECHNOLOGIES", mSettings.getString("SOLD_TECHNOLOGIES", "") + id + ",").apply();
+                        mLearnedTechsList.remove(i);
                         break;
                     }
                 }
 
-                dbManager.loadData(DbManager.WhatData.tech);
+                mDbManager.loadData(DbManager.WhatData.TECH);
 
-                listener = new DbThread.DbListener() {
+                mListener = new DbThread.DbListener() {
                     @Override
                     public void onDataLoaded(Bundle bundle) {
-                        tecs = bundle.getParcelableArrayList("techs");
-                        soldTechnologies = allSettings.getString("SOLD_TECHNOLOGIES", "").split(",");
-                        for (int i = 0; i < tecs.size(); i++) {
+                        mTechsList = bundle.getParcelableArrayList("techs");
+                        mSoldTechsArray = mSettings.getString("SOLD_TECHNOLOGIES", "").split(",");
+                        for (int i = 0; i < mTechsList.size(); i++) {
                             Boolean isSold = false;
-                            for (int j = 0; j < soldTechnologies.length; j++) {
-                                if (soldTechnologies[j].equals(Integer.toString(tecs.get(i).getId()))) {
+                            for (int j = 0; j < mSoldTechsArray.length; j++) {
+                                if (mSoldTechsArray[j].equals(Integer.toString(mTechsList.get(i).getId()))) {
                                     isSold = true;
                                 }
                             }
-                            if (tecs.get(i).isLearned() && !isSold) learnedTechs.add(tecs.get(i));
+                            if (mTechsList.get(i).isLearned() && !isSold)
+                                mLearnedTechsList.add(mTechsList.get(i));
                         }
-                        if (learnedTechs.size() > 0) {
-                            sellTecInfo.setText("");
-                            LearnedTechAdapter peopleAdapter = new LearnedTechAdapter(getApplicationContext(), R.layout.learned_technology_row, learnedTechs);
-                            learnedTecList.setHasFixedSize(true);
+                        if (mLearnedTechsList.size() > 0) {
+                            tvSellTecInfo.setText("");
+                            LearnedTechAdapter peopleAdapter
+                                    = new LearnedTechAdapter(getApplicationContext(), R.layout.learned_technology_row, mLearnedTechsList);
+                            rvLearnedTechs.setHasFixedSize(true);
                             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                            learnedTecList.setLayoutManager(layoutManager);
-                            learnedTecList.setAdapter(peopleAdapter);
+                            rvLearnedTechs.setLayoutManager(layoutManager);
+                            rvLearnedTechs.setAdapter(peopleAdapter);
                         } else {
-                            sellTecInfo.setText(R.string.you_dont_have_techs_to_sell);
+                            tvSellTecInfo.setText(R.string.you_dont_have_techs_to_sell);
                         }
                     }
                 };
-                DbThread.getInstance().addListener(listener);
-
+                DbThread.getInstance().addListener(mListener);
             }
         });
     }
@@ -105,61 +109,61 @@ public class SellTechnology extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        soldTechnologies = allSettings.getString("SOLD_TECHNOLOGIES", "").split(",");
-        learnedTechs = new ArrayList<>();
+        mSoldTechsArray = mSettings.getString("SOLD_TECHNOLOGIES", "").split(",");
+        mLearnedTechsList = new ArrayList<>();
 
-        dbManager.loadData(DbManager.WhatData.tech);
+        mDbManager.loadData(DbManager.WhatData.TECH);
 
-        listener = new DbThread.DbListener() {
+        mListener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
-                tecs = bundle.getParcelableArrayList("techs");
-                for (int i = 0; i < tecs.size(); i++) {
+                mTechsList = bundle.getParcelableArrayList("techs");
+                for (int i = 0; i < mTechsList.size(); i++) {
                     Boolean isSold = false;
-                    for (int j = 0; j < soldTechnologies.length; j++) {
-                        if (soldTechnologies[j].equals(Integer.toString(tecs.get(i).getId()))) {
+                    for (int j = 0; j < mSoldTechsArray.length; j++) {
+                        if (mSoldTechsArray[j].equals(Integer.toString(mTechsList.get(i).getId()))) {
                             isSold = true;
                         }
                     }
-                    if (tecs.get(i).isLearned() && !isSold) learnedTechs.add(tecs.get(i));
+                    if (mTechsList.get(i).isLearned() && !isSold)
+                        mLearnedTechsList.add(mTechsList.get(i));
                 }
-                if (learnedTechs.size() > 0) {
-                    sellTecInfo.setText("");
-                    LearnedTechAdapter peopleAdapter = new LearnedTechAdapter(getApplicationContext(), R.layout.learned_technology_row, learnedTechs);
-                    learnedTecList.setHasFixedSize(true);
+                if (mLearnedTechsList.size() > 0) {
+                    tvSellTecInfo.setText("");
+                    LearnedTechAdapter peopleAdapter
+                            = new LearnedTechAdapter(getApplicationContext(), R.layout.learned_technology_row, mLearnedTechsList);
+                    rvLearnedTechs.setHasFixedSize(true);
                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                    learnedTecList.setLayoutManager(layoutManager);
-                    learnedTecList.setAdapter(peopleAdapter);
+                    rvLearnedTechs.setLayoutManager(layoutManager);
+                    rvLearnedTechs.setAdapter(peopleAdapter);
                 } else {
-                    sellTecInfo.setText(R.string.you_dont_have_techs_to_sell);
+                    tvSellTecInfo.setText(R.string.you_dont_have_techs_to_sell);
                 }
             }
         };
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
 
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+        tvDate.setText(mDateAndMoney.getDate(mSettings));
+        tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+        tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        DbThread.getInstance().removeListener(listener);
+        DbThread.getInstance().removeListener(mListener);
     }
 
     public class LearnedTechHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
         private final TextView tecName;
         private final TextView tecPrice;
-
-        private Tecnology learnedTech;
+        private Technology learnedTech;
         private Context context;
 
         public LearnedTechHolder(Context context, View itemView) {
@@ -172,7 +176,7 @@ public class SellTechnology extends AppCompatActivity {
             itemView.setOnClickListener(this);
         }
 
-        public void bindLearnedTech(Tecnology learnedTech) {
+        public void bindLearnedTech(Technology learnedTech) {
             this.learnedTech = learnedTech;
             tecName.setText(learnedTech.getName());
             tecPrice.setText(learnedTech.getPrice() + " $");
@@ -180,27 +184,27 @@ public class SellTechnology extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            allSettings.edit().putInt("CURRENT_TEC_ID", learnedTech.getId()).apply();
-            allSettings.edit().putString("CURRENT_TEC_NAME", learnedTech.getName()).apply();
-            allSettings.edit().putString("CURRENT_TEC_DESCRIPTION", learnedTech.getDescription()).apply();
-            allSettings.edit().putInt("CURRENT_TEC_MONTHS", learnedTech.getMonthsToLearn()).apply();
-            allSettings.edit().putLong("CURRENT_TEC_PRICE", learnedTech.getPrice()).apply();
-            allSettings.edit().putBoolean("CURRENT_TEC_ISLEARNED", learnedTech.isLearned()).apply();
+            mSettings.edit().putInt("CURRENT_TEC_ID", learnedTech.getId()).apply();
+            mSettings.edit().putString("CURRENT_TEC_NAME", learnedTech.getName()).apply();
+            mSettings.edit().putString("CURRENT_TEC_DESCRIPTION", learnedTech.getDescription()).apply();
+            mSettings.edit().putInt("CURRENT_TEC_MONTHS", learnedTech.getMonthsToLearn()).apply();
+            mSettings.edit().putLong("CURRENT_TEC_PRICE", learnedTech.getPrice()).apply();
+            mSettings.edit().putBoolean("CURRENT_TEC_ISLEARNED", learnedTech.isLearned()).apply();
 
-            sellTecView.setText("\n" + allSettings.getString("CURRENT_TEC_NAME", "").toUpperCase() + "\n\nОписание: \n"
-                    + allSettings.getString("CURRENT_TEC_DESCRIPTION", "") + "\n\nДля изучения необходимо: "
-                    + allSettings.getInt("CURRENT_TEC_MONTHS", 0) + " мес. \n\nЦена продажи: "
-                    + allSettings.getLong("CURRENT_TEC_PRICE", 0) + " $");
+            tvSellTecView.setText("\n" + mSettings.getString("CURRENT_TEC_NAME", "")
+                    .toUpperCase() + "\n\nОписание: \n" + mSettings.getString("CURRENT_TEC_DESCRIPTION", "")
+                    + "\n\nДля изучения необходимо: " + mSettings.getInt("CURRENT_TEC_MONTHS", 0)
+                    + " мес. \n\nЦена продажи: " + mSettings.getLong("CURRENT_TEC_PRICE", 0) + " $");
             dialogSellTec.show();
         }
     }
 
     public class LearnedTechAdapter extends RecyclerView.Adapter<LearnedTechHolder> {
-        private final List<Tecnology> learnedTechs;
+        private final List<Technology> learnedTechs;
         private Context context;
         private int itemResource;
 
-        LearnedTechAdapter(Context context, int itemResourse, List<Tecnology> learnedTechs) {
+        LearnedTechAdapter(Context context, int itemResourse, List<Technology> learnedTechs) {
             this.context = context;
             this.learnedTechs = learnedTechs;
             this.itemResource = itemResourse;
@@ -216,7 +220,7 @@ public class SellTechnology extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull LearnedTechHolder holder, int position) {
-            Tecnology learnedTech = this.learnedTechs.get(position);
+            Technology learnedTech = this.learnedTechs.get(position);
             holder.bindLearnedTech(learnedTech);
         }
 

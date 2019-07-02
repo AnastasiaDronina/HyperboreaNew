@@ -20,62 +20,62 @@ import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
 public class Agriculture extends AppCompatActivity {
 
-    private RecyclerView agricultureLv;
-    private ArrayList<Farm> farmsList;
-    private DbThread.DbListener listener;
-    private SharedPreferences allSettings;
-    private DateAndMoney dateAndMoney;
-    private TextView date, moneyR, moneyD;
-    private DbManager dbManager;
+    private RecyclerView rvAgriculture;
+    private ArrayList<Farm> mFarmsList;
+    private DbThread.DbListener mListener;
+    private SharedPreferences mSettings;
+    private TextView mDate;
+    private TextView mMoneyR;
+    private TextView mMoneyD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agriculture);
 
-        dbManager = new DbManager();
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
-        dateAndMoney = new DateAndMoney();
-        date = findViewById(R.id.date);
-        moneyR = findViewById(R.id.moneyR);
-        moneyD = findViewById(R.id.moneyD);
-        agricultureLv = findViewById(R.id.agricultureList);
-        farmsList = new ArrayList<>();
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        mDate = findViewById(R.id.date);
+        mMoneyR = findViewById(R.id.moneyR);
+        mMoneyD = findViewById(R.id.moneyD);
+        rvAgriculture = findViewById(R.id.agricultureList);
+        mFarmsList = new ArrayList<>();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        dbManager.loadData(DbManager.WhatData.farms);
-        listener = new DbThread.DbListener() {
+        DbManager dbManager = new DbManager();
+        dbManager.loadData(DbManager.WhatData.FARMS);
+        mListener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
-                farmsList = bundle.getParcelableArrayList("farms");
-                FarmAdapter farmAdapter = new FarmAdapter(getApplicationContext(), R.layout.farms_row, farmsList);
-                agricultureLv.setHasFixedSize(true);
+                mFarmsList = bundle.getParcelableArrayList("farms");
+                FarmAdapter farmAdapter = new FarmAdapter(getApplicationContext(), R.layout.farms_row, mFarmsList);
+                rvAgriculture.setHasFixedSize(true);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                agricultureLv.setLayoutManager(layoutManager);
-                agricultureLv.setAdapter(farmAdapter);
+                rvAgriculture.setLayoutManager(layoutManager);
+                rvAgriculture.setAdapter(farmAdapter);
             }
         };
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
 
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+        DateAndMoney dateAndMoney = new DateAndMoney();
+        mDate.setText(dateAndMoney.getDate(mSettings));
+        mMoneyD.setText(dateAndMoney.getMoney(mSettings, "$"));
+        mMoneyR.setText(dateAndMoney.getMoney(mSettings, "руб"));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        DbThread.getInstance().removeListener(listener);
+        DbThread.getInstance().removeListener(mListener);
     }
 
     public class FarmHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -106,11 +106,11 @@ public class Agriculture extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            allSettings.edit().putInt("CURRENT_FARM_ID", farm.getId()).apply();
-            allSettings.edit().putString("CURRENT_FARM_NAME", farm.getName()).apply();
-            allSettings.edit().putString("CURRENT_FARM_CROP", farm.getCrop()).apply();
-            allSettings.edit().putInt("CURRENT_FARM_STATUS", farm.getStatus()).apply();
-            allSettings.edit().putInt("CURRENT_FARM_FARMER_ID", farm.getFarmerId()).apply();
+            mSettings.edit().putInt("CURRENT_FARM_ID", farm.getId()).apply();
+            mSettings.edit().putString("CURRENT_FARM_NAME", farm.getName()).apply();
+            mSettings.edit().putString("CURRENT_FARM_CROP", farm.getCrop()).apply();
+            mSettings.edit().putInt("CURRENT_FARM_STATUS", farm.getStatus()).apply();
+            mSettings.edit().putInt("CURRENT_FARM_FARMER_ID", farm.getFarmerId()).apply();
 
             startActivity(new Intent(getApplicationContext(), FarmCard.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);

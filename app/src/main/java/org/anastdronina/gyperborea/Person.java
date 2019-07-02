@@ -6,11 +6,21 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 
 public class Person implements Parcelable {
-    private int id;
-    private String name, surname;
-    private int age, salary, job;
-    private int building, manufacture, farm, athletic, learning, talking, strength, art;
-    private ArrayList<String> traits;
+    private int mId;
+    private String mName;
+    private String mSurname;
+    private int mAge;
+    private int mSalary;
+    private int mJob;
+    private int mBuilding;
+    private int mManufacture;
+    private int mFarm;
+    private int mAthletic;
+    private int mLearning;
+    private int mTalking;
+    private int mStrength;
+    private int mArt;
+    private ArrayList<String> mTraitsList;
 
     // JOBS //
     public static final int NOT_EMPLOYED = 0;
@@ -44,39 +54,39 @@ public class Person implements Parcelable {
 
     public Person(int id, String name, String surname, int job, int salary, int age, int building, int manufacture, int farm,
                   int athletic, int learning, int talking, int strength, int art, ArrayList<String> traits) {
-        this.id = id;
-        this.name = name;
-        this.surname = surname;
-        this.job = job;
-        this.salary = salary;
-        this.age = age;
-        this.building = building;
-        this.manufacture = manufacture;
-        this.farm = farm;
-        this.athletic = athletic;
-        this.learning = learning;
-        this.talking = talking;
-        this.strength = strength;
-        this.art = art;
-        this.traits = traits;
+        mId = id;
+        mName = name;
+        mSurname = surname;
+        mJob = job;
+        mSalary = salary;
+        mAge = age;
+        mBuilding = building;
+        mManufacture = manufacture;
+        mFarm = farm;
+        mAthletic = athletic;
+        mLearning = learning;
+        mTalking = talking;
+        mStrength = strength;
+        mArt = art;
+        this.mTraitsList = traits;
     }
 
     protected Person(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        surname = in.readString();
-        age = in.readInt();
-        salary = in.readInt();
-        job = in.readInt();
-        building = in.readInt();
-        manufacture = in.readInt();
-        farm = in.readInt();
-        athletic = in.readInt();
-        learning = in.readInt();
-        talking = in.readInt();
-        strength = in.readInt();
-        art = in.readInt();
-        traits = in.createStringArrayList();
+        mId = in.readInt();
+        mName = in.readString();
+        mSurname = in.readString();
+        mAge = in.readInt();
+        mSalary = in.readInt();
+        mJob = in.readInt();
+        mBuilding = in.readInt();
+        mManufacture = in.readInt();
+        mFarm = in.readInt();
+        mAthletic = in.readInt();
+        mLearning = in.readInt();
+        mTalking = in.readInt();
+        mStrength = in.readInt();
+        mArt = in.readInt();
+        mTraitsList = in.createStringArrayList();
     }
 
     public static final Creator<Person> CREATOR = new Creator<Person>() {
@@ -92,71 +102,71 @@ public class Person implements Parcelable {
     };
 
     public int getId() {
-        return id;
+        return mId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        mId = id;
     }
 
     public int getSalary() {
-        return salary;
+        return mSalary;
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        mName = name;
     }
 
     public String getSurname() {
-        return surname;
+        return mSurname;
     }
 
     public int getJob() {
-        return job;
+        return mJob;
     }
 
     public int getAge() {
-        return age;
+        return mAge;
     }
 
     public int getBuilding() {
-        return building;
+        return mBuilding;
     }
 
     public int getManufacture() {
-        return manufacture;
+        return mManufacture;
     }
 
     public int getFarm() {
-        return farm;
+        return mFarm;
     }
 
     public int getAthletic() {
-        return athletic;
+        return mAthletic;
     }
 
     public int getLearning() {
-        return learning;
+        return mLearning;
     }
 
     public int getTalking() {
-        return talking;
+        return mTalking;
     }
 
     public int getStrength() {
-        return strength;
+        return mStrength;
     }
 
     public int getArt() {
-        return art;
+        return mArt;
     }
 
     public ArrayList<String> getTraits() {
-        return traits;
+        return mTraitsList;
     }
 
     @Override
@@ -166,20 +176,20 @@ public class Person implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeString(surname);
-        dest.writeInt(age);
-        dest.writeInt(salary);
-        dest.writeInt(job);
-        dest.writeInt(building);
-        dest.writeInt(manufacture);
-        dest.writeInt(farm);
-        dest.writeInt(athletic);
-        dest.writeInt(learning);
-        dest.writeInt(talking);
-        dest.writeInt(strength);
-        dest.writeInt(art);
-        dest.writeStringList(traits);
+        dest.writeInt(mId);
+        dest.writeString(mName);
+        dest.writeString(mSurname);
+        dest.writeInt(mAge);
+        dest.writeInt(mSalary);
+        dest.writeInt(mJob);
+        dest.writeInt(mBuilding);
+        dest.writeInt(mManufacture);
+        dest.writeInt(mFarm);
+        dest.writeInt(mAthletic);
+        dest.writeInt(mLearning);
+        dest.writeInt(mTalking);
+        dest.writeInt(mStrength);
+        dest.writeInt(mArt);
+        dest.writeStringList(mTraitsList);
     }
 }

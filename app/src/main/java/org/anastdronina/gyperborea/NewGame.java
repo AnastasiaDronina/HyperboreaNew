@@ -20,29 +20,34 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
 
     private Boolean ifNewGame;
 
-    private Button btnPopulation, btnFinances, btnScience, btnSupply;
+    private Button btnPopulation;
+    private Button btnFinances;
+    private Button btnScience;
+    private Button btnSupply;
     private FloatingActionButton btnNextTurn;
-    private TextView moneyD, moneyR, date, tvForDialogNextTurn, tvNotEnoughtMoney;
-    private DateAndMoney dateAndMoney;
-    private long salaries;
-    private SharedPreferences allSettings;
-    private DbThread.DbListener listener;
-    private AlertDialog dialogNextTurn, dialogGameOver, dialogNotEnoughtMoney;
-    private ArrayList<Integer> finIds;
-    private ArrayList<Double> finCoefs;
-    private ArrayList<Integer> finMonthsWorked;
-    private ArrayList<Farm> farms;
-    private DbManager dbManager;
+    private TextView tvMoneyD;
+    private TextView tvMoneyR;
+    private TextView tvDate;
+    private TextView tvForDialogNextTurn;
+    private TextView tvNotEnoughtMoney;
+    private AlertDialog dialogNextTurn;
+    private AlertDialog dialogGameOver;
+    private AlertDialog dialogNotEnoughtMoney;
+    private DateAndMoney mDateAndMoney;
+    private long mSalaries;
+    private SharedPreferences mSettings;
+    private DbThread.DbListener mListener;
+    private DbManager mDbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
 
-        dbManager = new DbManager();
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
-        dateAndMoney = new DateAndMoney();
-        ifNewGame = allSettings.getBoolean("NEW_GAME", true);
+        mDbManager = new DbManager();
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        mDateAndMoney = new DateAndMoney();
+        ifNewGame = mSettings.getBoolean("NEW_GAME", true);
         if (ifNewGame) {
             Intent popupIntent = new Intent(this, Popup.class);
             startActivity(popupIntent);
@@ -55,9 +60,9 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
         btnNextTurn = findViewById(R.id.btnNextTurn);
         tvNotEnoughtMoney = new TextView(getApplicationContext());
         tvNotEnoughtMoney.setText(R.string.not_enough_money_to_pay_salaries);
-        moneyD = findViewById(R.id.moneyD);
-        moneyR = findViewById(R.id.moneyR);
-        date = findViewById(R.id.date);
+        tvMoneyD = findViewById(R.id.moneyD);
+        tvMoneyR = findViewById(R.id.moneyR);
+        tvDate = findViewById(R.id.date);
 
         dialogNotEnoughtMoney = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogNotEnoughtMoney.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
@@ -111,18 +116,18 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        if (allSettings.getInt("TURN", 0) == 9) {
+        if (mSettings.getInt("TURN", 0) == 9) {
             dialogGameOver.show();
         }
-        ifNewGame = allSettings.getBoolean("NEW_GAME", true);
+        ifNewGame = mSettings.getBoolean("NEW_GAME", true);
         if (ifNewGame) {
             Intent popupIntent = new Intent(this, Popup.class);
             startActivity(popupIntent);
         }
 
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+        tvDate.setText(mDateAndMoney.getDate(mSettings));
+        tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+        tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
     }
 
     @Override
@@ -160,116 +165,122 @@ public class NewGame extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onStart() {
         super.onStart();
+        DbThread.getInstance().addListener(mListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        DbThread.getInstance().removeListener(mListener);
     }
 
     public void nextTurn() {
 
         //paying salaris and changing finances coef
-        listener = new DbThread.DbListener() {
+        mListener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
-                salaries = bundle.getLong("salaries");
-                finIds = bundle.getIntegerArrayList("financeIds");
-                finCoefs = (ArrayList<Double>) bundle.getSerializable("financeCoefs");
-                finMonthsWorked = bundle.getIntegerArrayList("financeMonthsWorked");
-                farms = bundle.getParcelableArrayList("farms");
+                mSalaries = bundle.getLong("salaries");
+                ArrayList<Integer> finIdsList = bundle.getIntegerArrayList("financeIds");
+                ArrayList<Double> finCoefsList = (ArrayList<Double>) bundle.getSerializable("financeCoefs");
+                ArrayList<Integer> finMonthsWorkedList = bundle.getIntegerArrayList("financeMonthsWorked");
+                ArrayList<Farm> farmsList = bundle.getParcelableArrayList("farms");
 
-                if (allSettings.getLong("MONEY_RUBLES", 0) < salaries) {
+                if (mSettings.getLong("MONEY_RUBLES", 0) < mSalaries) {
                     dialogNotEnoughtMoney.show();
                 } else {
                     //changing month and year if it needs
-                    int currentMonth = allSettings.getInt("MONTH_ID", 0);
+                    int currentMonth = mSettings.getInt("MONTH_ID", 0);
                     if (currentMonth == 12) {
-                        allSettings.edit().putInt("MONTH_ID", 1).apply();
-                        allSettings.edit().putInt("YEAR", allSettings.getInt("YEAR", 0) + 1).apply();
+                        mSettings.edit().putInt("MONTH_ID", 1).apply();
+                        mSettings.edit().putInt("YEAR", mSettings.getInt("YEAR", 0) + 1).apply();
                     } else {
-                        allSettings.edit().putInt("MONTH_ID", currentMonth + 1).apply();
+                        mSettings.edit().putInt("MONTH_ID", currentMonth + 1).apply();
                     }
 
                     //changing money value and finanses coef
-                    allSettings.edit().putLong("MONEY_RUBLES", allSettings.getLong("MONEY_RUBLES", 0) - salaries).apply();
+                    mSettings.edit().putLong("MONEY_RUBLES", mSettings.getLong("MONEY_RUBLES", 0) - mSalaries).apply();
 
 
-                    for (int i = 0; i < finIds.size(); i++) {
-                        double newCoef = finCoefs.get(i) + 0.2;
+                    for (int i = 0; i < finIdsList.size(); i++) {
+                        double newCoef = finCoefsList.get(i) + 0.2;
                         newCoef = Math.round(newCoef * 10.0) / 10.0;
                         if (newCoef > 3.0) {
                             newCoef = 3.0;
                         }
 
-                        dbManager.performQuery("UPDATE " + "population" + " SET FIN_MONTHS_WORKED='" + finMonthsWorked.get(i) + 1 + "'WHERE ID='" + finIds.get(i) + "'");
-                        dbManager.performQuery("UPDATE " + "population" + " SET FIN_COEF='" + newCoef + "'WHERE ID='" + finIds.get(i) + "'");
+                        mDbManager.performQuery("UPDATE " + "population" + " SET FIN_MONTHS_WORKED='" + finMonthsWorkedList.get(i) + 1
+                                + "'WHERE ID='" + finIdsList.get(i) + "'");
+                        mDbManager.performQuery("UPDATE " + "population" + " SET FIN_COEF='" + newCoef
+                                + "'WHERE ID='" + finIdsList.get(i) + "'");
                     }
 
 
-                    date.setText(dateAndMoney.getDate(allSettings));
-                    moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-                    moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+                    tvDate.setText(mDateAndMoney.getDate(mSettings));
+                    tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+                    tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
 
                     //learning current technology
-                    if (allSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0) {
-                        int tecId = allSettings.getInt("TEC_IS_BEEING_LEARNED_ID", 0);
-                        int monthsLeft = allSettings.getInt("MONTHS_LEFT_TO_LEARN", 0) - 1;
+                    if (mSettings.getString("TEC_IS_BEEING_LEARNED", "").length() > 0) {
+                        int tecId = mSettings.getInt("TEC_IS_BEEING_LEARNED_ID", 0);
+                        int monthsLeft = mSettings.getInt("MONTHS_LEFT_TO_LEARN", 0) - 1;
                         if (monthsLeft == 0) {
-                            dbManager.performQuery("UPDATE " + "tecnologies" + " SET TEC_IS_LEARNED='" + 1 + "'WHERE TEC_ID='" + tecId + "'");
-                            allSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
-                            allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
-                            allSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", 0).apply();
+                            mDbManager.performQuery("UPDATE " + "tecnologies" + " SET TEC_IS_LEARNED='" + 1 + "'WHERE TEC_ID='" + tecId + "'");
+                            mSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
+                            mSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
+                            mSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", 0).apply();
                         } else {
-                            allSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", monthsLeft).apply();
+                            mSettings.edit().putInt("MONTHS_LEFT_TO_LEARN", monthsLeft).apply();
                         }
                     }
 
                     //changing farms statuses
-                    for (int i = 0; i < farms.size(); i++) {
-                        if ((farms.get(i).getFarmerId() != 0) && !(farms.get(i).getCrop().equals("Не выбрано"))) {
-                            if (farms.get(i).getStatus() == Farm.HARVEST) {
-                                dbManager.insertStockData(farms.get(i).getCrop(), "Еда", 100);
-                                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_STATUS='" + 0 + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
+                    for (int i = 0; i < farmsList.size(); i++) {
+                        if ((farmsList.get(i).getFarmerId() != 0) && !(farmsList.get(i).getCrop().equals("Не выбрано"))) {
+                            if (farmsList.get(i).getStatus() == Farm.HARVEST) {
+                                mDbManager.insertStockData(farmsList.get(i).getCrop(), "Еда", 100);
+                                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_STATUS='" + 0
+                                        + "'WHERE FARM_ID='" + farmsList.get(i).getId() + "'");
 
                             } else {
-                                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_STATUS='" + farms.get(i).getStatus() + 1 + "'WHERE FARM_ID='" + farms.get(i).getId() + "'");
+                                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_STATUS='" + farmsList.get(i).getStatus() + 1
+                                        + "'WHERE FARM_ID='" + farmsList.get(i).getId() + "'");
                             }
                         }
                     }
 
                     //changing turn value
-                    int turnValue = allSettings.getInt("TURN", 0);
+                    int turnValue = mSettings.getInt("TURN", 0);
                     if (turnValue == 9) {
                         dialogGameOver.show();
                     } else {
                         turnValue++;
-                        allSettings.edit().putInt("TURN", turnValue).apply();
+                        mSettings.edit().putInt("TURN", turnValue).apply();
                     }
                 }
             }
         };
-        DbThread.getInstance().addListener(listener);
-        dbManager.countInfoForNextTurn();
+        DbThread.getInstance().addListener(mListener);
+        mDbManager.countInfoForNextTurn();
     }
 
     public void startNewGame() {
-        allSettings.edit().putInt("TURN", 0).apply();
-        allSettings.edit().putBoolean("NEW_GAME", true).apply();
-        allSettings.edit().putString("PRESIDENT_NAME", "").apply();
-        allSettings.edit().putString("COUNTRY_NAME", "").apply();
-        allSettings.edit().putString("LEVEL", "Middle").apply();
-        allSettings.edit().putLong("MONEY_DOLLARS", 200000).apply();
-        allSettings.edit().putInt("MONEY_CENTS", 0).apply();
-        allSettings.edit().putLong("MONEY_RUBLES", 20000000).apply();
-        allSettings.edit().putInt("MONEY_KOP", 0).apply();
-        allSettings.edit().putInt("MONTH_ID", 1).apply();
-        allSettings.edit().putInt("YEAR", 2019).apply();
-        allSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
-        allSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
-        allSettings.edit().putInt("SCIENTIST_IN_USE_ID", -1).apply();
-        allSettings.edit().putString("SCIENTIST_IN_USE_NAME", "").apply();
-        allSettings.edit().putString("SOLD_TECHNOLOGIES", "").apply();
+        mSettings.edit().putInt("TURN", 0).apply();
+        mSettings.edit().putBoolean("NEW_GAME", true).apply();
+        mSettings.edit().putString("PRESIDENT_NAME", "").apply();
+        mSettings.edit().putString("COUNTRY_NAME", "").apply();
+        mSettings.edit().putString("LEVEL", "Middle").apply();
+        mSettings.edit().putLong("MONEY_DOLLARS", 200000).apply();
+        mSettings.edit().putInt("MONEY_CENTS", 0).apply();
+        mSettings.edit().putLong("MONEY_RUBLES", 20000000).apply();
+        mSettings.edit().putInt("MONEY_KOP", 0).apply();
+        mSettings.edit().putInt("MONTH_ID", 1).apply();
+        mSettings.edit().putInt("YEAR", 2019).apply();
+        mSettings.edit().putString("TEC_IS_BEEING_LEARNED", "").apply();
+        mSettings.edit().putInt("TEC_IS_BEEING_LEARNED_ID", 0).apply();
+        mSettings.edit().putInt("SCIENTIST_IN_USE_ID", -1).apply();
+        mSettings.edit().putString("SCIENTIST_IN_USE_NAME", "").apply();
+        mSettings.edit().putString("SOLD_TECHNOLOGIES", "").apply();
 
         getApplicationContext().deleteDatabase("hyperborea.db");
 

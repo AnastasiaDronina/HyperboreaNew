@@ -4,8 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Farm implements Parcelable {
-    private int id, status, farmerId;
-    private String name, crop;
+    private int mId;
+    private int mStatus;
+    private int mFarmerId;
+    private String mName;
+    private String mCrop;
 
     // FARMS' STATUSES
     public static final int NOT_USED = 0;
@@ -16,19 +19,19 @@ public class Farm implements Parcelable {
     public static final int HARVEST = 5;
 
     public Farm(int id, String name, String crop, int status, int farmerId) {
-        this.id = id;
-        this.status = status;
-        this.farmerId = farmerId;
-        this.name = name;
-        this.crop = crop;
+        mId = id;
+        mStatus = status;
+        mFarmerId = farmerId;
+        mName = name;
+        mCrop = crop;
     }
 
     protected Farm(Parcel in) {
-        id = in.readInt();
-        status = in.readInt();
-        farmerId = in.readInt();
-        name = in.readString();
-        crop = in.readString();
+        mId = in.readInt();
+        mStatus = in.readInt();
+        mFarmerId = in.readInt();
+        mName = in.readString();
+        mCrop = in.readString();
     }
 
     public static final Creator<Farm> CREATOR = new Creator<Farm>() {
@@ -44,31 +47,31 @@ public class Farm implements Parcelable {
     };
 
     public int getId() {
-        return id;
+        return mId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        mId = id;
     }
 
     public int getStatus() {
-        return status;
+        return mStatus;
     }
 
     public int getFarmerId() {
-        return farmerId;
+        return mFarmerId;
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        mName = name;
     }
 
     public String getCrop() {
-        return crop;
+        return mCrop;
     }
 
     public String statusString(int statusInt) {
@@ -103,10 +106,10 @@ public class Farm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeInt(status);
-        dest.writeInt(farmerId);
-        dest.writeString(name);
-        dest.writeString(crop);
+        dest.writeInt(mId);
+        dest.writeInt(mStatus);
+        dest.writeInt(mFarmerId);
+        dest.writeString(mName);
+        dest.writeString(mCrop);
     }
 }

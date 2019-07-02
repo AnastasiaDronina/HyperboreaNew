@@ -29,66 +29,73 @@ import java.util.List;
 import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
 public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-
-    private SharedPreferences allSettings;
-    private TextView tvStatus, tvFarmFarmer, tvFarmName;
+    private TextView tvStatus;
+    private TextView tvFarmFarmer;
+    private TextView tvFarmName;
     private Button btnChangeFarmer;
     private ImageButton btnToPeople;
-    private EditText editFarmName;
+    private EditText etFarmName;
     private Spinner spinnerCrops;
-    private ArrayAdapter<CharSequence> adapter;
-    private DbThread.DbListener listener;
-    private int farmId, farmFarmerId, farmStatus;
-    private String farmName, farmCrop;
-    private Person farmer;
-    private ArrayList<Person> farmersAvailable;
-    private ArrayList<Person> allPeople;
-    private RecyclerView lvChangeFarmer;
-    private AlertDialog dialogChangeFarmer, dialogChangeFarmName;
-    private DbManager dbManager;
+    private RecyclerView rvChangeFarmer;
+    private AlertDialog dialogChangeFarmer;
+    private AlertDialog dialogChangeFarmName;
+    private ArrayAdapter<CharSequence> mAdapter;
+    private SharedPreferences mSettings;
+    private DbThread.DbListener mListener;
+    private int mFarmId;
+    private int mFarmFarmerId;
+    private int mFarmStatus;
+    private String mFarmName;
+    private String mFarmCrop;
+    private Person mFarmer;
+    private ArrayList<Person> mFarmersAvailableList;
+    private ArrayList<Person> mPeopleList;
+    private DbManager mDbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farm_card);
 
-        dbManager = new DbManager();
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        mDbManager = new DbManager();
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
         tvStatus = findViewById(R.id.tvStatus);
         tvFarmFarmer = findViewById(R.id.tvFarmFarmer);
         tvFarmName = findViewById(R.id.tvFarmName);
-        editFarmName = new EditText(this);
+        etFarmName = new EditText(this);
         btnChangeFarmer = findViewById(R.id.btnChangeFarmer);
         btnToPeople = findViewById(R.id.btnToPeople);
         spinnerCrops = findViewById(R.id.spinnerCrops);
-        lvChangeFarmer = new RecyclerView(this);
+        rvChangeFarmer = new RecyclerView(this);
         dialogChangeFarmer = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
         dialogChangeFarmName = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
 
         dialogChangeFarmer.setTitle(R.string.choose_farmer);
-        dialogChangeFarmer.setView(lvChangeFarmer);
+        dialogChangeFarmer.setView(rvChangeFarmer);
         dialogChangeFarmName.setTitle(R.string.change_farm_name);
-        dialogChangeFarmName.setView(editFarmName);
+        dialogChangeFarmName.setView(etFarmName);
 
-        dialogChangeFarmName.setButton(DialogInterface.BUTTON_POSITIVE, "Сохранить", new DialogInterface.OnClickListener() {
+        dialogChangeFarmName.setButton(DialogInterface.BUTTON_POSITIVE, "Сохранить",
+                new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                tvFarmName.setText(editFarmName.getText());
+                tvFarmName.setText(etFarmName.getText());
 
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_NAME='" + editFarmName.getText() + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_NAME='" + etFarmName.getText()
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
         });
         tvFarmName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editFarmName.setText(tvFarmName.getText());
+                etFarmName.setText(tvFarmName.getText());
                 dialogChangeFarmName.show();
             }
         });
 
-        adapter = ArrayAdapter.createFromResource(this, R.array.crops, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCrops.setAdapter(adapter);
+        mAdapter = ArrayAdapter.createFromResource(this, R.array.crops, android.R.layout.simple_spinner_item);
+        mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCrops.setAdapter(mAdapter);
         spinnerCrops.setOnItemSelectedListener(this);
         btnToPeople.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,51 +108,54 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
         btnChangeFarmer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (allSettings.getInt("CURRENT_FARM_STATUS", Farm.NOT_USED) != Farm.NOT_USED) {
-                    Toast.makeText(getApplicationContext(), R.string.cant_change_farmer, Toast.LENGTH_SHORT).show();
+                if (mSettings.getInt("CURRENT_FARM_STATUS", Farm.NOT_USED) != Farm.NOT_USED) {
+                    Toast.makeText(getApplicationContext(), R.string.cant_change_farmer,
+                            Toast.LENGTH_SHORT).show();
                 } else {
-                    farmersAvailable = new ArrayList<>();
-                    allPeople = new ArrayList<>();
+                    mFarmersAvailableList = new ArrayList<>();
+                    mPeopleList = new ArrayList<>();
 
-                    dbManager.loadData(DbManager.WhatData.population);
+                    mDbManager.loadData(DbManager.WhatData.POPULATION);
 
-                    listener = new DbThread.DbListener() {
+                    mListener = new DbThread.DbListener() {
                         @Override
                         public void onDataLoaded(Bundle bundle) {
-                            allPeople = bundle.getParcelableArrayList("allPopulation");
-                            if (allPeople != null) {
-                                for (int i = 0; i < allPeople.size(); i++) {
-                                    if (allPeople.get(i).getJob() == 4) {
-                                        farmersAvailable.add(allPeople.get(i));
+                            mPeopleList = bundle.getParcelableArrayList("allPopulation");
+                            if (mPeopleList != null) {
+                                for (int i = 0; i < mPeopleList.size(); i++) {
+                                    if (mPeopleList.get(i).getJob() == 4) {
+                                        mFarmersAvailableList.add(mPeopleList.get(i));
                                     }
                                 }
-                                FarmersAdapter farmersAdapter = new FarmersAdapter(getApplicationContext(), R.layout.scientists_row, farmersAvailable);
-                                lvChangeFarmer.setHasFixedSize(true);
-                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                                lvChangeFarmer.setLayoutManager(layoutManager);
-                                lvChangeFarmer.setAdapter(farmersAdapter);
+                                FarmersAdapter farmersAdapter
+                                        = new FarmersAdapter(getApplicationContext(), R.layout.scientists_row, mFarmersAvailableList);
+                                rvChangeFarmer.setHasFixedSize(true);
+                                RecyclerView.LayoutManager layoutManager
+                                        = new LinearLayoutManager(getApplicationContext());
+                                rvChangeFarmer.setLayoutManager(layoutManager);
+                                rvChangeFarmer.setAdapter(farmersAdapter);
                             }
                         }
                     };
-                    DbThread.getInstance().addListener(listener);
+                    DbThread.getInstance().addListener(mListener);
 
                     dialogChangeFarmer.show();
                 }
             }
         });
 
-        farmId = allSettings.getInt("CURRENT_FARM_ID", 0);
-        farmName = allSettings.getString("CURRENT_FARM_NAME", "");
-        farmCrop = allSettings.getString("CURRENT_FARM_CROP", "");
-        farmFarmerId = allSettings.getInt("CURRENT_FARM_FARMER_ID", 0);
-        farmStatus = allSettings.getInt("CURRENT_FARM_STATUS", Farm.NOT_USED);
+        mFarmId = mSettings.getInt("CURRENT_FARM_ID", 0);
+        mFarmName = mSettings.getString("CURRENT_FARM_NAME", "");
+        mFarmCrop = mSettings.getString("CURRENT_FARM_CROP", "");
+        mFarmFarmerId = mSettings.getInt("CURRENT_FARM_FARMER_ID", 0);
+        mFarmStatus = mSettings.getInt("CURRENT_FARM_STATUS", Farm.NOT_USED);
 
-        Farm currentFarm = new Farm(farmId, farmName, farmCrop, farmStatus, farmFarmerId);
+        Farm currentFarm = new Farm(mFarmId, mFarmName, mFarmCrop, mFarmStatus, mFarmFarmerId);
 
-        tvFarmName.setText(farmName);
-        tvStatus.setText("Статус: " + currentFarm.statusString(farmStatus));
+        tvFarmName.setText(mFarmName);
+        tvStatus.setText("Статус: " + currentFarm.statusString(mFarmStatus));
         int crop = -1;
-        switch (farmCrop) {
+        switch (mFarmCrop) {
             case "Не выбрано":
                 crop = 0;
                 break;
@@ -179,38 +189,38 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
         }
         spinnerCrops.setSelection(crop);
 
-        if (farmFarmerId == 0) {
+        if (mFarmFarmerId == 0) {
             tvFarmFarmer.setText(R.string.farmer_not_pinned);
         } else {
-            dbManager.loadData(DbManager.WhatData.population);
-            listener = new DbThread.DbListener() {
+            mDbManager.loadData(DbManager.WhatData.POPULATION);
+            mListener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
-                    allPeople = bundle.getParcelableArrayList("allPopulation");
-                    if (allPeople != null) {
-                        for (int i = 0; i < allPeople.size(); i++) {
-                            if (allPeople.get(i).getId() == farmFarmerId) {
-                                farmer = allPeople.get(i);
+                    mPeopleList = bundle.getParcelableArrayList("allPopulation");
+                    if (mPeopleList != null) {
+                        for (int i = 0; i < mPeopleList.size(); i++) {
+                            if (mPeopleList.get(i).getId() == mFarmFarmerId) {
+                                mFarmer = mPeopleList.get(i);
                             }
                         }
                     }
-                    tvFarmFarmer.setText("Ответственный фермер: " + farmer.getName() + " " + farmer.getSurname());
+                    tvFarmFarmer.setText("Ответственный фермер: " + mFarmer.getName() + " " + mFarmer.getSurname());
                 }
             };
-            DbThread.getInstance().addListener(listener);
+            DbThread.getInstance().addListener(mListener);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        DbThread.getInstance().removeListener(listener);
+        DbThread.getInstance().removeListener(mListener);
     }
 
     @Override
@@ -228,42 +238,54 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
-        if (allSettings.getInt("CURRENT_FARM_STATUS", 0) != 0) {
-            if (!allSettings.getString("CURRENT_FARM_CROP", "").equals(text)) {
-                Toast.makeText(getApplicationContext(), R.string.cant_change_crop, Toast.LENGTH_SHORT).show();
-                int previousPosition = Arrays.asList((getResources().getStringArray(R.array.crops))).indexOf(allSettings.getString("CURRENT_FARM_CROP", ""));
+        if (mSettings.getInt("CURRENT_FARM_STATUS", 0) != 0) {
+            if (!mSettings.getString("CURRENT_FARM_CROP", "").equals(text)) {
+                Toast.makeText(getApplicationContext(), R.string.cant_change_crop,
+                        Toast.LENGTH_SHORT).show();
+                int previousPosition = Arrays.asList((getResources().getStringArray(R.array.crops)))
+                        .indexOf(mSettings.getString("CURRENT_FARM_CROP", ""));
                 spinnerCrops.setSelection(previousPosition);
             }
         } else {
             if (text.equals("Не выбрано")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Не выбрано" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Не выбрано"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Огурцы")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Огурцы" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Огурцы"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Картофель")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Картофель" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Картофель"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Помидоры")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Помидоры" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Помидоры"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Пшеница")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Пшеница" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Пшеница"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Рожь")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Рожь" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Рожь"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Лук")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Лук" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Лук"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Морковь")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Морковь" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Морковь"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Укроп")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Укроп" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Укроп"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
             if (text.equals("Свёкла")) {
-                dbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Свёкла" + "'WHERE FARM_ID='" + farmId + "'");
+                mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_CROP='" + "Свёкла"
+                        + "'WHERE FARM_ID='" + mFarmId + "'");
             }
         }
     }
@@ -300,11 +322,12 @@ public class FarmCard extends AppCompatActivity implements AdapterView.OnItemSel
         @Override
         public void onClick(View v) {
             int pinnedFarmerId = person.getId();
-            allSettings.edit().putString("CURRENT_FARM_FARMER_NAME", person.getName() + " " + person.getSurname()).apply();
+            mSettings.edit().putString("CURRENT_FARM_FARMER_NAME", person.getName() + " " + person.getSurname()).apply();
             tvFarmFarmer.setText("Ответственный фермер: "
-                    + allSettings.getString("CURRENT_FARM_FARMER_NAME", ""));
-            dbManager.performQuery("UPDATE " + "farms" + " SET FARM_FARMER_ID='" + pinnedFarmerId + "'WHERE FARM_ID='" + farmId + "'");
-            allSettings.edit().putInt("FARMER_IN_USE_ID", pinnedFarmerId).apply();
+                    + mSettings.getString("CURRENT_FARM_FARMER_NAME", ""));
+            mDbManager.performQuery("UPDATE " + "farms" + " SET FARM_FARMER_ID='" + pinnedFarmerId
+                    + "'WHERE FARM_ID='" + mFarmId + "'");
+            mSettings.edit().putInt("FARMER_IN_USE_ID", pinnedFarmerId).apply();
 
             dialogChangeFarmer.dismiss();
         }

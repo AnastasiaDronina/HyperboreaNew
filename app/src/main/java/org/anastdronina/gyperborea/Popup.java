@@ -14,106 +14,108 @@ import android.widget.Toast;
 import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
 public class Popup extends AppCompatActivity implements View.OnClickListener {
-    private EditText editCountryName;
-    private EditText editPresidentName;
-
-    private Button popupApply, popupBack;
-    private RadioGroup levels;
-    private RadioButton chekedRadioButton;
-    private RadioButton easyLevel, middleLevel, hardLevel;
-    private SharedPreferences allSettings;
-    private DbThread.DbListener listener;
-    private DbManager dbManager;
+    private EditText etCountryName;
+    private EditText etPresidentName;
+    private Button btnPopupApply;
+    private Button btnPopupBack;
+    private RadioGroup radioGroupLevels;
+    private RadioButton radioBtnCheked;
+    private RadioButton radioBtnEasyLevel;
+    private RadioButton radioBtnMiddleLevel;
+    private RadioButton RadioBtnHardLevel;
+    private SharedPreferences mSettings;
+    private DbThread.DbListener mListener;
+    private DbManager mDbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popup);
 
-        dbManager = new DbManager();
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
-        popupApply = findViewById(R.id.popupApply);
-        popupBack = findViewById(R.id.popupBack);
-        levels = findViewById(R.id.levels);
-        easyLevel = findViewById(R.id.easyLevel);
-        middleLevel = findViewById(R.id.middleLevel);
-        hardLevel = findViewById(R.id.hardLevel);
-        editCountryName = findViewById(R.id.editCountryName);
-        editPresidentName = findViewById(R.id.editPresidentName);
+        mDbManager = new DbManager();
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        btnPopupApply = findViewById(R.id.popupApply);
+        btnPopupBack = findViewById(R.id.popupBack);
+        radioGroupLevels = findViewById(R.id.levels);
+        radioBtnEasyLevel = findViewById(R.id.easyLevel);
+        radioBtnMiddleLevel = findViewById(R.id.middleLevel);
+        RadioBtnHardLevel = findViewById(R.id.hardLevel);
+        etCountryName = findViewById(R.id.editCountryName);
+        etPresidentName = findViewById(R.id.editPresidentName);
 
-        popupApply.setOnClickListener(this);
-        popupBack.setOnClickListener(this);
+        btnPopupApply.setOnClickListener(this);
+        btnPopupBack.setOnClickListener(this);
 
-        dbManager.createNewDatabase();
+        mDbManager.createNewDatabase();
 
-        listener = new DbThread.DbListener() {
+        mListener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
                 //inserting data in db
-                dbManager.insertPopulationData("Дмитрий", "Аксенов", 0, 0, 21, 0, 0, 0, 1, 0,
+                mDbManager.insertPopulationData("Дмитрий", "Аксенов", 0, 0, 21, 0, 0, 0, 1, 0,
                         0, 1, 0, "Жаворонок", "Торопыжка", "Некультурный", 0, 0.0);
-                dbManager.insertPopulationData("Денис", "Сергеев", 0, 0, 53, 0, 1, 0, 0, 1,
+                mDbManager.insertPopulationData("Денис", "Сергеев", 0, 0, 53, 0, 1, 0, 0, 1,
                         0, 0, 0, "Способный ученик", "Технарь", "Бездонный желудок", 0, 0.0);
-                dbManager.insertPopulationData("Степан", "Одинцов", 0, 0, 28, 0, 0, 0, 0, 1,
+                mDbManager.insertPopulationData("Степан", "Одинцов", 0, 0, 28, 0, 0, 0, 0, 1,
                         1, 0, 0, "Декоратор", "Гурман", "Брезгливый", 0, 0.0);
-                dbManager.insertPopulationData("Вадим", "Дьячков", 0, 0, 34, 0, 0, 1, 0, 0,
+                mDbManager.insertPopulationData("Вадим", "Дьячков", 0, 0, 34, 0, 0, 1, 0, 0,
                         1, 0, 0, "Веган", "Болтун", "Громкий храп", 0, 0.0);
-                dbManager.insertPopulationData("Владислав", "Кошелев", 0, 0, 30, 1, 0, 1, 0, 0,
+                mDbManager.insertPopulationData("Владислав", "Кошелев", 0, 0, 30, 1, 0, 1, 0, 0,
                         0, 0, 0, "Способный ученик", "Декоратор", "Пацифист", 0, 0.0);
-                dbManager.insertPopulationData("Святослав", "Гуляев", 0, 0, 25, 0, 1, 0, 0, 0,
+                mDbManager.insertPopulationData("Святослав", "Гуляев", 0, 0, 25, 0, 1, 0, 0, 0,
                         0, 1, 0, "Анемия", "Гурман", "Неконструктивный", 0, 0.0);
-                dbManager.insertPopulationData("Артём", "Тетерин", 0, 0, 28, 0, 0, 0, 1, 0,
+                mDbManager.insertPopulationData("Артём", "Тетерин", 0, 0, 28, 0, 0, 0, 1, 0,
                         1, 0, 0, "Руки из лапши", "Бездонный желудок", "Жаворонок", 0, 0.0);
-                dbManager.insertPopulationData("Эдуард", "Лыткин", 0, 0, 18, 0, 0, 0, 0, 1,
+                mDbManager.insertPopulationData("Эдуард", "Лыткин", 0, 0, 18, 0, 0, 0, 0, 1,
                         0, 0, 1, "Буйвол", "Декоратор", "Нарколепсия", 0, 0.0);
-                dbManager.insertPopulationData("Иннокентий", "Харитонов", 0, 0, 34, 0, 1, 1, 0, 0,
+                mDbManager.insertPopulationData("Иннокентий", "Харитонов", 0, 0, 34, 0, 1, 1, 0, 0,
                         0, 0, 0, "Медленная обучаемость", "Брезгливый", "Торопыжка", 0, 0.0);
-                dbManager.insertPopulationData("Илья", "Некрасов", 0, 0, 23, 1, 0, 0, 0, 0,
+                mDbManager.insertPopulationData("Илья", "Некрасов", 0, 0, 23, 1, 0, 0, 0, 0,
                         1, 0, 1, "Трипофобия", "Технарь", "Декоратор", 0, 0.0);
 
-                dbManager.insertTechData("tec1", "desc1", 3, 300, 0);
-                dbManager.insertTechData("tec2", "desc2", 10, 1000, 1);
-                dbManager.insertTechData("tec3", "desc3", 5, 500, 0);
-                dbManager.insertTechData("tec4", "desc4", 8, 800, 0);
-                dbManager.insertTechData("tec5", "desc5", 12, 1200, 0);
-                dbManager.insertTechData("tec1.1", "desc1.1", 2, 200, 0);
-                dbManager.insertTechData("tec2.1", "desc2.1", 7, 700, 0);
-                dbManager.insertTechData("tec3.1", "desc3.1", 9, 900, 0);
-                dbManager.insertTechData("tec4.1", "desc4.1", 4, 400, 0);
-                dbManager.insertTechData("tec5.1", "desc5.1", 18, 1800, 0);
+                mDbManager.insertTechData("tec1", "desc1", 3, 300, 0);
+                mDbManager.insertTechData("tec2", "desc2", 10, 1000, 1);
+                mDbManager.insertTechData("tec3", "desc3", 5, 500, 0);
+                mDbManager.insertTechData("tec4", "desc4", 8, 800, 0);
+                mDbManager.insertTechData("tec5", "desc5", 12, 1200, 0);
+                mDbManager.insertTechData("tec1.1", "desc1.1", 2, 200, 0);
+                mDbManager.insertTechData("tec2.1", "desc2.1", 7, 700, 0);
+                mDbManager.insertTechData("tec3.1", "desc3.1", 9, 900, 0);
+                mDbManager.insertTechData("tec4.1", "desc4.1", 4, 400, 0);
+                mDbManager.insertTechData("tec5.1", "desc5.1", 18, 1800, 0);
 
-                dbManager.insertStockData("Самосвал", "Транспорт", 2);
-                dbManager.insertStockData("Огурцы", "Еда", 10);
-                dbManager.insertStockData("Ресурс1", "Ресурсы", 2);
-                dbManager.insertStockData("Лук", "Еда", 30);
-                dbManager.insertStockData("Ресурс2", "Ресурсы", 10);
-                dbManager.insertStockData("Помидоры", "Еда", 10);
-                dbManager.insertStockData("Оборудование3", "Оборудование", 2);
-                dbManager.insertStockData("Ресурс3", "Ресурсы", 6);
-                dbManager.insertStockData("Оборудование2", "Оборудование", 7);
-                dbManager.insertStockData("Легковой автомобиль", "Транспорт", 5);
-                dbManager.insertStockData("Оборудование1", "Оборудование", 10);
-                dbManager.insertStockData("Трактор", "Транспорт", 3);
+                mDbManager.insertStockData("Самосвал", "Транспорт", 2);
+                mDbManager.insertStockData("Огурцы", "Еда", 10);
+                mDbManager.insertStockData("Ресурс1", "Ресурсы", 2);
+                mDbManager.insertStockData("Лук", "Еда", 30);
+                mDbManager.insertStockData("Ресурс2", "Ресурсы", 10);
+                mDbManager.insertStockData("Помидоры", "Еда", 10);
+                mDbManager.insertStockData("Оборудование3", "Оборудование", 2);
+                mDbManager.insertStockData("Ресурс3", "Ресурсы", 6);
+                mDbManager.insertStockData("Оборудование2", "Оборудование", 7);
+                mDbManager.insertStockData("Легковой автомобиль", "Транспорт", 5);
+                mDbManager.insertStockData("Оборудование1", "Оборудование", 10);
+                mDbManager.insertStockData("Трактор", "Транспорт", 3);
 
-                dbManager.insertFarmsData("Теплица 1", "Не выбрано", 0, 0);
-                dbManager.insertFarmsData("Теплица 2", "Не выбрано", 0, 0);
-                dbManager.insertFarmsData("Теплица 3", "Не выбрано", 0, 0);
-                dbManager.insertFarmsData("Теплица 4", "Не выбрано", 0, 0);
-                dbManager.insertFarmsData("Теплица 5", "Не выбрано", 0, 0);
+                mDbManager.insertFarmsData("Теплица 1", "Не выбрано", 0, 0);
+                mDbManager.insertFarmsData("Теплица 2", "Не выбрано", 0, 0);
+                mDbManager.insertFarmsData("Теплица 3", "Не выбрано", 0, 0);
+                mDbManager.insertFarmsData("Теплица 4", "Не выбрано", 0, 0);
+                mDbManager.insertFarmsData("Теплица 5", "Не выбрано", 0, 0);
 
-                dbManager.insertMarketData("Картофель", "руб", "Еда", 10, 300);
-                dbManager.insertMarketData("Оборудование42", "руб", "Оборудование", 5, 50000);
-                dbManager.insertMarketData("Бетономешалка", "$", "Транспорт", 1, 50000);
+                mDbManager.insertMarketData("Картофель", "руб", "Еда", 10, 300);
+                mDbManager.insertMarketData("Оборудование42", "руб", "Оборудование", 5, 50000);
+                mDbManager.insertMarketData("Бетономешалка", "$", "Транспорт", 1, 50000);
             }
         };
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!allSettings.getBoolean("NEW_GAME", true)) {
+        if (!mSettings.getBoolean("NEW_GAME", true)) {
             finish();
         }
     }
@@ -121,7 +123,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onStop() {
         super.onStop();
-        DbThread.getInstance().removeListener(listener);
+        DbThread.getInstance().removeListener(mListener);
     }
 
     @Override
@@ -129,28 +131,28 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         Intent intent = null;
         switch (v.getId()) {
             case R.id.popupApply:
-                if (editCountryName.getText().toString().length() > 0 && editPresidentName.getText().toString().length() > 0) {
-                    SharedPreferences allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
-                    allSettings.edit().putBoolean("NEW_GAME", false).apply();
-                    allSettings.edit().putString("COUNTRY_NAME", editCountryName.getText().toString()).apply();
-                    allSettings.edit().putString("PRESIDENT_NAME", editPresidentName.getText().toString()).apply();
+                if (etCountryName.getText().toString().length() > 0 && etPresidentName.getText().toString().length() > 0) {
+                    mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+                    mSettings.edit().putBoolean("NEW_GAME", false).apply();
+                    mSettings.edit().putString("COUNTRY_NAME", etCountryName.getText().toString()).apply();
+                    mSettings.edit().putString("PRESIDENT_NAME", etPresidentName.getText().toString()).apply();
 
-                    int checkedId = levels.getCheckedRadioButtonId();
-                    chekedRadioButton = findViewById(checkedId);
-                    if (chekedRadioButton.equals(easyLevel)) {
-                        allSettings.edit().putString("LEVEL", "Easy").apply();
-                        allSettings.edit().putLong("MONEY_DOLLARS", 300000).apply();
-                        allSettings.edit().putLong("MONEY_RUBLES", 30000000).apply();
+                    int checkedId = radioGroupLevels.getCheckedRadioButtonId();
+                    radioBtnCheked = findViewById(checkedId);
+                    if (radioBtnCheked.equals(radioBtnEasyLevel)) {
+                        mSettings.edit().putString("LEVEL", "Easy").apply();
+                        mSettings.edit().putLong("MONEY_DOLLARS", 300000).apply();
+                        mSettings.edit().putLong("MONEY_RUBLES", 30000000).apply();
                     }
-                    if (chekedRadioButton.equals(hardLevel)) {
-                        allSettings.edit().putString("LEVEL", "Hard").apply();
-                        allSettings.edit().putLong("MONEY_DOLLARS", 100000).apply();
-                        allSettings.edit().putLong("MONEY_RUBLES", 10000000).apply();
+                    if (radioBtnCheked.equals(RadioBtnHardLevel)) {
+                        mSettings.edit().putString("LEVEL", "Hard").apply();
+                        mSettings.edit().putLong("MONEY_DOLLARS", 100000).apply();
+                        mSettings.edit().putLong("MONEY_RUBLES", 10000000).apply();
                     }
-                    if (chekedRadioButton.equals(middleLevel)) {
-                        allSettings.edit().putString("LEVEL", "Middle");
-                        allSettings.edit().putLong("MONEY_DOLLARS", 200000).apply();
-                        allSettings.edit().putLong("MONEY_RUBLES", 20000000).apply();
+                    if (radioBtnCheked.equals(radioBtnMiddleLevel)) {
+                        mSettings.edit().putString("LEVEL", "Middle");
+                        mSettings.edit().putLong("MONEY_DOLLARS", 200000).apply();
+                        mSettings.edit().putLong("MONEY_RUBLES", 20000000).apply();
                     }
 
                     intent = new Intent(this, NewGame.class);

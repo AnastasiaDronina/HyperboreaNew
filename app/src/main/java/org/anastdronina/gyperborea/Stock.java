@@ -23,163 +23,165 @@ import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 public class Stock extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private Spinner spinnerPruductType;
-    private ArrayAdapter<CharSequence> stockArrayAdapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private StockAdapter stockAdapter;
-    private ArrayList<Product> products;
-    private ArrayList<Product> subList;
-    private RecyclerView stockListView;
-    private SharedPreferences allSettings;
-    private DateAndMoney dateAndMoney;
-    private TextView date, moneyD, moneyR;
-    private DbThread.DbListener listener;
-    private DbManager dbManager;
+    private RecyclerView rvStock;
+    private TextView tvDate;
+    private TextView tvMoneyD;
+    private TextView tvMoneyR;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private ArrayList<Product> mProductsList;
+    private ArrayList<Product> mSubList;
+    private ArrayAdapter<CharSequence> mStockArrayAdapter;
+    private StockAdapter mStockAdapter;
+    private SharedPreferences mSettings;
+    private DateAndMoney mDateAndMoney;
+    private DbThread.DbListener mListener;
+    private DbManager mDbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock);
 
-        dbManager = new DbManager();
-        products = new ArrayList<>();
-        stockListView = findViewById(R.id.stockListView);
-        stockListView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getApplicationContext());
+        mDbManager = new DbManager();
+        mProductsList = new ArrayList<>();
+        rvStock = findViewById(R.id.stockListView);
+        rvStock.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(getApplicationContext());
 
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
-        dateAndMoney = new DateAndMoney();
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        mDateAndMoney = new DateAndMoney();
 
-        date = findViewById(R.id.date);
-        moneyR = findViewById(R.id.moneyR);
-        moneyD = findViewById(R.id.moneyD);
+        tvDate = findViewById(R.id.date);
+        tvMoneyR = findViewById(R.id.moneyR);
+        tvMoneyD = findViewById(R.id.moneyD);
         spinnerPruductType = findViewById(R.id.spinnerPruductType);
-        stockArrayAdapter = ArrayAdapter.createFromResource(this, R.array.product_types, R.layout.spinner_item);
-        stockArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerPruductType.setAdapter(stockArrayAdapter);
+        mStockArrayAdapter = ArrayAdapter.createFromResource(this, R.array.product_types, R.layout.spinner_item);
+        mStockArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerPruductType.setAdapter(mStockArrayAdapter);
         spinnerPruductType.setOnItemSelectedListener(this);
 
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+        tvDate.setText(mDateAndMoney.getDate(mSettings));
+        tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+        tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        dbManager.loadData(DbManager.WhatData.stock);
-        listener = new DbThread.DbListener() {
+        mDbManager.loadData(DbManager.WhatData.STOCK);
+        mListener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
-                products = bundle.getParcelableArrayList("products");
+                mProductsList = bundle.getParcelableArrayList("products");
             }
         };
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        DbThread.getInstance().removeListener(listener);
+        DbThread.getInstance().removeListener(mListener);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String text = parent.getItemAtPosition(position).toString();
         if (text.equals("Не выбрано")) {
-            dbManager.loadData(DbManager.WhatData.stock);
-            listener = new DbThread.DbListener() {
+            mDbManager.loadData(DbManager.WhatData.STOCK);
+            mListener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
-                    products = bundle.getParcelableArrayList("products");
-                    stockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, products);
-                    stockListView.setLayoutManager(layoutManager);
-                    stockListView.setAdapter(stockAdapter);
+                    mProductsList = bundle.getParcelableArrayList("products");
+                    mStockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, mProductsList);
+                    rvStock.setLayoutManager(mLayoutManager);
+                    rvStock.setAdapter(mStockAdapter);
                 }
             };
-            DbThread.getInstance().addListener(listener);
+            DbThread.getInstance().addListener(mListener);
         }
         if (text.equals("Еда")) {
-            dbManager.loadData(DbManager.WhatData.stock);
-            listener = new DbThread.DbListener() {
+            mDbManager.loadData(DbManager.WhatData.STOCK);
+            mListener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
-                    products = bundle.getParcelableArrayList("products");
-                    subList = new ArrayList<>();
-                    for (int i = 0; i < products.size(); i++) {
-                        if (products.get(i).getType().equals("Еда")) {
-                            subList.add(products.get(i));
+                    mProductsList = bundle.getParcelableArrayList("products");
+                    mSubList = new ArrayList<>();
+                    for (int i = 0; i < mProductsList.size(); i++) {
+                        if (mProductsList.get(i).getType().equals("Еда")) {
+                            mSubList.add(mProductsList.get(i));
                         }
                     }
-                    stockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, subList);
-                    stockListView.setLayoutManager(layoutManager);
-                    stockListView.setAdapter(stockAdapter);
+                    mStockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, mSubList);
+                    rvStock.setLayoutManager(mLayoutManager);
+                    rvStock.setAdapter(mStockAdapter);
                 }
             };
-            DbThread.getInstance().addListener(listener);
+            DbThread.getInstance().addListener(mListener);
         }
         if (text.equals("Ресурсы")) {
-            dbManager.loadData(DbManager.WhatData.stock);
-            listener = new DbThread.DbListener() {
+            mDbManager.loadData(DbManager.WhatData.STOCK);
+            mListener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
-                    products = bundle.getParcelableArrayList("products");
-                    subList = new ArrayList<>();
-                    for (int i = 0; i < products.size(); i++) {
-                        if (products.get(i).getType().equals("Ресурсы")) {
-                            subList.add(products.get(i));
+                    mProductsList = bundle.getParcelableArrayList("products");
+                    mSubList = new ArrayList<>();
+                    for (int i = 0; i < mProductsList.size(); i++) {
+                        if (mProductsList.get(i).getType().equals("Ресурсы")) {
+                            mSubList.add(mProductsList.get(i));
                         }
                     }
-                    stockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, subList);
-                    stockListView.setLayoutManager(layoutManager);
-                    stockListView.setAdapter(stockAdapter);
+                    mStockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, mSubList);
+                    rvStock.setLayoutManager(mLayoutManager);
+                    rvStock.setAdapter(mStockAdapter);
                 }
             };
-            DbThread.getInstance().addListener(listener);
+            DbThread.getInstance().addListener(mListener);
         }
         if (text.equals("Оборудование")) {
-            dbManager.loadData(DbManager.WhatData.stock);
-            listener = new DbThread.DbListener() {
+            mDbManager.loadData(DbManager.WhatData.STOCK);
+            mListener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
-                    products = bundle.getParcelableArrayList("products");
-                    subList = new ArrayList<>();
-                    for (int i = 0; i < products.size(); i++) {
-                        if (products.get(i).getType().equals("Оборудование")) {
-                            subList.add(products.get(i));
+                    mProductsList = bundle.getParcelableArrayList("products");
+                    mSubList = new ArrayList<>();
+                    for (int i = 0; i < mProductsList.size(); i++) {
+                        if (mProductsList.get(i).getType().equals("Оборудование")) {
+                            mSubList.add(mProductsList.get(i));
                         }
                     }
-                    stockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, subList);
-                    stockListView.setLayoutManager(layoutManager);
-                    stockListView.setAdapter(stockAdapter);
+                    mStockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, mSubList);
+                    rvStock.setLayoutManager(mLayoutManager);
+                    rvStock.setAdapter(mStockAdapter);
                 }
             };
-            DbThread.getInstance().addListener(listener);
+            DbThread.getInstance().addListener(mListener);
         }
         if (text.equals("Транспорт")) {
-            dbManager.loadData(DbManager.WhatData.stock);
-            listener = new DbThread.DbListener() {
+            mDbManager.loadData(DbManager.WhatData.STOCK);
+            mListener = new DbThread.DbListener() {
                 @Override
                 public void onDataLoaded(Bundle bundle) {
-                    products = bundle.getParcelableArrayList("products");
-                    subList = new ArrayList<>();
-                    for (int i = 0; i < products.size(); i++) {
-                        if (products.get(i).getType().equals("Транспорт")) {
-                            subList.add(products.get(i));
+                    mProductsList = bundle.getParcelableArrayList("products");
+                    mSubList = new ArrayList<>();
+                    for (int i = 0; i < mProductsList.size(); i++) {
+                        if (mProductsList.get(i).getType().equals("Транспорт")) {
+                            mSubList.add(mProductsList.get(i));
                         }
                     }
-                    stockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, subList);
-                    stockListView.setLayoutManager(layoutManager);
-                    stockListView.setAdapter(stockAdapter);
+                    mStockAdapter = new StockAdapter(getApplicationContext(), R.layout.scientists_row, mSubList);
+                    rvStock.setLayoutManager(mLayoutManager);
+                    rvStock.setAdapter(mStockAdapter);
                 }
             };
-            DbThread.getInstance().addListener(listener);
+            DbThread.getInstance().addListener(mListener);
         }
     }
 

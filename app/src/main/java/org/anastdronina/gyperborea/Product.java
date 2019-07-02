@@ -4,22 +4,23 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Product implements Parcelable {
-    private int id;
-    private String name, type;
-    private int amount;
+    private int mId;
+    private String mName;
+    private String mType;
+    private int mAmount;
 
     public Product(int id, String name, String type, int amount) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.amount = amount;
+        mId = id;
+        mName = name;
+        mType = type;
+        mAmount = amount;
     }
 
     protected Product(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        type = in.readString();
-        amount = in.readInt();
+        mId = in.readInt();
+        mName = in.readString();
+        mType = in.readString();
+        mAmount = in.readInt();
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {
@@ -35,27 +36,27 @@ public class Product implements Parcelable {
     };
 
     public int getId() {
-        return id;
+        return mId;
     }
 
     public void setId(int id) {
-        this.id = id;
+        mId = id;
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        mName = name;
     }
 
     public String getType() {
-        return type;
+        return mType;
     }
 
     public int getAmount() {
-        return amount;
+        return mAmount;
     }
 
     @Override
@@ -65,9 +66,9 @@ public class Product implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeString(type);
-        dest.writeInt(amount);
+        dest.writeInt(mId);
+        dest.writeString(mName);
+        dest.writeString(mType);
+        dest.writeInt(mAmount);
     }
 }

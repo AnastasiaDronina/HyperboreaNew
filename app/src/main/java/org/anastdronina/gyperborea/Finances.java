@@ -19,35 +19,47 @@ import static org.anastdronina.gyperborea.ResetPreferences.ALL_SETTINGS;
 
 public class Finances extends AppCompatActivity implements View.OnClickListener {
 
-    private Button btnRubToDol, btnDolToRub, btnRubToDolCount, btnDolToRubCount;
+    private Button btnRubToDol;
+    private Button btnDolToRub;
+    private Button btnRubToDolCount;
+    private Button btnDolToRubCount;
     private ImageButton btnToPeople;
-    private EditText etRubToConvert, etDolToConvert, etRubConverted, etDolConverted;
-    private AlertDialog uSureDialogRub, uSureDialogDol;
-    private TextView tvForDialogRub, tvForDialogDol, tvRulesFinances, date, moneyD, moneyR;
-    private SharedPreferences allSettings;
-    private DateAndMoney dateAndMoney;
-    private double coef;
-    private DbThread.DbListener listener;
-    private DbManager dbManager;
+    private EditText etRubToConvert;
+    private EditText etDolToConvert;
+    private EditText etRubConverted;
+    private EditText etDolConverted;
+    private AlertDialog dialogUSureRub;
+    private AlertDialog dialogUSureDol;
+    private TextView tvForDialogRub;
+    private TextView tvForDialogDol;
+    private TextView tvRulesFinances;
+    private TextView tvDate;
+    private TextView tvMoneyD;
+    private TextView tvMoneyR;
+    private SharedPreferences mSettings;
+    private DateAndMoney mDateAndMoney;
+    private double mCoef;
+    private DbThread.DbListener mListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finances);
 
-        dbManager = new DbManager();
+        DbManager dbManager = new DbManager();
         dbManager.setCoefInFinances();
 
-        listener = new DbThread.DbListener() {
+        mListener = new DbThread.DbListener() {
             @Override
             public void onDataLoaded(Bundle bundle) {
-                coef = bundle.getDouble("coef");
-                tvRulesFinances.setText("Коэффициент улучшения курса: " + coef + "\nПокупка $ - " + (70.0 - coef) + "0 руб \nПродажа $ - " + (60.0 + coef) + "0 руб");
+                mCoef = bundle.getDouble("coef");
+                tvRulesFinances.setText("Коэффициент улучшения курса: " + mCoef
+                        + "\nПокупка $ - " + (70.0 - mCoef) + "0 руб \nПродажа $ - " + (60.0 + mCoef) + "0 руб");
             }
         };
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
 
-        allSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
+        mSettings = getSharedPreferences(ALL_SETTINGS, MODE_PRIVATE);
 
         btnRubToDol = findViewById(R.id.btn_rub_to_dol);
         btnDolToRub = findViewById(R.id.btn_dol_to_rub);
@@ -58,17 +70,17 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
         etDolToConvert = findViewById(R.id.et_dol_to_convert);
         etRubConverted = findViewById(R.id.et_rub_converted);
         etDolConverted = findViewById(R.id.et_dol_converted);
-        uSureDialogRub = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
-        uSureDialogRub.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
+        dialogUSureRub = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
+        dialogUSureRub.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         tvForDialogRub = new TextView(this);
-        uSureDialogDol = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
-        uSureDialogDol.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
+        dialogUSureDol = new AlertDialog.Builder(this, R.style.MyDialogTheme).create();
+        dialogUSureDol.getWindow().getAttributes().windowAnimations = R.style.MyDialogTheme;
         tvForDialogDol = new TextView(this);
         tvRulesFinances = findViewById(R.id.tv_rules_finances);
-        date = findViewById(R.id.date);
-        moneyR = findViewById(R.id.moneyR);
-        moneyD = findViewById(R.id.moneyD);
-        dateAndMoney = new DateAndMoney();
+        tvDate = findViewById(R.id.date);
+        tvMoneyR = findViewById(R.id.moneyR);
+        tvMoneyD = findViewById(R.id.moneyD);
+        mDateAndMoney = new DateAndMoney();
 
         btnRubToDolCount.setOnClickListener(this);
         btnDolToRubCount.setOnClickListener(this);
@@ -76,26 +88,26 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
         btnDolToRub.setOnClickListener(this);
         btnToPeople.setOnClickListener(this);
 
-        uSureDialogRub.setTitle(R.string.confirm);
-        uSureDialogRub.setView(tvForDialogRub);
-        uSureDialogDol.setTitle(R.string.confirm);
-        uSureDialogDol.setView(tvForDialogDol);
+        dialogUSureRub.setTitle(R.string.confirm);
+        dialogUSureRub.setView(tvForDialogRub);
+        dialogUSureDol.setTitle(R.string.confirm);
+        dialogUSureDol.setView(tvForDialogDol);
 
-        uSureDialogRub.setButton(DialogInterface.BUTTON_POSITIVE, "Да", new DialogInterface.OnClickListener() {
+        dialogUSureRub.setButton(DialogInterface.BUTTON_POSITIVE, "Да", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String rubles = Long.toString(allSettings.getLong("MONEY_RUBLES", 20000000));
+                String rubles = Long.toString(mSettings.getLong("MONEY_RUBLES", 20000000));
                 String kop;
-                if (allSettings.getInt("MONEY_KOP", 0) < 10) {
-                    kop = "0" + allSettings.getInt("MONEY_KOP", 0);
-                } else kop = Integer.toString(allSettings.getInt("MONEY_KOP", 0));
+                if (mSettings.getInt("MONEY_KOP", 0) < 10) {
+                    kop = "0" + mSettings.getInt("MONEY_KOP", 0);
+                } else kop = Integer.toString(mSettings.getInt("MONEY_KOP", 0));
                 BigDecimal currentRubbles = new BigDecimal(rubles + "." + kop);
 
-                String dollars = Long.toString(allSettings.getLong("MONEY_DOLLARS", 20000));
+                String dollars = Long.toString(mSettings.getLong("MONEY_DOLLARS", 20000));
                 String cents;
-                if (allSettings.getInt("MONEY_CENTS", 0) < 10) {
-                    cents = "0" + allSettings.getInt("MONEY_CENTS", 0);
-                } else cents = Integer.toString(allSettings.getInt("MONEY_CENTS", 0));
+                if (mSettings.getInt("MONEY_CENTS", 0) < 10) {
+                    cents = "0" + mSettings.getInt("MONEY_CENTS", 0);
+                } else cents = Integer.toString(mSettings.getInt("MONEY_CENTS", 0));
                 BigDecimal currentDollars = new BigDecimal(dollars + "." + cents);
 
                 BigDecimal rubblesFromEditText = new BigDecimal(etRubToConvert.getText().toString());
@@ -104,31 +116,31 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
                 String[] partsResRub = currentRubbles.subtract(rubblesFromEditText).toString().split("\\.");
                 String[] partsResDol = currentDollars.add(dollarsFromEditText).toString().split("\\.");
 
-                allSettings.edit().putLong("MONEY_DOLLARS", Integer.parseInt(partsResDol[0])).apply();
-                allSettings.edit().putInt("MONEY_CENTS", Integer.parseInt(partsResDol[1])).apply();
-                allSettings.edit().putLong("MONEY_RUBLES", Integer.parseInt(partsResRub[0])).apply();
-                allSettings.edit().putInt("MONEY_KOP", Integer.parseInt(partsResRub[1])).apply();
+                mSettings.edit().putLong("MONEY_DOLLARS", Integer.parseInt(partsResDol[0])).apply();
+                mSettings.edit().putInt("MONEY_CENTS", Integer.parseInt(partsResDol[1])).apply();
+                mSettings.edit().putLong("MONEY_RUBLES", Integer.parseInt(partsResRub[0])).apply();
+                mSettings.edit().putInt("MONEY_KOP", Integer.parseInt(partsResRub[1])).apply();
 
-                moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-                moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+                tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+                tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
             }
         });
 
-        uSureDialogDol.setButton(DialogInterface.BUTTON_POSITIVE, "Да", new DialogInterface.OnClickListener() {
+        dialogUSureDol.setButton(DialogInterface.BUTTON_POSITIVE, "Да", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String rubles = Long.toString(allSettings.getLong("MONEY_RUBLES", 20000000));
+                String rubles = Long.toString(mSettings.getLong("MONEY_RUBLES", 20000000));
                 String kop;
-                if (allSettings.getInt("MONEY_KOP", 0) < 10) {
-                    kop = "0" + allSettings.getInt("MONEY_KOP", 0);
-                } else kop = Integer.toString(allSettings.getInt("MONEY_KOP", 0));
+                if (mSettings.getInt("MONEY_KOP", 0) < 10) {
+                    kop = "0" + mSettings.getInt("MONEY_KOP", 0);
+                } else kop = Integer.toString(mSettings.getInt("MONEY_KOP", 0));
                 BigDecimal currentRubbles = new BigDecimal(rubles + "." + kop);
 
-                String dollars = Long.toString(allSettings.getLong("MONEY_DOLLARS", 20000));
+                String dollars = Long.toString(mSettings.getLong("MONEY_DOLLARS", 20000));
                 String cents;
-                if (allSettings.getInt("MONEY_CENTS", 0) < 10) {
-                    cents = "0" + allSettings.getInt("MONEY_CENTS", 0);
-                } else cents = Integer.toString(allSettings.getInt("MONEY_CENTS", 0));
+                if (mSettings.getInt("MONEY_CENTS", 0) < 10) {
+                    cents = "0" + mSettings.getInt("MONEY_CENTS", 0);
+                } else cents = Integer.toString(mSettings.getInt("MONEY_CENTS", 0));
                 BigDecimal currentDollars = new BigDecimal(dollars + "." + cents);
 
                 BigDecimal rubblesFromEditText = new BigDecimal(etRubConverted.getText().toString());
@@ -137,10 +149,10 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
                 String[] resRub = currentRubbles.add(rubblesFromEditText).toString().split("\\.");
                 String[] resDol = currentDollars.subtract(dollarsFromEditText).toString().split("\\.");
 
-                allSettings.edit().putLong("MONEY_DOLLARS", Integer.parseInt(resDol[0])).apply();
-                allSettings.edit().putInt("MONEY_CENTS", Integer.parseInt(resDol[1])).apply();
-                allSettings.edit().putLong("MONEY_RUBLES", Integer.parseInt(resRub[0])).apply();
-                allSettings.edit().putInt("MONEY_KOP", Integer.parseInt(resRub[1])).apply();
+                mSettings.edit().putLong("MONEY_DOLLARS", Integer.parseInt(resDol[0])).apply();
+                mSettings.edit().putInt("MONEY_CENTS", Integer.parseInt(resDol[1])).apply();
+                mSettings.edit().putLong("MONEY_RUBLES", Integer.parseInt(resRub[0])).apply();
+                mSettings.edit().putInt("MONEY_KOP", Integer.parseInt(resRub[1])).apply();
             }
         });
     }
@@ -148,29 +160,29 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
-        date.setText(dateAndMoney.getDate(allSettings));
-        moneyD.setText(dateAndMoney.getMoney(allSettings, "$"));
-        moneyR.setText(dateAndMoney.getMoney(allSettings, "руб"));
+        tvDate.setText(mDateAndMoney.getDate(mSettings));
+        tvMoneyD.setText(mDateAndMoney.getMoney(mSettings, "$"));
+        tvMoneyR.setText(mDateAndMoney.getMoney(mSettings, "руб"));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        DbThread.getInstance().addListener(listener);
+        DbThread.getInstance().addListener(mListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        DbThread.getInstance().removeListener(listener);
+        DbThread.getInstance().removeListener(mListener);
     }
 
     @Override
     public void onClick(View v) {
-        long moneyDollars = allSettings.getLong("MONEY_DOLLARS", 200000);
-        long moneyRubles = allSettings.getLong("MONEY_RUBLES", 20000000);
-        int moneyCents = allSettings.getInt("MONEY_CENTS", 00);
-        int moneyKop = allSettings.getInt("MONEY_KOP", 00);
+        long moneyDollars = mSettings.getLong("MONEY_DOLLARS", 200000);
+        long moneyRubles = mSettings.getLong("MONEY_RUBLES", 20000000);
+        int moneyCents = mSettings.getInt("MONEY_CENTS", 00);
+        int moneyKop = mSettings.getInt("MONEY_KOP", 00);
         String cents, kop;
         if (moneyCents < 10) {
             cents = "0" + moneyCents;
@@ -220,7 +232,7 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
                         checkDecimalPart(etRubToConvert);
                         tvForDialogRub.setText(etRubToConvert.getText().toString() + "  \u20BD -----> " + etDolConverted.getText().toString()
                                 + " $\n\nУверены, что хотите конвертировать?");
-                        uSureDialogRub.show();
+                        dialogUSureRub.show();
                     }
                 } else {
                     showErrorMsg("kop");
@@ -236,7 +248,7 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
                         checkDecimalPart(etDolToConvert);
                         tvForDialogDol.setText(etDolToConvert.getText().toString() + " $ -----> " + etRubConverted.getText().toString()
                                 + " \u20BD\n\nУверены, что хотите конвертировать?");
-                        uSureDialogDol.show();
+                        dialogUSureDol.show();
                     }
                 } else showErrorMsg("cent");
                 break;
@@ -261,7 +273,7 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
                     return false;
                 } else {
                     if (2 == parts[1].length()) {
-                        BigDecimal resultRubToDol = new BigDecimal(rubInput).multiply(new BigDecimal(1 / (70.0 - coef))).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                        BigDecimal resultRubToDol = new BigDecimal(rubInput).multiply(new BigDecimal(1 / (70.0 - mCoef))).setScale(2, BigDecimal.ROUND_HALF_EVEN);
                         etDolConverted.setText(resultRubToDol.toString());
                         return true;
                     } else return false;
@@ -275,7 +287,7 @@ public class Finances extends AppCompatActivity implements View.OnClickListener 
                     return false;
                 } else {
                     if (2 == parts2[1].length()) {
-                        BigDecimal resultDolToRub = new BigDecimal(dolInput).multiply(new BigDecimal(60.0 + coef)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                        BigDecimal resultDolToRub = new BigDecimal(dolInput).multiply(new BigDecimal(60.0 + mCoef)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
                         etRubConverted.setText(resultDolToRub.toString());
                         return true;
                     } else return false;

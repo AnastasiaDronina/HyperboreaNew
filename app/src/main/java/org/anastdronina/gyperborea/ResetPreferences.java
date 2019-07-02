@@ -10,17 +10,18 @@ import android.widget.Button;
 public class ResetPreferences extends AppCompatActivity implements View.OnClickListener {
 
     public static final String ALL_SETTINGS = "allSettings";
-    private Button buttonOk, buttonNo;
+    private Button btnOk;
+    private Button btnNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_preferences);
 
-        buttonOk = findViewById(R.id.buttonOk);
-        buttonNo = findViewById(R.id.buttonNo);
-        buttonOk.setOnClickListener(this);
-        buttonNo.setOnClickListener(this);
+        btnOk = findViewById(R.id.buttonOk);
+        btnNo = findViewById(R.id.buttonNo);
+        btnOk.setOnClickListener(this);
+        btnNo.setOnClickListener(this);
     }
 
     @Override
