@@ -73,17 +73,13 @@ public class DbThread extends Thread {
     public void run() {
         super.run();
         Looper.prepare();
-        sDb = Hyperborea.getAppContext().openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
-
         sBackgoundHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-
                 sDb = Hyperborea.getAppContext().openOrCreateDatabase("hyperborea.db", Context.MODE_PRIVATE, null);
                 Cursor res;
                 sBundle = new Bundle();
-
                 switch (msg.what) {
                     case PERFORM_SQL_QUERY:
                         sDb.execSQL(msg.getData().getString("query"));
@@ -110,7 +106,8 @@ public class DbThread extends Thread {
                             String trait2 = res.getString(res.getColumnIndex("TRAIT2"));
                             String trait3 = res.getString(res.getColumnIndex("TRAIT3"));
 
-                            allPopulation.add(new Person(id, name, surname, job, salary, age, building, manufacture, farm, athletic, learning, talking, strength, art,
+                            allPopulation.add(new Person(id, name, surname, job, salary, age, building,
+                                    manufacture, farm, athletic, learning, talking, strength, art,
                                     new ArrayList<>(Arrays.asList(trait1, trait2, trait3))));
                         }
                         res.close();
