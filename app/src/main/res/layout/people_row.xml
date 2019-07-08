@@ -17,7 +17,7 @@
         android:textAlignment="center"
         android:textColor="@color/cardview_dark_background"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/farmsCrop"
+        app:layout_constraintEnd_toStartOf="@+id/personJob"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
